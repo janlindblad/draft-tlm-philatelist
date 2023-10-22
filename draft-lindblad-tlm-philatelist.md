@@ -60,7 +60,7 @@ Data science issues like adding overlapping quantities, adding quantities of dif
 
 ## The Solution
 
-The Philantropist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the data flows aggregated using any kind of operation.
+The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the data flows aggregated using any kind of operation.
 
 To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the usa of YANG here does not limit the architecture to traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.
 
@@ -283,6 +283,8 @@ The sensor groups are then arranged into streams from a collection of sources (t
 Processor components take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in in the input data, or fill in approximate values where there are holes in the input data.
 
 Aggregator components take multiple incoming data flows and combine them, typically by adding them together, taking possible differences in cadence in the input data flows into account.
+
+Processor and Aggregator components provide a YANG model of the output data, just like the Collector components, so that all data flowing in the system has a YANG description and is associated with metadata.
 
 Note: In the current version of the YANG modules, a Processor is simply an Aggregator with a single input and output.  Unless we see a need to keep these two component types separate, we might remove the Processor component and keep it baked in with the Aggregator.
 
