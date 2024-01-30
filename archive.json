@@ -1,0 +1,135 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2024-01-30T01:00:50.653460+00:00",
+  "repo": "janlindblad/netmod-tlm-philatelist",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOKioyEc50kvak",
+      "title": "Exemplify source",
+      "url": "https://github.com/janlindblad/netmod-tlm-philatelist/issues/1",
+      "state": "OPEN",
+      "author": "plajjan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "https://github.com/janlindblad/netmod-tlm-philatelist/blob/b4ce4be2adbcd37b547348f20e75f41c380e57aa/draft-lindblad-tlm-philatelist.md?plain=1#L169\r\n\r\n> Provider components (61, 82, 91) are running on a telemetry source system that supports a YANG-based telemetry data server.\r\n\r\nWould be good to add an example, perhaps something like:\r\n\r\n```md\r\nProvider components (61, 82, 91) are running on a telemetry source system that supports a YANG-based \r\ntelemetry data server, e.g. periodic RESTCONF GETs or NETCONF with YANG-push subscriptions.\r\n```",
+      "createdAt": "2023-10-22T07:02:28Z",
+      "updatedAt": "2023-10-22T07:02:28Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOKioyEc50kvbl",
+      "title": "Where is TSDB in diagram?",
+      "url": "https://github.com/janlindblad/netmod-tlm-philatelist/issues/2",
+      "state": "OPEN",
+      "author": "plajjan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "https://github.com/janlindblad/netmod-tlm-philatelist/blob/b4ce4be2adbcd37b547348f20e75f41c380e57aa/draft-lindblad-tlm-philatelist.md?plain=1#L169\r\n\r\n> The telemetry data flows from the telemetry source system to a Time Series Database (TSDB). \r\n\r\nTSDB is not in diagram, should it not be? It's a very important architectural piece IMHO. I think we want to support both using a very large centralized TSDB (Uber talks how they use an M3DB instance with over 9 billion metrics, so likely centralized) but also the case of multiple smaller ones, since some departments / sub-organizations within a large company will prefer to run their own systems or it just starts that way. When there are many smaller systems, you might need support for doing distributed queries over them. For example, Prometheus has a remote read interface to support distributed / federated setups, see like https://sitaram.substack.com/p/multilevel-prometheus-setup-using",
+      "createdAt": "2023-10-22T07:02:44Z",
+      "updatedAt": "2023-10-22T07:02:44Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOKioyEc50kvyg",
+      "title": "Collectors cannot necessarily configure devices",
+      "url": "https://github.com/janlindblad/netmod-tlm-philatelist/issues/3",
+      "state": "OPEN",
+      "author": "plajjan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "https://github.com/janlindblad/netmod-tlm-philatelist/blob/b4ce4be2adbcd37b547348f20e75f41c380e57aa/draft-lindblad-tlm-philatelist.md?plain=1#L171\r\n\r\n>  Collector components (51, 72, 81) ensure the Providers are programmed properly to deliver the telemetry data to the TSDB designated by the collector.  In some cases this flow may be direct from the source to the TSDB, in other cases, it may be going through the collector.  In some cases the collector may be polling the source, in others it may have set up an automatic, periodic subscription. \r\n\r\nIt's generally a bad idea to let multiple managers manage the same device as it becomes really tricky to figure out ownership of configuration. It is generally desirable to have a single manager for a particular device. Suggesting the collector configures a device goes contrary to that. Bad.\r\n\r\nBut first, subscriptions or fetching data does not necessarily require (extra) configuration on the device. If NETCONF is already use for configuration of the device then NETCONF get polling is already possible. YANG-push subscriptions do not require config, the subscriptions are established dynamically.\r\n\r\nFor the protocols (dial-out generally) I think we should suggest that the collector can a) rely on pre-existing configuration put in place by a configuration provisioning system, b) ask the configuration provisioning system to add config or c) configure the device directly itself.",
+      "createdAt": "2023-10-22T07:08:24Z",
+      "updatedAt": "2023-10-22T07:08:24Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOKioyEc50kwOi",
+      "title": "Avoid \"server\" nomenclature for non-YANG sources",
+      "url": "https://github.com/janlindblad/netmod-tlm-philatelist/issues/4",
+      "state": "OPEN",
+      "author": "plajjan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In many places a device is referred to as a \"server\" which works well in NETCONF nomenclature where a device like a router implements a NETCONF server. For other protocols this nomenclature might not be used and in fact, telemetry might not be sent like that. It could rather be a client that connects and pushes the data. I think it is better to use \"source system\" (already used in text) or something generic like \"device\".",
+      "createdAt": "2023-10-22T07:15:01Z",
+      "updatedAt": "2023-10-22T07:15:01Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOKioyEc50nlDs",
+      "title": "Merge processor & aggregator? Nomenclature -> processor? Transform?",
+      "url": "https://github.com/janlindblad/netmod-tlm-philatelist/issues/5",
+      "state": "OPEN",
+      "author": "plajjan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Filtering, translating, aggregating (across values or across time) are all just different operations in a processing pipeline that we wish to perform to shape the data into a form that we want before inserting into TSDB for easier querying. I don't think there is a meaningful difference between \"processor\" and \"aggregator\" as currently drawn in the diagram. I think it is better to combine and describe in text the kind of transforms that can be performed.",
+      "createdAt": "2023-10-23T07:30:32Z",
+      "updatedAt": "2023-10-23T07:30:32Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": []
+}

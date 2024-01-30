@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Philatelist, YANG-based collection and aggregation framework integrating Telemetry data and Time Series Databases</title>
+<meta content="Jan Lindblad" name="author">
+<meta content="
+       Timestamped telemetry data is collected en masse today.  Mature tools are typically used, but the data is often collected in an ad hoc manner.  While the dashboard graphs look great, the resulting data is often of questionable quality, not well defined, and hard to compare with seemingly similar data from other organizations. 
+       This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more dependable and comparable results. 
+    " name="description">
+<meta content="xml2rfc 3.18.2" name="generator">
+<meta content="YANG" name="keyword">
+<meta content="telemetry" name="keyword">
+<meta content="collection" name="keyword">
+<meta content="aggregation" name="keyword">
+<meta content="time series database" name="keyword">
+<meta content="TSDB" name="keyword">
+<meta content="draft-lindblad-tlm-philatelist-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.18.2
+    Python 3.11.6
+    ConfigArgParse 1.5.3
+    google-i18n-address 3.1.0
+    intervaltree 3.1.0
+    Jinja2 3.1.2
+    lxml 4.9.3
+    platformdirs 3.11.0
+    pycountry 22.3.5
+    PyYAML 6.0
+    requests 2.31.0
+    setuptools 67.7.2
+    six 1.16.0
+    wcwidth 0.2.8
+-->
+<link href="draft-lindblad-tlm-philatelist.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+:is(ol, ul) :is(ol, ul) {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  line-height: 1;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+}
+dl.olPercent {
+  --indent: 5ch;
+}
+dl > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+dl.olPercent > dt {
+  min-width: calc(var(--indent) - 2ch);
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
+  margin-top: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
+  margin-bottom: 0;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    overflow-x: auto;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  min-width: var(--identifier-width);
+  clear: left;
+  float: left;
+  text-align: right;
+  margin-right: 1ch;
+}
+#identifiers dd {
+  margin: 0;
+  margin-left: calc(1em + var(--identifier-width)) !important;
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 2px 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 10ch;
+  margin-right: 1.5ch;
+}
+.references dt:target::before {
+  content: "⇒";
+  width: 15px;
+  margin: 0 10px 0 -25px;
+}
+.references dd {
+  margin-left: 12ch !important;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul :is(p, li) {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+  .toplink {
+    display: none;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">Philatelist</td>
+<td class="right">October 2023</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Lindblad</td>
+<td class="center">Expires 22 April 2024</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">NETMOD</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-lindblad-tlm-philatelist-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2023-10-20" class="published">20 October 2023</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2024-04-22">22 April 2024</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">J. Lindblad</div>
+<div class="org">Cisco</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Philatelist, YANG-based collection and aggregation framework integrating Telemetry data and Time Series Databases</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">Timestamped telemetry data is collected en masse today.  Mature tools are typically used, but the data is often collected in an ad hoc manner.  While the dashboard graphs look great, the resulting data is often of questionable quality, not well defined, and hard to compare with seemingly similar data from other organizations.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more dependable and comparable results.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://janlindblad.github.io/netmod-tlm-philatelist/draft-lindblad-tlm-philatelist.html">https://janlindblad.github.io/netmod-tlm-philatelist/draft-lindblad-tlm-philatelist.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-lindblad-tlm-philatelist/">https://datatracker.ietf.org/doc/draft-lindblad-tlm-philatelist/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/janlindblad/netmod-tlm-philatelist">https://github.com/janlindblad/netmod-tlm-philatelist</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 22 April 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2023 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-the-problem" class="internal xref">The Problem</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-the-solution" class="internal xref">The Solution</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
+                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-the-philatelist-name" class="internal xref">The Philatelist Name</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecure-overview" class="internal xref">Architecure Overview</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-the-provider-component" class="internal xref">The Provider Component</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-the-collector-component" class="internal xref">The Collector Component</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-the-processor-and-aggregato" class="internal xref">The Processor and Aggregator Components</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-yang-based-telemetry-outloo" class="internal xref">YANG-based Telemetry Outlook</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-yang-modules" class="internal xref">YANG Modules</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-base-types-module-for-phila" class="internal xref">Base types module for Philatelist</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-provider-interface-module-f" class="internal xref">Provider interface module for Philatelist</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-collector-interface-module-" class="internal xref">Collector interface module for Philatelist</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-aggregator-interface-module" class="internal xref">Aggregator interface module for Philatelist</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<div id="the-problem">
+<section id="section-1.1">
+        <h3 id="name-the-problem">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-the-problem" class="section-name selfRef">The Problem</a>
+        </h3>
+<p id="section-1.1-1">Many organizations today are collecting large amounts of telemetry data from their networks and data centers for a variety of purposes.  Much (most?) of this data is funneled into a Time Series Database (TSDB) for display in a dashboard or further (AI-backed) processing and decision making.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">While this data collection is often handled using standard tools, there generally seems to be little commonality when it comes to what is meaured, how the data is aggregated, or definitions of the measured quantities (if any).<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">Data science issues like adding overlapping quantities, adding quantities of different units of measurement, or quantities with different scopes, are likely common.  Such errors are hard to detect given the ad hoc nature of the collection.  This often leads to uncertainty regarding the quality of the conclusions drawn from the collected data.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-solution">
+<section id="section-1.2">
+        <h3 id="name-the-solution">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-the-solution" class="section-name selfRef">The Solution</a>
+        </h3>
+<p id="section-1.2-1">The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the data flows aggregated using any kind of operation.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-2">To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the usa of YANG here does not limit the architecture to traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">Initially developed in context of the Power and Energy Efficiency work (POWEFF), we realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-4">There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+<p id="section-1.2-5">In this initial version, we have done nothing to pull the proposed YANG modules out of its POWEFF roots and generalize it for general telemetry.  We believe the ideas and merits of this framework architecture will be apparent nonetheless in this first version.  For the next version, we certainly need to generalize the quantities measured and rename the YANG modules and node names.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-philatelist-name">
+<section id="section-1.3">
+        <h3 id="name-the-philatelist-name">
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-the-philatelist-name" class="section-name selfRef">The Philatelist Name</a>
+        </h3>
+<p id="section-1.3-1">This specification is about a framework for collection, aggregation and interpretation of timestamped telemetry data.  The definition of "philatelist" seems close enough.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<span id="name-source-https-wwwsynonymcom-"></span><figure id="figure-1">
+          <div class="alignLeft art-text artwork" id="section-1.3-2.1">
+<pre>
+1. philatelist
+
+noun. ['fɪˈlætəlɪst'] a collector and student of postage stamps.
+
+Synonyms
+- collector
+- aggregator
+
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-source-https-wwwsynonymcom-" class="selfRef">Source: https://www.synonym.com/synonyms/philatelist</a>
+          </figcaption></figure>
+</section>
+</div>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">This document uses the terminology defined in
+<span>[<a href="#RFC7950" class="cite xref">RFC7950</a>]</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">In addition, this document defines the following terms:<a href="#section-2-3" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-2-4">
+        <dt id="section-2-4.1">TSDB</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.2">
+          <p id="section-2-4.2.1">Time Series Database.<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.3">Sensor</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.4">
+          <p id="section-2-4.4.1">An entity in a system that delivers a snapshot value of some quantity pertaining to the system.  Sensors are identified by their Sensor Path.<a href="#section-2-4.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.5">Sensor Path</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.6">
+          <p id="section-2-4.6.1">A textual representation of the sensor's address within the system.<a href="#section-2-4.6.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="architecure-overview">
+<section id="section-3">
+      <h2 id="name-architecure-overview">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecure-overview" class="section-name selfRef">Architecure Overview</a>
+      </h2>
+<p id="section-3-1">The deployment of a Philatelist framework consists of a collection of plug-in compomnents with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<span id="name-example-philatelist-compone"></span><figure id="figure-2">
+        <div class="alignLeft art-text artwork" id="section-3-2.1">
+<pre>
+                      +-----------------+
+                      | USER INTERFACE  |
+                      |    Dashboard    |
+                      |                 |
+                      +--------------11-+
+                               |
+                      +-----------------+
+                      |    PROCESSOR    |
+                      | Recommendation  |
+                      |     Engine      |
+                      +--------------21-+
+                               |
+                      +-----------------+
+                      |   AGGREGATOR    |
+                      |   Data Center   |
+                      +--------------31-+
+                               |
+       +---------------+-------+-------+--------------+
+       |               |               |              |
++------------+  +------------+  +------------+  +------------+
+| PROCESSOR  |  | AGGREGATOR |  | AGGREGATOR |  | AGGREGATOR |
+| Normalizer |  |  Network   |  |  Storage   |  |  Compute   |
++---------41-+  +---------42-+  +---------43-+  +---------44-+
+       |           |                   |\             |\
++------------+     |     +------+------------+  +------------+------+
+| COLLECTOR  |     |     | YANG | COLLECTOR  |  | COLLECTOR  | YANG |
+|  Cooling   |     |     +---52-+ Storage 1  |  | Compute 1  +---55-+
++---------51-+     |            +---------53-+  +---------54-+
+       |           |             \ Storage 2  \  \ Compute 2  \
++------------+     |              +------------+  +------------+
+|  PROVIDER  |     |               \ Storage N  \  \ Compute N  \
+|Utility Bill|     |                +------------+  +------------+
++---------61-+     |
+                   +--------------+
+                   |              |
+            +------------+  +------------+
+            | PROCESSOR  |  | COLLECTOR  |
+            | Normalizer |  |  Routers   |
+            +---------71-+  +---------72-+
+                   |              |\
+            +------------+  +------------+
+            | COLLECTOR  |  |  PROVIDER  |
+            |  Firewall  |  |  Router 1  |
+            +---------81-+  +---------82-+
+                   |         \  Router 2  \
+            +------------+    +------------+
+            |  PROVIDER  |     \  Router N  \
+            |  Firewall  |      +------------+
+            +---------91-+
+
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-example-philatelist-compone" class="selfRef">Example Philatelist component deployment.</a>
+        </figcaption></figure>
+<p id="section-3-3">Each component in the above diagram, represents a logical function.  Many boxes could be running within a single server, or they could be fully distrubuted, or anything in between.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">Provider components (61, 82, 91) are running on a telemetry source system that supports a YANG-based telemetry data server.  The telemetry data flows from the telemetry source system to a Time Series Database (TSDB).<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">Collector components (51, 72, 81) ensure the Providers are programmed properly to deliver the telemetry data to the TSDB designated by the collector.  In some cases this flow may be direct from the source to the TSDB, in other cases, it may be going through the collector.  In some cases the collector may be polling the source, in others it may have set up an automatic, periodic subscription.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">Many telemetry source systems will not have any on-board YANG-based telemetry server.  Such servers will instead be managed by a collector specialized to handle a particular kind of source server (53, 54).  These specialized collectors are still responsible to set up a telemetry data stream from them to the collector's TSDB.  In this case, the collector will also supply a YANG description (52, 55) of the incoming data stream.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">Processor components (21, 41, 71) are transforming the data stream in some way, e.g. converting from one unit of measurement to another, or adjusting the data values recorded to also include some aspect that this particular sensor is not taking into account.<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-8">Aggregator components (31, 42, 43, 44) combine the time series telemetry data flows using some operation, e.g. summing, averaging or computing the max or min over them.  In this example there are aggregators for Network, Storage, Compute and the entire Data Center<a href="#section-3-8" class="pilcrow">¶</a></p>
+<p id="section-3-9">On top of the stack, we may often find a (graphical) user interface (11), for human consumption of the intelligence acquired by the system.  Equally relevant is of course an (AI) application making decisions based on findings in the aggregated telemetry flow.<a href="#section-3-9" class="pilcrow">¶</a></p>
+<div id="the-provider-component">
+<section id="section-3.1">
+        <h3 id="name-the-provider-component">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-the-provider-component" class="section-name selfRef">The Provider Component</a>
+        </h3>
+<p id="section-3.1-1">A Provider is a source of telemetry data that also offers a YANG-based management interface.  Each provider typically has a large number of "sensors" that can be polled or in some cases subscribed to.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">One problem with the sensors is that they are spread around inside the source system, and may not be trivial to locate.  Also, the metadata assciated with the sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<span id="name-example-of-scattered-potent"></span><figure id="figure-3">
+          <div class="alignLeft art-text artwork" id="section-3.1-3.1">
+<pre>
+    /hardware/component[name="psu3"]/.../sensor-data/value
+    ...
+    /interfaces/interface[name="eth0/0"]/.../out-broadcast-packets
+    ...
+    /routing/mpls/mpls-label-blocks/.../inuse-labels-count
+    ...
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-example-of-scattered-potent" class="selfRef">Example of scattered potential sensors in a device.</a>
+          </figcaption></figure>
+<p id="section-3.1-4">To solve these problems, the Provider YANG module contains a sensor-catalog list.  Essentially a list of all interesting sensors available on the system, with their sensor paths and machine parsable units, definition and any other metadata.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-5">An admin user or application can then copy the sensor definition from the sensor catalog and insert into the configuration in the colletor.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-pr"></span><figure id="figure-4">
+          <div class="lang-yang-tree sourcecode" id="section-3.1-6.1">
+<pre>
+  +--ro sensor-catalog
+      +--ro sensors
+        +--ro sensor* [path]
+            +--ro path?                     xpath
+            +--ro sensor-type?              identityref
+            +--ro sensor-location?          something
+            +--ro sensor-state?             something
+            +--ro sensor-current-reading?   something
+            +--ro sensor-precision?         string
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-yang-tree-diagram-of-the-pr" class="selfRef">YANG tree diagram of the Provider sensor-catalog.</a>
+          </figcaption></figure>
+<p id="section-3.1-7">Note: The "something" YANG-type is used in many places in this document.  That is just a temporarty placeholder we use until we have figured out what the appropriate type should be.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.1-8">The sensor types are defined as YANG identities, making them maximally extensible.  Examples of sensor types might be energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-collector-component">
+<section id="section-3.2">
+        <h3 id="name-the-collector-component">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-the-collector-component" class="section-name selfRef">The Collector Component</a>
+        </h3>
+<p id="section-3.2-1">Collector components collect data points from sources, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the source to the destination TSDB and that the data has a YANG description and is tagged with necessary metadata.  How the collector agrees with a source to deliver data in a timely manner is beyond the scope of this document.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<span id="name-example-of-collector-settin"></span><figure id="figure-5">
+          <div class="alignLeft art-text artwork" id="section-3.2-2.1">
+<pre>
+         +-------------+
+         |  COLLECTOR  |
+         +-------------+                     ___________
+                |                           /           \
+      +------------------+                 ( DESTINATION )
+      v                  v                 |\___________/|
++------------+    +------------+  STREAM 1 |             |
+|   SOURCE   |    |   SOURCE   |  =======&gt; |             |
+| - sensor 1 |    | - sensor 1 |           |             |
+| - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
+| - sensor 3 |    | - sensor 7 |  =======&gt; |             |
++------------+    +------------+           |             |
+          \\                      STREAM 3 |             |
+            =============================&gt;  \___________/
+
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-example-of-collector-settin" class="selfRef">Example of Collector setting up three streams of telemetry data from two sources to one desitination.</a>
+          </figcaption></figure>
+<p id="section-3.2-3">Each source holds a number of sensors that may be queried or subscribed to.  The collector arranges the sensors into sensour groups that presumably are logically related, and that are collected using the same method.  A number of collection methods (some YANG-based, some not) are modeled directly in the ietf-poweff-collector.yang module, but the set is designed to be easily extensible.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-co"></span><figure id="figure-6">
+          <div class="lang-yang-tree sourcecode" id="section-3.2-4.1">
+<pre>
+  +-- sensor-groups
+  |  +-- sensor-group* [id]
+  |     +-- id?                                something
+  |     +-- method?                            identityref
+  |     +-- get-static-url-once
+  |     |  +-- url?                            something
+  |     |  +-- format?                         something
+  |     +-- gnmi-polling
+  |     |  +-- encoding?                       something
+  |     |  +-- protocol?                       something
+  |     +-- restconf-get-polling
+  |     |  +-- xxx?                            something
+  |     +-- netconf-get-polling
+  |     |  +-- xxx?                            something
+  |     +-- restconf-yang-push-subscription
+  |     |  +-- xxx?                            something
+  |     +-- netconf-yang-push-subscription
+  |     |  +-- xxx?                            something
+  |     +-- redfish-polling
+  |     |  +-- xxx?                            something
+  |     +-- frequency?                         sample-frequency
+  |     +-- path* [path]
+  |        +-- path?                           xpath
+  |        +-- sensor-type?                    identityref
+  +-- streams
+    +-- stream* [id]
+        +-- id?                                something
+        +-- source*                            string
+        +-- sensor-group* [name]
+        |  +-- name?   -&gt; ../../../sensor-groups/sensor-group/id
+        +-- destination?    -&gt; ../../../destinations/destination/id
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-yang-tree-diagram-of-the-co" class="selfRef">YANG tree diagram of the Collector sensor-groups and streams.</a>
+          </figcaption></figure>
+<p id="section-3.2-5">The sensor groups are then arranged into streams from a collection of sources (that support the same set of sensor groups) to a destination.  This structure has been chosen with the assumption that there will be many source devices with the same set of sensor groups, and we want to minimize repetition.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-processor-and-aggregator-components">
+<section id="section-3.3">
+        <h3 id="name-the-processor-and-aggregato">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-the-processor-and-aggregato" class="section-name selfRef">The Processor and Aggregator Components</a>
+        </h3>
+<p id="section-3.3-1">Processor components take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in in the input data, or fill in approximate values where there are holes in the input data.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">Aggregator components take multiple incoming data flows and combine them, typically by adding them together, taking possible differences in cadence in the input data flows into account.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">Processor and Aggregator components provide a YANG model of the output data, just like the Collector components, so that all data flowing in the system has a YANG description and is associated with metadata.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">Note: In the current version of the YANG modules, a Processor is simply an Aggregator with a single input and output.  Unless we see a need to keep these two component types separate, we might remove the Processor component and keep it baked in with the Aggregator.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<span id="name-example-of-an-aggregator-se"></span><figure id="figure-7">
+          <div class="alignLeft art-text artwork" id="section-3.3-5.1">
+<pre>
+                +-------------+
+                | AGGREGATOR  |
+                +-------------+
+                       |
+           +-----------+-----------+
+           v                       v
+      ___________             ___________
+     /           \           /           \
+    (  SOURCE 1   )         ( DESTINATION )
+    |\___________/| FLOW 1  |\___________/|
+    |             | ======&gt; |             |
+    |             |         |             |
+    |             | FLOW 2  |             |
+     \___________/  ===##=&gt;  \___________/
+                       ||
+      ___________      ||
+     /           \     ||
+    (  SOURCE 2   )   //
+    |\___________/| ==
+    |             |
+    |             |
+    |             |
+     \___________/
+
+</pre>
+</div>
+<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
+<a href="#name-example-of-an-aggregator-se" class="selfRef">Example of an Aggregator setting up two flows of telemetry data from two sources to one desitination.</a>
+          </figcaption></figure>
+<p id="section-3.3-6">In this diagram, the sources and destination look like separate TSDBs, which they might be.  They may also be different buckets within the same TSDB.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+<p id="section-3.3-7">Each flow is associated with one or more inputs, one output and a series of processing operations.  Each input flow and output flow may have an pre-processing or post-processing operation applied to it separately.  Then all the input flows are combined using one or more aggregation operations.  Some basic operations have been defined in the Aggregator YANG module, but the set of operations has been designed to be maximally extensible.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-ag"></span><figure id="figure-8">
+          <div class="lang-yang-tree sourcecode" id="section-3.3-8.1">
+<pre>
+  +-- flows
+  |  +-- flow* [id]
+  |     +-- id?                                string
+  |     +-- (chain-position)?
+  |        +--:(input)
+  |        |  +-- input
+  |        |     +-- source?
+  |        |           -&gt; ../../../../../sources/source/id
+  |        +--:(output)
+  |        |  +-- output
+  |        |     +-- destination?
+  |        |           -&gt; ../../../../../destinations/destination/id
+  |        +--:(middle)
+  |           +-- middle
+  |              +-- inputs*
+  |              |     -&gt; ../../../../flows/flow/id
+  |              +-- pre-process-inputs?
+  |              |     -&gt; ../../../../operations/operation/id
+  |              +-- aggregate?
+  |              |     -&gt; ../../../../operations/operation/id
+  |              +-- post-process-output?
+  |                    -&gt; ../../../../operations/operation/id
+  +-- operations
+    +-- operation* [id]
+        +-- id?                                something
+        +-- (op-type)?
+          +--:(linear-sum)
+          |  +-- linear-sum
+          +--:(linear-average)
+          |  +-- linear-average
+          +--:(linear-max)
+          |  +-- linear-max
+          +--:(linear-min)
+          |  +-- linear-min
+          +--:(rolling-average)
+          |  +-- rolling-average
+          |     +-- timespan?                  something
+          +--:(filter-age)
+          |  +-- filter-age
+          |     +-- min-age?                   something
+          |     +-- max-age?                   something
+          +--:(function)
+              +-- function
+                +-- name?                      something
+</pre>
+</div>
+<figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
+<a href="#name-yang-tree-diagram-of-the-ag" class="selfRef">YANG tree diagram of the Aggregator flows and operations.</a>
+          </figcaption></figure>
+<p id="section-3.3-9">The operations listed above are basic aggregation operations.  Linear-sum is just adding all the input sources together, with linear interpolation when their data points don't align perfectly in time.  Rolling average is averaging the input flows over a given length of time.  The filter-age drops all data points that are outside the min to max age.  The function allows plugging in any other function the Aggregator may have defined, but more importantly, the operations choice is easily extended using YANG augment to include any other IETF or vendor specified extensions.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="yang-based-telemetry-outlook">
+<section id="section-4">
+      <h2 id="name-yang-based-telemetry-outloo">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-yang-based-telemetry-outloo" class="section-name selfRef">YANG-based Telemetry Outlook</a>
+      </h2>
+<p id="section-4-1">Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g. <span>[<a href="#I-D.draft-ietf-opsawg-collected-data-manifest-01" class="cite xref">I-D.draft-ietf-opsawg-collected-data-manifest-01</a>]</span> and <span>[<a href="#I-D.draft-claise-netconf-metadata-for-collection-03" class="cite xref">I-D.draft-claise-netconf-metadata-for-collection-03</a>]</span> come to mind.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Even though this work has a solid foundation and shares many or most of the goals with this work, we (the POWEFF team) have not found it easy to apply the above work directly in the practical work we do.  So what we have tried to do is a very pragmatic approach to telemetry data collection the way we see it happening on the ground combined with the benefits of Model Driven Telemetry (MDT), in practice meaning YANG-based with additional YANG-modeled metadata.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">In particular, this draft depends on the mapping of YANG-based structures to the typical TSDB tag-based formats described in <span>[<a href="#I-D.draft-kll-yang-label-tsdb-00" class="cite xref">I-D.draft-kll-yang-label-tsdb-00</a>]</span>.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the data flow interfaces with rigor regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.<a href="#section-4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="yang-modules">
+<section id="section-5">
+      <h2 id="name-yang-modules">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-yang-modules" class="section-name selfRef">YANG Modules</a>
+      </h2>
+<div id="base-types-module-for-philatelist">
+<section id="section-5.1">
+        <h3 id="name-base-types-module-for-phila">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-base-types-module-for-phila" class="section-name selfRef">Base types module for Philatelist</a>
+        </h3>
+<div class="breakable lang-yang sourcecode" id="section-5.1-1">
+<pre>&lt;CODE BEGINS&gt;
+module ietf-poweff-types {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-types";
+  prefix ietf-poweff-types;
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   &lt;https://datatracker.ietf.org/wg/opsawg/&gt;
+     WG List:  &lt;mailto:opsawg@ietf.org&gt;
+     Editor:  Jan Lindblad
+              &lt;mailto:jlindbla@cisco.com&gt;
+     Editor:  Snezana Mitrovic
+              &lt;mailto:snmitrov@cisco.com&gt;
+     Editor:  Marisol Palmero
+              &lt;mailto:mpalmero@cisco.com&gt;";
+  description
+    "This YANG module defines basic quantities, measurement units
+    and sensor types for the POWEFF framework.
+
+     Copyright (c) 2021 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
+
+  revision 2023-10-12 {
+    description
+      "Initial revision of POWEFF types";
+    reference
+      "RFC XXXX: ...";
+  }
+
+  typedef something { // FIXME: Used when we haven't decided the type yet
+    type string;
+  }
+  typedef xpath {
+    type string; // FIXME: Proper type needed
+  }
+  typedef sample-frequency {
+    type string; // FIXME: Proper type needed
+  }
+
+  // ========== SENSOR-CLASS ==============================
+  identity sensor-class {
+    description "Sensor's relation to the asset it sits on.";
+  }
+  identity sc-input {
+    base sensor-class;
+    description "Sensor reports input quantity of the asset it sits
+      on.";
+  }
+  identity sc-output {
+    base sensor-class;
+    description "Sensor reports output quantity of the asset it sits
+      on.";
+  }
+  identity sc-allocated {
+    base sensor-class;
+    description "Sensor reports (maximum) allocated quantity of the
+      asset it sits on.";
+  }
+
+  // ========== SENSOR-QUANTITY ==============================
+  identity sensor-quantity {
+    description "Sensor's quantity being measured.";
+  }
+  identity sq-voltage {
+    base sensor-quantity;
+    description "Sensor reports electric tension, voltage.";
+  }
+  identity sq-current {
+    base sensor-quantity;
+    description "Sensor reports electric current.";
+  }
+  identity sq-power {
+    base sensor-quantity;
+    description "Sensor reports power draw (energy per unit of time).";
+  }
+  identity sq-power-apparent {
+    base sq-power;
+    description "Sensor reports apparent power, i.e. average electrical
+      current times voltage (in VA).";
+  }
+  identity sq-power-true {
+    base sq-power;
+    description "Sensor reports true power, i.e. integral over current
+      and voltage at each instant in time.";
+  }
+  identity sq-energy {
+    base sensor-quantity;
+    description "Sensor reports actual energy drawn by asset.";
+  }
+  identity sq-co2-emission {
+    base sensor-quantity;
+    description "Sensor reports CO2 (carbon dioxide) emission by
+      asset.";
+  }
+  identity sq-co2eq-emission {
+    base sensor-quantity;
+    description "Sensor reports CO2 (carbon dioxide) equivalent
+      emission by asset.";
+  }
+  identity sq-temperature {
+    base sensor-quantity;
+    description "Sensor reports temperature of asset.";
+  }
+
+  // ========== SENSOR-UNIT ==============================
+  identity sensor-unit {
+    description "Sensor's unit of reporting.";
+  }
+  identity su-volt {
+    base sensor-unit;
+    base sq-voltage;
+    description "Sensor unit volt, V.";
+  }
+  identity su-ampere {
+    base sensor-unit;
+    base sq-current;
+    description "Sensor unit ampere, A.";
+  }
+  identity su-watt {
+    base sensor-unit;
+    base sq-power;
+    description "Sensor unit watt, W.";
+  }
+  identity su-voltampere {
+    base sensor-unit;
+    base sq-power;
+    description "Sensor unit Volt*Ampere, VA.";
+  }
+  identity su-kw {
+    base sensor-unit;
+    base sq-power;
+    description "Sensor unit kilowatt, kW.";
+  }
+  identity su-joule {
+    base sensor-unit;
+    base sq-energy;
+    description "Sensor unit joule, J.";
+  }
+  identity su-wh {
+    base sensor-unit;
+    base sq-energy;
+    description "Sensor unit watthour, Wh.";
+  }
+  identity su-kwh {
+    base sensor-unit;
+    base sq-energy;
+    description "Sensor unit kliowatthour, kWh.";
+  }
+  identity su-kelvin {
+    base sensor-unit;
+    base sq-temperature;
+    description "Sensor unit kelvin, K.";
+  }
+  identity su-celsius {
+    base sensor-unit;
+    base sq-temperature;
+    description "Sensor unit celsius, C.";
+  }
+  identity su-farenheit {
+    base sensor-unit;
+    base sq-temperature;
+    description "Sensor unit farenheit, F.";
+  }
+  identity su-gram {
+    base sensor-unit;
+    base sq-co2-emission;
+    description "Sensor unit gram, g.";
+  }
+  identity su-kg {
+    base sensor-unit;
+    base sq-co2-emission;
+    description "Sensor unit kliogram, kg.";
+  }
+  identity su-ton {
+    base sensor-unit;
+    base sq-co2-emission;
+    description "Sensor unit ton, t.";
+  }
+
+  // ========== SENSOR-TYPE ==============================
+  identity sensor-type {
+    description "Sensor's type, i.e. combination of class, quantity and
+      unit.";
+  }
+  identity st-v-in {
+    base sensor-type;
+    base sc-input;
+    base sq-voltage;
+    base su-volt;
+    description "Sensor reporting Voltage In to asset.";
+  }
+  identity st-v-out {
+    base sensor-type;
+    base sc-output;
+    base sq-voltage;
+    base su-volt;
+    description "Sensor reporting Voltage Out of asset.";
+  }
+  identity st-i-in {
+    base sensor-type;
+    base sc-input;
+    base sq-current;
+    base su-ampere;
+    description "Sensor reporting Current In to asset.";
+  }
+  identity st-i-out {
+    base sensor-type;
+    base sc-output;
+    base sq-current;
+    base su-ampere;
+    description "Sensor reporting Current Out of asset.";
+  }
+  identity st-p-in-apparent-watt {
+    base sensor-type;
+    base sc-input;
+    base sq-power-apparent;
+    base su-voltampere;
+    description "Sensor reporting Power In to asset as apparent (I*U)
+      power.";
+  }
+  identity st-p-out-apparent-watt {
+    base sensor-type;
+    base sc-output;
+    base sq-power-apparent;
+    base su-voltampere;
+    description "Sensor reporting Power Out of asset as apparent (I*U)
+      power.";
+  }
+  identity st-p-in-true-watt {
+    base sensor-type;
+    base sc-input;
+    base sq-power-true;
+    base su-watt;
+    description "Sensor reporting Power In to asset as true power.";
+  }
+  identity st-p-out-true-watt {
+    base sensor-type;
+    base sc-output;
+    base sq-power-true;
+    base su-watt;
+    description "Sensor reporting Power Out of asset as true power.";
+  }
+  identity st-p-allocated-watt {
+    base sensor-type;
+    base sc-allocated;
+    base sq-power;
+    base su-watt;
+    description "Sensor reporting Allocated Power for asset.";
+  }
+  identity st-w-j {
+    base sensor-type;
+    base sq-energy;
+    base su-joule;
+    description "Sensor reporting energy draw of asset in J.";
+  }
+  identity st-w-wh {
+    base sensor-type;
+    base sq-energy;
+    base su-wh;
+    description "Sensor reporting energy draw of asset in Wh.";
+  }
+  identity st-w-kwh {
+    base sensor-type;
+    base sq-energy;
+    base su-kwh;
+    description "Sensor reporting energy draw of asset in kWh.";
+  }
+  identity st-t-k {
+    base sensor-type;
+    base sq-temperature;
+    base su-kelvin;
+    description "Sensor reporting Temperature of asset in K.";
+  }
+  identity st-t-c {
+    base sensor-type;
+    base sq-temperature;
+    base su-celsius;
+    description "Sensor reporting Temperature of asset in °C.";
+  }
+  identity st-t-f {
+    base sensor-type;
+    base sq-temperature;
+    base su-farenheit;
+    description "Sensor reporting Temperature of asset in °F.";
+  }
+
+  // ========== COLLECTION-METHOD ==============================
+
+  identity collection-method;
+  identity cm-polled {
+    base collection-method;
+  }
+  identity cm-gnmi {
+    base collection-method;
+  }
+  identity cm-restconf {
+    base collection-method;
+  }
+  identity cm-netconf {
+    base collection-method;
+  }
+  identity cm-redfish {
+    base collection-method;
+  }
+  identity get-static-url-once {
+    base collection-method;
+  }
+  identity gnmi-polling {
+    base cm-gnmi;
+    base cm-polled;
+  }
+  identity restconf-get-polling {
+    base cm-restconf;
+    base cm-polled;
+  }
+  identity netconf-get-polling {
+    base cm-netconf;
+    base cm-polled;
+  }
+  identity restconf-yang-push-subscription {
+    base cm-restconf;
+  }
+  identity netconf-yang-push-subscription {
+    base cm-netconf;
+  }
+  identity redfish-polling {
+    base cm-redfish;
+  }
+}
+
+&lt;CODE ENDS&gt;</pre><a href="#section-5.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="provider-interface-module-for-philatelist">
+<section id="section-5.2">
+        <h3 id="name-provider-interface-module-f">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-provider-interface-module-f" class="section-name selfRef">Provider interface module for Philatelist</a>
+        </h3>
+<div class="breakable lang-yang sourcecode" id="section-5.2-1">
+<pre>&lt;CODE BEGINS&gt;
+module ietf-poweff-provider {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-provider";
+  prefix ietf-poweff-provider;
+
+  import ietf-poweff-types {
+    prefix ietf-poweff-types;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   &lt;https://datatracker.ietf.org/wg/opsawg/&gt;
+     WG List:  &lt;mailto:opsawg@ietf.org&gt;
+     Editor:  Jan Lindblad
+              &lt;mailto:jlindbla@cisco.com&gt;
+     Editor:  Snezana Mitrovic
+              &lt;mailto:snmitrov@cisco.com&gt;
+     Editor:  Marisol Palmero
+              &lt;mailto:mpalmero@cisco.com&gt;";
+  description
+    "This YANG module defines the POWEFF Provider.
+
+     Copyright (c) 2021 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
+
+  revision 2023-10-12 {
+    description
+      "Initial revision of POWEFF Provider";
+    reference
+      "RFC XXXX: ...";
+  }
+
+  grouping provider-g {
+    container sensor-catalog {
+      config false;
+      container sensors {
+        list sensor {
+          key path;
+          leaf path { type ietf-poweff-types:xpath; }
+          leaf sensor-type { type identityref { base ietf-poweff-types:sensor-type; }}
+
+          leaf sensor-location {
+            type ietf-poweff-types:something;
+            description
+              "Indicates the current location where the sensor is located
+                in the chassis,typically refers to slot";
+          }
+          leaf sensor-state { // FIXME: What does this mean?
+            type ietf-poweff-types:something;
+            description
+              "Current state of the sensor";
+          }
+          leaf sensor-current-reading { // FIXME: Do we want a copy of the value here?
+            type ietf-poweff-types:something;
+            description
+              "Current reading of the sensor";
+          }
+          leaf sensor-precision {
+            type string;
+            description
+              "Maximum deviation to be considered. This attribute mainly
+              will apply to drawn power, which corresponds to PSU PowerIn
+              measured power or calculated power; assuming discrepancy
+              between Real Power, power collected from a power meter, and
+              power measured or calculated from the metrics provided by
+              the sensors";
+          }
+          container sensor-thresholds { // FIXME: Is this for generating alarms, or what?
+            description
+              "Threshold values for the particular sensor.
+              Default values shall beprovided as part of static data
+              but when configurable need to be pulledfrom the device.
+              Ideally, the sensor should allow configuing
+              thesethreshold values";
+
+            leaf minor-low {
+              type string;
+              description
+                "minor-low";
+            }
+            leaf minor-high {
+              type string;
+              description
+                "minor-high";
+            }
+            leaf major-low {
+              type string;
+              description
+                "major-low";
+            }
+            leaf major-high {
+              type string;
+              description
+                "major-high";
+            }
+            leaf critical-low {
+              type string;
+              description
+                "critical-low";
+            }
+            leaf critical-high {
+              type string;
+              description
+                "critical-high";
+            }
+            leaf shutdown { // FIXME: What does this mean for a sensor?
+              type string;
+              description
+                "shutdown";
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+&lt;CODE ENDS&gt;</pre><a href="#section-5.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="collector-interface-module-for-philatelist">
+<section id="section-5.3">
+        <h3 id="name-collector-interface-module-">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-collector-interface-module-" class="section-name selfRef">Collector interface module for Philatelist</a>
+        </h3>
+<div class="breakable lang-yang sourcecode" id="section-5.3-1">
+<pre>&lt;CODE BEGINS&gt;
+module ietf-poweff-collector {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-collector";
+  prefix ietf-poweff-collector;
+
+  import ietf-poweff-types {
+    prefix ietf-poweff-types;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   &lt;https://datatracker.ietf.org/wg/opsawg/&gt;
+     WG List:  &lt;mailto:opsawg@ietf.org&gt;
+     Editor:  Jan Lindblad
+              &lt;mailto:jlindbla@cisco.com&gt;
+     Editor:  Snezana Mitrovic
+              &lt;mailto:snmitrov@cisco.com&gt;
+     Editor:  Marisol Palmero
+              &lt;mailto:mpalmero@cisco.com&gt;";
+  description
+    "This YANG module defines the POWEFF Collector.
+
+     Copyright (c) 2021 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
+
+  revision 2023-10-12 {
+    description
+      "Initial revision of POWEFF Collector";
+    reference
+      "RFC XXXX: ...";
+  }
+
+/*
+
+  A COLLECTOR programs one or more SOURCE(s) to generate a
+  STREAM of telemetry data.  The STREAM is sent to a specific
+  DESTINATION.
+
+  Each STREAM consists of timestamped sensor values from each
+  sensor in a sensor group.
+
+             +-------------+
+             |  COLLECTOR  |
+             +-------------+                     ___________
+                    |                           /           \
+          +------------------+                 ( DESTINATION )
+          v                  v                 |\___________/|
+    +------------+    +------------+  STREAM 1 |             |
+    |   SOURCE   |    |   SOURCE   |  =======&gt; |             |
+    | - sensor 1 |    | - sensor 1 |           |             |
+    | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
+    | - sensor 3 |    | - sensor 7 |  =======&gt; |             |
+    +------------+    +------------+           |             |
+              \\                      STREAM 3 |             |
+                =============================&gt;  \___________/
+
+*/
+
+  grouping data-endpoint-g {
+    leaf url { type ietf-poweff-types:something; }
+    leaf organization { type ietf-poweff-types:something; }
+    leaf bucket { type ietf-poweff-types:something; }
+    container impl-specific {
+      list binding {
+        key key;
+        leaf key { type string; }
+        choice value-type {
+          leaf value { type string; }
+          leaf-list values { type string; ordered-by user; }
+          leaf env-var { type string; }
+        }
+      }
+    }
+  }
+
+  grouping sensor-group-g {
+    leaf method {
+      type identityref {
+        base ietf-poweff-types:collection-method;
+      }
+    }
+    container get-static-url-once {
+      when "derived-from-or-self(../method, 'ietf-poweff-types:get-static-url-once')";
+      leaf url { type ietf-poweff-types:something; }
+      leaf format { type ietf-poweff-types:something; } // JSON-IETF, XML, etc
+    }
+    container gnmi-polling {
+      when "derived-from-or-self(../method, 'ietf-poweff-types:gnmi-polling')";
+      leaf encoding { type ietf-poweff-types:something; } // self-describing-gpb
+      leaf protocol { type ietf-poweff-types:something; } // protocol grpc no-tls
+    }
+    container restconf-get-polling {
+      when "derived-from-or-self(../method, 'ietf-poweff-types:restconf-get-polling')";
+      leaf xxx { type string; }
+    }
+    container netconf-get-polling {
+      when "derived-from-or-self(../method, 'ietf-poweff-types:netconf-get-polling')";
+      leaf xxx { type string; }
+    }
+    container restconf-yang-push-subscription {
+      when "derived-from-or-self(../method, 'ietf-poweff-types:restconf-yang-push-subscription')";
+      leaf xxx { type string; }
+    }
+    container netconf-yang-push-subscription {
+      when "derived-from-or-self(../method, 'ietf-poweff-types:netconf-yang-push-subscription')";
+      leaf xxx { type string; }
+    }
+    container redfish-polling {
+      when "derived-from-or-self(../method, 'ietf-poweff-types:redfish-polling')";
+      leaf xxx { type string; }
+    }
+    leaf frequency {
+      when "derived-from(../method, 'ietf-poweff-types:cm-polled')";
+      type ietf-poweff-types:sample-frequency;
+    }
+    list path {
+      key path;
+      leaf path { type ietf-poweff-types:xpath; }
+      leaf sensor-type { type identityref { base ietf-poweff-types:sensor-type; }}
+      leaf attribution { type string; }
+    }
+  }
+
+  grouping collector-g {
+    container poweff-collector {
+      container destinations {
+        list destination {
+          key id;
+          leaf id { type ietf-poweff-types:something; }
+          uses data-endpoint-g;
+        }
+      }
+
+      container sensor-groups {
+        list sensor-group {
+          key id;
+          leaf id { type ietf-poweff-types:something; }
+          uses sensor-group-g;
+        }
+      }
+
+      container streams {
+        list stream {
+          key id;
+          leaf id { type ietf-poweff-types:something; }
+          leaf-list source { type string; } // Implementation specific meaning, possibly wildcards
+          list sensor-group {
+            key name;
+            leaf name { type leafref { path ../../../sensor-groups/sensor-group/id; }}
+          }
+          leaf destination { type leafref { path ../../../destinations/destination/id; }}
+        }
+      }
+    }
+  }
+}
+
+&lt;CODE ENDS&gt;</pre><a href="#section-5.3-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="aggregator-interface-module-for-philatelist">
+<section id="section-5.4">
+        <h3 id="name-aggregator-interface-module">
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-aggregator-interface-module" class="section-name selfRef">Aggregator interface module for Philatelist</a>
+        </h3>
+<div class="breakable lang-yang sourcecode" id="section-5.4-1">
+<pre>&lt;CODE BEGINS&gt;
+module ietf-poweff-aggregator {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-aggregator";
+  prefix ietf-poweff-aggregator;
+
+  import ietf-poweff-types {
+    prefix ietf-poweff-types;
+  }
+  import ietf-poweff-collector {
+    prefix ietf-poweff-collector;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   &lt;https://datatracker.ietf.org/wg/opsawg/&gt;
+     WG List:  &lt;mailto:opsawg@ietf.org&gt;
+     Editor:  Jan Lindblad
+              &lt;mailto:jlindbla@cisco.com&gt;
+     Editor:  Snezana Mitrovic
+              &lt;mailto:snmitrov@cisco.com&gt;
+     Editor:  Marisol Palmero
+              &lt;mailto:mpalmero@cisco.com&gt;";
+  description
+    "This YANG module defines the POWEFF Aggregator.
+
+     Copyright (c) 2021 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
+
+  revision 2023-10-12 {
+    description
+      "Initial revision of POWEFF Aggregator";
+    reference
+      "RFC XXXX: ...";
+  }
+
+/*
+
+  An AGGREGATOR ensures data from one or more SOURCE(s) are
+  combined into a FLOW using a (sequence of) OPERATIONs (OPs)
+  to generate a new data set in the DESTINATION (which could
+  be a new collection in the same data storage system as the
+  SOURCE).
+
+                +-------------+
+                | AGGREGATOR  |
+                +-------------+
+                       |
+           +-----------+-----------+
+           v                       v
+      ___________             ___________
+     /           \           /           \
+    (  SOURCE 1   )         ( DESTINATION )
+    |\___________/| FLOW 1  |\___________/|
+    |             | ======&gt; |             |
+    |             |         |             |
+    |             | FLOW 2  |             |
+     \___________/  ===##=&gt;  \___________/
+                       ||
+      ___________      ||
+     /           \     ||
+    (  SOURCE 2   )   //
+    |\___________/| ==
+    |             |
+    |             |
+    |             |
+     \___________/
+
+
+*/
+
+  grouping aggregator-g {
+    container poweff-aggregator {
+      container sources {
+        list source {
+          key id;
+          leaf id { type ietf-poweff-types:something; }
+          uses ietf-poweff-collector:data-endpoint-g;
+        }
+      }
+      container destinations {
+        list destination {
+          key id;
+          leaf id { type ietf-poweff-types:something; }
+          uses ietf-poweff-collector:data-endpoint-g;
+        }
+      }
+      container flows {
+        list flow {
+          key id;
+          leaf id { type string; }
+          choice chain-position {
+            container input {
+              leaf source { type leafref { path ../../../../../sources/source/id; }}
+            }
+            container output {
+              leaf destination { type leafref { path ../../../../../destinations/destination/id; }}
+            }
+            container middle {
+              leaf-list inputs { type leafref { path ../../../../flows/flow/id; }}
+              leaf pre-process-inputs { type leafref { path ../../../../operations/operation/id; }}
+              leaf aggregate { type leafref { path ../../../../operations/operation/id; }}
+              leaf post-process-output { type leafref { path ../../../../operations/operation/id; }}
+            }
+          }
+        }
+      }
+      container operations {
+        list operation {
+          key id;
+          leaf id { type ietf-poweff-types:something; }
+          choice op-type {
+            container linear-sum {}
+            container linear-average {}
+            container linear-max {}
+            container linear-min {}
+            container rolling-average {
+              leaf timespan { type ietf-poweff-types:something; }
+            }
+            container filter-age {
+              leaf min-age { type ietf-poweff-types:something; }
+              leaf max-age { type ietf-poweff-types:something; }
+            }
+            container function {
+              leaf name { type ietf-poweff-types:something; }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+&lt;CODE ENDS&gt;</pre><a href="#section-5.4-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-6">
+      <h2 id="name-security-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-6-1">TODO Security<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-7">
+      <h2 id="name-iana-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-7-1">This document has no IANA actions.<a href="#section-7-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-8">
+      <h2 id="name-references">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-8.1">
+        <h3 id="name-normative-references">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.draft-kll-yang-label-tsdb-00">[I-D.draft-kll-yang-label-tsdb-00]</dt>
+        <dd>
+<span class="refAuthor">Larsson, K.</span>, <span class="refTitle">"Mapping YANG Data to Label-Set Time Series"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-kll-yang-label-tsdb-00</span>, <time datetime="2023-10-18" class="refDate">18 October 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-kll-yang-label-tsdb-00">https://datatracker.ietf.org/doc/html/draft-kll-yang-label-tsdb-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7950">[RFC7950]</dt>
+        <dd>
+<span class="refAuthor">Bjorklund, M., Ed.</span>, <span class="refTitle">"The YANG 1.1 Data Modeling Language"</span>, <span class="seriesInfo">RFC 7950</span>, <span class="seriesInfo">DOI 10.17487/RFC7950</span>, <time datetime="2016-08" class="refDate">August 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7950">https://www.rfc-editor.org/rfc/rfc7950</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-8.2">
+        <h3 id="name-informative-references">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.draft-claise-netconf-metadata-for-collection-03">[I-D.draft-claise-netconf-metadata-for-collection-03]</dt>
+        <dd>
+<span class="refAuthor">Claise, B.</span>, <span class="refAuthor">Nayyar, M.</span>, and <span class="refAuthor">A. R. Sesani</span>, <span class="refTitle">"Per-Node Capabilities for Optimum Operational Data Collection"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-claise-netconf-metadata-for-collection-03</span>, <time datetime="2022-01-25" class="refDate">25 January 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-claise-netconf-metadata-for-collection-03">https://datatracker.ietf.org/doc/html/draft-claise-netconf-metadata-for-collection-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-ietf-opsawg-collected-data-manifest-01">[I-D.draft-ietf-opsawg-collected-data-manifest-01]</dt>
+      <dd>
+<span class="refAuthor">Claise, B.</span>, <span class="refAuthor">Quilbeuf, J.</span>, <span class="refAuthor">Lopez, D.</span>, <span class="refAuthor">Martinez-Casanueva, I. D.</span>, and <span class="refAuthor">T. Graf</span>, <span class="refTitle">"A Data Manifest for Contextualized Telemetry Data"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-opsawg-collected-data-manifest-01</span>, <time datetime="2023-07-10" class="refDate">10 July 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-opsawg-collected-data-manifest-01">https://datatracker.ietf.org/doc/html/draft-ietf-opsawg-collected-data-manifest-01</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">Kristian Larsson has provided invaluable insights, experience and validation of the design.  Many thanks to the entire POWEFF team for their committment, flexibility and hard work behind this.  Hat off to Benoît Claise, who inspires by the extensive work produced in IETF over the years, and in this area in particular.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Jan Lindblad</span></div>
+<div dir="auto" class="left"><span class="org">Cisco</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:jlindbla@cisco.com" class="email">jlindbla@cisco.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

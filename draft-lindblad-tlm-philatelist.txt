@@ -1,0 +1,1439 @@
+
+
+
+
+NETMOD                                                       J. Lindblad
+Internet-Draft                                                     Cisco
+Intended status: Standards Track                         20 October 2023
+Expires: 22 April 2024
+
+
+Philatelist, YANG-based collection and aggregation framework integrating
+                Telemetry data and Time Series Databases
+                 draft-lindblad-tlm-philatelist-latest
+
+Abstract
+
+   Timestamped telemetry data is collected en masse today.  Mature tools
+   are typically used, but the data is often collected in an ad hoc
+   manner.  While the dashboard graphs look great, the resulting data is
+   often of questionable quality, not well defined, and hard to compare
+   with seemingly similar data from other organizations.
+
+   This document proposes a standard, extensible, cross domain framework
+   for collecting and aggregating timestamped telemetry data in a way
+   that combines YANG, metadata and Time Series Databases to produce
+   more dependable and comparable results.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://janlindblad.github.io/netmod-tlm-philatelist/draft-lindblad-
+   tlm-philatelist.html.  Status information for this document may be
+   found at https://datatracker.ietf.org/doc/draft-lindblad-tlm-
+   philatelist/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/janlindblad/netmod-tlm-philatelist.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 22 April 2024.
+
+Copyright Notice
+
+   Copyright (c) 2023 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  The Problem
+     1.2.  The Solution
+     1.3.  The Philatelist Name
+   2.  Conventions and Definitions
+   3.  Architecure Overview
+     3.1.  The Provider Component
+     3.2.  The Collector Component
+     3.3.  The Processor and Aggregator Components
+   4.  YANG-based Telemetry Outlook
+   5.  YANG Modules
+     5.1.  Base types module for Philatelist
+     5.2.  Provider interface module for Philatelist
+     5.3.  Collector interface module for Philatelist
+     5.4.  Aggregator interface module for Philatelist
+   6.  Security Considerations
+   7.  IANA Considerations
+   8.  References
+     8.1.  Normative References
+     8.2.  Informative References
+   Acknowledgments
+   Author's Address
+
+1.  Introduction
+
+1.1.  The Problem
+
+   Many organizations today are collecting large amounts of telemetry
+   data from their networks and data centers for a variety of purposes.
+   Much (most?) of this data is funneled into a Time Series Database
+   (TSDB) for display in a dashboard or further (AI-backed) processing
+   and decision making.
+
+   While this data collection is often handled using standard tools,
+   there generally seems to be little commonality when it comes to what
+   is meaured, how the data is aggregated, or definitions of the
+   measured quantities (if any).
+
+   Data science issues like adding overlapping quantities, adding
+   quantities of different units of measurement, or quantities with
+   different scopes, are likely common.  Such errors are hard to detect
+   given the ad hoc nature of the collection.  This often leads to
+   uncertainty regarding the quality of the conclusions drawn from the
+   collected data.
+
+1.2.  The Solution
+
+   The Philatelist framework proposes to standardize the collection,
+   definitions of the quantities measured and meta data handling to
+   provide a robust ground layer for telemetry collection.  The
+   architecture defines a few interfaces, but allows great freedom in
+   the implementations with its plug-in architecture.  This allows
+   flexibility enough that any kind of quantitiy can be measured, any
+   kind of collection protocol and mechanism employed, and the data
+   flows aggregated using any kind of operation.
+
+   To do this, YANG is used both to describe the quantities being
+   measured, as well as act as the framework for the metadata
+   management.  Note that the usa of YANG here does not limit the
+   architecture to traditional YANG-based transport protocols.  YANG is
+   used to describe the data, regardless of which format it arrives in.
+
+   Initially developed in context of the Power and Energy Efficiency
+   work (POWEFF), we realized both the potential and the need for this
+   collection and aggregation architecture to become a general framework
+   for collection of a variety of metrics.
+
+   There is not much point in knowing the "cost side" of a running
+   system (as in energy consumption or CO2-emissions) if that cannot be
+   weighed against the "value side" delivered by the system (as in
+   transported bytes, VPN connections, music streaming hours, or number
+   of cat videos, etc.), which means traditional performance metrics
+   will play an equally important role in the collection.
+
+   In this initial version, we have done nothing to pull the proposed
+   YANG modules out of its POWEFF roots and generalize it for general
+   telemetry.  We believe the ideas and merits of this framework
+   architecture will be apparent nonetheless in this first version.  For
+   the next version, we certainly need to generalize the quantities
+   measured and rename the YANG modules and node names.
+
+1.3.  The Philatelist Name
+
+   This specification is about a framework for collection, aggregation
+   and interpretation of timestamped telemetry data.  The definition of
+   "philatelist" seems close enough.
+
+   1. philatelist
+
+   noun. ['fɪˈlætəlɪst'] a collector and student of postage stamps.
+
+   Synonyms
+   - collector
+   - aggregator
+
+       Figure 1: Source: https://www.synonym.com/synonyms/philatelist
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   This document uses the terminology defined in [RFC7950].
+
+   In addition, this document defines the following terms:
+
+   TSDB  Time Series Database.
+
+   Sensor  An entity in a system that delivers a snapshot value of some
+      quantity pertaining to the system.  Sensors are identified by
+      their Sensor Path.
+
+   Sensor Path  A textual representation of the sensor's address within
+      the system.
+
+3.  Architecure Overview
+
+   The deployment of a Philatelist framework consists of a collection of
+   plug-in compomnents with well defined interfaces.  Here is an example
+   of a deployment.  Each box is numbered in the lower right for easy
+   reference.
+
+                         +-----------------+
+                         | USER INTERFACE  |
+                         |    Dashboard    |
+                         |                 |
+                         +--------------11-+
+                                  |
+                         +-----------------+
+                         |    PROCESSOR    |
+                         | Recommendation  |
+                         |     Engine      |
+                         +--------------21-+
+                                  |
+                         +-----------------+
+                         |   AGGREGATOR    |
+                         |   Data Center   |
+                         +--------------31-+
+                                  |
+          +---------------+-------+-------+--------------+
+          |               |               |              |
+   +------------+  +------------+  +------------+  +------------+
+   | PROCESSOR  |  | AGGREGATOR |  | AGGREGATOR |  | AGGREGATOR |
+   | Normalizer |  |  Network   |  |  Storage   |  |  Compute   |
+   +---------41-+  +---------42-+  +---------43-+  +---------44-+
+          |           |                   |\             |\
+   +------------+     |     +------+------------+  +------------+------+
+   | COLLECTOR  |     |     | YANG | COLLECTOR  |  | COLLECTOR  | YANG |
+   |  Cooling   |     |     +---52-+ Storage 1  |  | Compute 1  +---55-+
+   +---------51-+     |            +---------53-+  +---------54-+
+          |           |             \ Storage 2  \  \ Compute 2  \
+   +------------+     |              +------------+  +------------+
+   |  PROVIDER  |     |               \ Storage N  \  \ Compute N  \
+   |Utility Bill|     |                +------------+  +------------+
+   +---------61-+     |
+                      +--------------+
+                      |              |
+               +------------+  +------------+
+               | PROCESSOR  |  | COLLECTOR  |
+               | Normalizer |  |  Routers   |
+               +---------71-+  +---------72-+
+                      |              |\
+               +------------+  +------------+
+               | COLLECTOR  |  |  PROVIDER  |
+               |  Firewall  |  |  Router 1  |
+               +---------81-+  +---------82-+
+                      |         \  Router 2  \
+               +------------+    +------------+
+               |  PROVIDER  |     \  Router N  \
+               |  Firewall  |      +------------+
+               +---------91-+
+
+            Figure 2: Example Philatelist component deployment.
+
+   Each component in the above diagram, represents a logical function.
+   Many boxes could be running within a single server, or they could be
+   fully distrubuted, or anything in between.
+
+   Provider components (61, 82, 91) are running on a telemetry source
+   system that supports a YANG-based telemetry data server.  The
+   telemetry data flows from the telemetry source system to a Time
+   Series Database (TSDB).
+
+   Collector components (51, 72, 81) ensure the Providers are programmed
+   properly to deliver the telemetry data to the TSDB designated by the
+   collector.  In some cases this flow may be direct from the source to
+   the TSDB, in other cases, it may be going through the collector.  In
+   some cases the collector may be polling the source, in others it may
+   have set up an automatic, periodic subscription.
+
+   Many telemetry source systems will not have any on-board YANG-based
+   telemetry server.  Such servers will instead be managed by a
+   collector specialized to handle a particular kind of source server
+   (53, 54).  These specialized collectors are still responsible to set
+   up a telemetry data stream from them to the collector's TSDB.  In
+   this case, the collector will also supply a YANG description (52, 55)
+   of the incoming data stream.
+
+   Processor components (21, 41, 71) are transforming the data stream in
+   some way, e.g. converting from one unit of measurement to another, or
+   adjusting the data values recorded to also include some aspect that
+   this particular sensor is not taking into account.
+
+   Aggregator components (31, 42, 43, 44) combine the time series
+   telemetry data flows using some operation, e.g. summing, averaging or
+   computing the max or min over them.  In this example there are
+   aggregators for Network, Storage, Compute and the entire Data Center
+
+   On top of the stack, we may often find a (graphical) user interface
+   (11), for human consumption of the intelligence acquired by the
+   system.  Equally relevant is of course an (AI) application making
+   decisions based on findings in the aggregated telemetry flow.
+
+3.1.  The Provider Component
+
+   A Provider is a source of telemetry data that also offers a YANG-
+   based management interface.  Each provider typically has a large
+   number of "sensors" that can be polled or in some cases subscribed
+   to.
+
+   One problem with the sensors is that they are spread around inside
+   the source system, and may not be trivial to locate.  Also, the
+   metadata assciated with the sensor is often only missing or only
+   available in human readable form (free form strings), rather than in
+   a strict machine parsable format.
+
+       /hardware/component[name="psu3"]/.../sensor-data/value
+       ...
+       /interfaces/interface[name="eth0/0"]/.../out-broadcast-packets
+       ...
+       /routing/mpls/mpls-label-blocks/.../inuse-labels-count
+       ...
+
+       Figure 3: Example of scattered potential sensors in a device.
+
+   To solve these problems, the Provider YANG module contains a sensor-
+   catalog list.  Essentially a list of all interesting sensors
+   available on the system, with their sensor paths and machine parsable
+   units, definition and any other metadata.
+
+   An admin user or application can then copy the sensor definition from
+   the sensor catalog and insert into the configuration in the colletor.
+
+     +--ro sensor-catalog
+         +--ro sensors
+           +--ro sensor* [path]
+               +--ro path?                     xpath
+               +--ro sensor-type?              identityref
+               +--ro sensor-location?          something
+               +--ro sensor-state?             something
+               +--ro sensor-current-reading?   something
+               +--ro sensor-precision?         string
+
+        Figure 4: YANG tree diagram of the Provider sensor-catalog.
+
+   Note: The "something" YANG-type is used in many places in this
+   document.  That is just a temporarty placeholder we use until we have
+   figured out what the appropriate type should be.
+
+   The sensor types are defined as YANG identities, making them
+   maximally extensible.  Examples of sensor types might be energy
+   measured in kWh, or energy measured in J, or temperature measured in
+   F, or in C, or in K.
+
+3.2.  The Collector Component
+
+   Collector components collect data points from sources, typically by
+   periodic polling or subscriptions, and ensure the collected data is
+   stored in a Time Series Database (TSDB).  The actual data stream may
+   or may not be passing through the collector component; the collector
+   is responsible for ensuring data flows from the source to the
+   destination TSDB and that the data has a YANG description and is
+   tagged with necessary metadata.  How the collector agrees with a
+   source to deliver data in a timely manner is beyond the scope of this
+   document.
+
+            +-------------+
+            |  COLLECTOR  |
+            +-------------+                     ___________
+                   |                           /           \
+         +------------------+                 ( DESTINATION )
+         v                  v                 |\___________/|
+   +------------+    +------------+  STREAM 1 |             |
+   |   SOURCE   |    |   SOURCE   |  =======> |             |
+   | - sensor 1 |    | - sensor 1 |           |             |
+   | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
+   | - sensor 3 |    | - sensor 7 |  =======> |             |
+   +------------+    +------------+           |             |
+             \\                      STREAM 3 |             |
+               =============================>  \___________/
+
+         Figure 5: Example of Collector setting up three streams of
+            telemetry data from two sources to one desitination.
+
+   Each source holds a number of sensors that may be queried or
+   subscribed to.  The collector arranges the sensors into sensour
+   groups that presumably are logically related, and that are collected
+   using the same method.  A number of collection methods (some YANG-
+   based, some not) are modeled directly in the ietf-poweff-
+   collector.yang module, but the set is designed to be easily
+   extensible.
+
+     +-- sensor-groups
+     |  +-- sensor-group* [id]
+     |     +-- id?                                something
+     |     +-- method?                            identityref
+     |     +-- get-static-url-once
+     |     |  +-- url?                            something
+     |     |  +-- format?                         something
+     |     +-- gnmi-polling
+     |     |  +-- encoding?                       something
+     |     |  +-- protocol?                       something
+     |     +-- restconf-get-polling
+     |     |  +-- xxx?                            something
+     |     +-- netconf-get-polling
+     |     |  +-- xxx?                            something
+     |     +-- restconf-yang-push-subscription
+     |     |  +-- xxx?                            something
+     |     +-- netconf-yang-push-subscription
+     |     |  +-- xxx?                            something
+     |     +-- redfish-polling
+     |     |  +-- xxx?                            something
+     |     +-- frequency?                         sample-frequency
+     |     +-- path* [path]
+     |        +-- path?                           xpath
+     |        +-- sensor-type?                    identityref
+     +-- streams
+       +-- stream* [id]
+           +-- id?                                something
+           +-- source*                            string
+           +-- sensor-group* [name]
+           |  +-- name?   -> ../../../sensor-groups/sensor-group/id
+           +-- destination?    -> ../../../destinations/destination/id
+
+       Figure 6: YANG tree diagram of the Collector sensor-groups and
+                                  streams.
+
+   The sensor groups are then arranged into streams from a collection of
+   sources (that support the same set of sensor groups) to a
+   destination.  This structure has been chosen with the assumption that
+   there will be many source devices with the same set of sensor groups,
+   and we want to minimize repetition.
+
+3.3.  The Processor and Aggregator Components
+
+   Processor components take an incoming data flow and transforms it
+   somehow, and possibly augments it with a flow of derived information.
+   The purpose of the transformation could be to convert between
+   different units of measurement, correct for known errors in in the
+   input data, or fill in approximate values where there are holes in
+   the input data.
+
+   Aggregator components take multiple incoming data flows and combine
+   them, typically by adding them together, taking possible differences
+   in cadence in the input data flows into account.
+
+   Processor and Aggregator components provide a YANG model of the
+   output data, just like the Collector components, so that all data
+   flowing in the system has a YANG description and is associated with
+   metadata.
+
+   Note: In the current version of the YANG modules, a Processor is
+   simply an Aggregator with a single input and output.  Unless we see a
+   need to keep these two component types separate, we might remove the
+   Processor component and keep it baked in with the Aggregator.
+
+                   +-------------+
+                   | AGGREGATOR  |
+                   +-------------+
+                          |
+              +-----------+-----------+
+              v                       v
+         ___________             ___________
+        /           \           /           \
+       (  SOURCE 1   )         ( DESTINATION )
+       |\___________/| FLOW 1  |\___________/|
+       |             | ======> |             |
+       |             |         |             |
+       |             | FLOW 2  |             |
+        \___________/  ===##=>  \___________/
+                          ||
+         ___________      ||
+        /           \     ||
+       (  SOURCE 2   )   //
+       |\___________/| ==
+       |             |
+       |             |
+       |             |
+        \___________/
+
+         Figure 7: Example of an Aggregator setting up two flows of
+            telemetry data from two sources to one desitination.
+
+   In this diagram, the sources and destination look like separate
+   TSDBs, which they might be.  They may also be different buckets
+   within the same TSDB.
+
+   Each flow is associated with one or more inputs, one output and a
+   series of processing operations.  Each input flow and output flow may
+   have an pre-processing or post-processing operation applied to it
+   separately.  Then all the input flows are combined using one or more
+   aggregation operations.  Some basic operations have been defined in
+   the Aggregator YANG module, but the set of operations has been
+   designed to be maximally extensible.
+
+     +-- flows
+     |  +-- flow* [id]
+     |     +-- id?                                string
+     |     +-- (chain-position)?
+     |        +--:(input)
+     |        |  +-- input
+     |        |     +-- source?
+     |        |           -> ../../../../../sources/source/id
+     |        +--:(output)
+     |        |  +-- output
+     |        |     +-- destination?
+     |        |           -> ../../../../../destinations/destination/id
+     |        +--:(middle)
+     |           +-- middle
+     |              +-- inputs*
+     |              |     -> ../../../../flows/flow/id
+     |              +-- pre-process-inputs?
+     |              |     -> ../../../../operations/operation/id
+     |              +-- aggregate?
+     |              |     -> ../../../../operations/operation/id
+     |              +-- post-process-output?
+     |                    -> ../../../../operations/operation/id
+     +-- operations
+       +-- operation* [id]
+           +-- id?                                something
+           +-- (op-type)?
+             +--:(linear-sum)
+             |  +-- linear-sum
+             +--:(linear-average)
+             |  +-- linear-average
+             +--:(linear-max)
+             |  +-- linear-max
+             +--:(linear-min)
+             |  +-- linear-min
+             +--:(rolling-average)
+             |  +-- rolling-average
+             |     +-- timespan?                  something
+             +--:(filter-age)
+             |  +-- filter-age
+             |     +-- min-age?                   something
+             |     +-- max-age?                   something
+             +--:(function)
+                 +-- function
+                   +-- name?                      something
+
+    Figure 8: YANG tree diagram of the Aggregator flows and operations.
+
+   The operations listed above are basic aggregation operations.
+   Linear-sum is just adding all the input sources together, with linear
+   interpolation when their data points don't align perfectly in time.
+   Rolling average is averaging the input flows over a given length of
+   time.  The filter-age drops all data points that are outside the min
+   to max age.  The function allows plugging in any other function the
+   Aggregator may have defined, but more importantly, the operations
+   choice is easily extended using YANG augment to include any other
+   IETF or vendor specified extensions.
+
+4.  YANG-based Telemetry Outlook
+
+   Much work has already gone into the area of telemetry, YANG, and even
+   their intersection.  E.g.
+   [I-D.draft-ietf-opsawg-collected-data-manifest-01] and
+   [I-D.draft-claise-netconf-metadata-for-collection-03] come to mind.
+
+   Even though this work has a solid foundation and shares many or most
+   of the goals with this work, we (the POWEFF team) have not found it
+   easy to apply the above work directly in the practical work we do.
+   So what we have tried to do is a very pragmatic approach to telemetry
+   data collection the way we see it happening on the ground combined
+   with the benefits of Model Driven Telemetry (MDT), in practice
+   meaning YANG-based with additional YANG-modeled metadata.
+
+   Many essential data sources in real world deployments do not support
+   any YANG-based interfaces, and that situation is expected to remain
+   for the forseable future, which is why we find it important to be
+   able to ingest data from free form (often REST-based) interfaces, and
+   then add the necessary rigor on the Collector level.  Then output the
+   datastreams in formats that existing, mature tools can consume
+   directly.
+
+   In particular, this draft depends on the mapping of YANG-based
+   structures to the typical TSDB tag-based formats described in
+   [I-D.draft-kll-yang-label-tsdb-00].
+
+   For the evolution of the YANG-based telemetry area, we believe this
+   approach, combining pragmatism in the data flow interfaces with rigor
+   regarding the data content, is key.  We would like to make this work
+   fit in with the works of others in the field.
+
+5.  YANG Modules
+
+5.1.  Base types module for Philatelist
+
+   <CODE BEGINS>
+   module ietf-poweff-types {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-types";
+     prefix ietf-poweff-types;
+
+     organization
+       "IETF OPSA (Operations and Management Area) Working Group";
+     contact
+       "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+        WG List:  <mailto:opsawg@ietf.org>
+        Editor:  Jan Lindblad
+                 <mailto:jlindbla@cisco.com>
+        Editor:  Snezana Mitrovic
+                 <mailto:snmitrov@cisco.com>
+        Editor:  Marisol Palmero
+                 <mailto:mpalmero@cisco.com>";
+     description
+       "This YANG module defines basic quantities, measurement units
+       and sensor types for the POWEFF framework.
+
+        Copyright (c) 2021 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Simplified BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC XXXX
+        (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+        for full legal notices.";
+
+     revision 2023-10-12 {
+       description
+         "Initial revision of POWEFF types";
+       reference
+         "RFC XXXX: ...";
+     }
+
+     typedef something { // FIXME: Used when we haven't decided the type yet
+       type string;
+     }
+     typedef xpath {
+       type string; // FIXME: Proper type needed
+     }
+     typedef sample-frequency {
+       type string; // FIXME: Proper type needed
+     }
+
+     // ========== SENSOR-CLASS ==============================
+     identity sensor-class {
+       description "Sensor's relation to the asset it sits on.";
+     }
+     identity sc-input {
+       base sensor-class;
+       description "Sensor reports input quantity of the asset it sits
+         on.";
+     }
+     identity sc-output {
+       base sensor-class;
+       description "Sensor reports output quantity of the asset it sits
+         on.";
+     }
+     identity sc-allocated {
+       base sensor-class;
+       description "Sensor reports (maximum) allocated quantity of the
+         asset it sits on.";
+     }
+
+     // ========== SENSOR-QUANTITY ==============================
+     identity sensor-quantity {
+       description "Sensor's quantity being measured.";
+     }
+     identity sq-voltage {
+       base sensor-quantity;
+       description "Sensor reports electric tension, voltage.";
+     }
+     identity sq-current {
+       base sensor-quantity;
+       description "Sensor reports electric current.";
+     }
+     identity sq-power {
+       base sensor-quantity;
+       description "Sensor reports power draw (energy per unit of time).";
+     }
+     identity sq-power-apparent {
+       base sq-power;
+       description "Sensor reports apparent power, i.e. average electrical
+         current times voltage (in VA).";
+     }
+     identity sq-power-true {
+       base sq-power;
+       description "Sensor reports true power, i.e. integral over current
+         and voltage at each instant in time.";
+     }
+     identity sq-energy {
+       base sensor-quantity;
+       description "Sensor reports actual energy drawn by asset.";
+     }
+     identity sq-co2-emission {
+       base sensor-quantity;
+       description "Sensor reports CO2 (carbon dioxide) emission by
+         asset.";
+     }
+     identity sq-co2eq-emission {
+       base sensor-quantity;
+       description "Sensor reports CO2 (carbon dioxide) equivalent
+         emission by asset.";
+     }
+     identity sq-temperature {
+       base sensor-quantity;
+       description "Sensor reports temperature of asset.";
+     }
+
+     // ========== SENSOR-UNIT ==============================
+     identity sensor-unit {
+       description "Sensor's unit of reporting.";
+     }
+     identity su-volt {
+       base sensor-unit;
+       base sq-voltage;
+       description "Sensor unit volt, V.";
+     }
+     identity su-ampere {
+       base sensor-unit;
+       base sq-current;
+       description "Sensor unit ampere, A.";
+     }
+     identity su-watt {
+       base sensor-unit;
+       base sq-power;
+       description "Sensor unit watt, W.";
+     }
+     identity su-voltampere {
+       base sensor-unit;
+       base sq-power;
+       description "Sensor unit Volt*Ampere, VA.";
+     }
+     identity su-kw {
+       base sensor-unit;
+       base sq-power;
+       description "Sensor unit kilowatt, kW.";
+     }
+     identity su-joule {
+       base sensor-unit;
+       base sq-energy;
+       description "Sensor unit joule, J.";
+     }
+     identity su-wh {
+       base sensor-unit;
+       base sq-energy;
+       description "Sensor unit watthour, Wh.";
+     }
+     identity su-kwh {
+       base sensor-unit;
+       base sq-energy;
+       description "Sensor unit kliowatthour, kWh.";
+     }
+     identity su-kelvin {
+       base sensor-unit;
+       base sq-temperature;
+       description "Sensor unit kelvin, K.";
+     }
+     identity su-celsius {
+       base sensor-unit;
+       base sq-temperature;
+       description "Sensor unit celsius, C.";
+     }
+     identity su-farenheit {
+       base sensor-unit;
+       base sq-temperature;
+       description "Sensor unit farenheit, F.";
+     }
+     identity su-gram {
+       base sensor-unit;
+       base sq-co2-emission;
+       description "Sensor unit gram, g.";
+     }
+     identity su-kg {
+       base sensor-unit;
+       base sq-co2-emission;
+       description "Sensor unit kliogram, kg.";
+     }
+     identity su-ton {
+       base sensor-unit;
+       base sq-co2-emission;
+       description "Sensor unit ton, t.";
+     }
+
+     // ========== SENSOR-TYPE ==============================
+     identity sensor-type {
+       description "Sensor's type, i.e. combination of class, quantity and
+         unit.";
+     }
+     identity st-v-in {
+       base sensor-type;
+       base sc-input;
+       base sq-voltage;
+       base su-volt;
+       description "Sensor reporting Voltage In to asset.";
+     }
+     identity st-v-out {
+       base sensor-type;
+       base sc-output;
+       base sq-voltage;
+       base su-volt;
+       description "Sensor reporting Voltage Out of asset.";
+     }
+     identity st-i-in {
+       base sensor-type;
+       base sc-input;
+       base sq-current;
+       base su-ampere;
+       description "Sensor reporting Current In to asset.";
+     }
+     identity st-i-out {
+       base sensor-type;
+       base sc-output;
+       base sq-current;
+       base su-ampere;
+       description "Sensor reporting Current Out of asset.";
+     }
+     identity st-p-in-apparent-watt {
+       base sensor-type;
+       base sc-input;
+       base sq-power-apparent;
+       base su-voltampere;
+       description "Sensor reporting Power In to asset as apparent (I*U)
+         power.";
+     }
+     identity st-p-out-apparent-watt {
+       base sensor-type;
+       base sc-output;
+       base sq-power-apparent;
+       base su-voltampere;
+       description "Sensor reporting Power Out of asset as apparent (I*U)
+         power.";
+     }
+     identity st-p-in-true-watt {
+       base sensor-type;
+       base sc-input;
+       base sq-power-true;
+       base su-watt;
+       description "Sensor reporting Power In to asset as true power.";
+     }
+     identity st-p-out-true-watt {
+       base sensor-type;
+       base sc-output;
+       base sq-power-true;
+       base su-watt;
+       description "Sensor reporting Power Out of asset as true power.";
+     }
+     identity st-p-allocated-watt {
+       base sensor-type;
+       base sc-allocated;
+       base sq-power;
+       base su-watt;
+       description "Sensor reporting Allocated Power for asset.";
+     }
+     identity st-w-j {
+       base sensor-type;
+       base sq-energy;
+       base su-joule;
+       description "Sensor reporting energy draw of asset in J.";
+     }
+     identity st-w-wh {
+       base sensor-type;
+       base sq-energy;
+       base su-wh;
+       description "Sensor reporting energy draw of asset in Wh.";
+     }
+     identity st-w-kwh {
+       base sensor-type;
+       base sq-energy;
+       base su-kwh;
+       description "Sensor reporting energy draw of asset in kWh.";
+     }
+     identity st-t-k {
+       base sensor-type;
+       base sq-temperature;
+       base su-kelvin;
+       description "Sensor reporting Temperature of asset in K.";
+     }
+     identity st-t-c {
+       base sensor-type;
+       base sq-temperature;
+       base su-celsius;
+       description "Sensor reporting Temperature of asset in °C.";
+     }
+     identity st-t-f {
+       base sensor-type;
+       base sq-temperature;
+       base su-farenheit;
+       description "Sensor reporting Temperature of asset in °F.";
+     }
+
+     // ========== COLLECTION-METHOD ==============================
+
+     identity collection-method;
+     identity cm-polled {
+       base collection-method;
+     }
+     identity cm-gnmi {
+       base collection-method;
+     }
+     identity cm-restconf {
+       base collection-method;
+     }
+     identity cm-netconf {
+       base collection-method;
+     }
+     identity cm-redfish {
+       base collection-method;
+     }
+     identity get-static-url-once {
+       base collection-method;
+     }
+     identity gnmi-polling {
+       base cm-gnmi;
+       base cm-polled;
+     }
+     identity restconf-get-polling {
+       base cm-restconf;
+       base cm-polled;
+     }
+     identity netconf-get-polling {
+       base cm-netconf;
+       base cm-polled;
+     }
+     identity restconf-yang-push-subscription {
+       base cm-restconf;
+     }
+     identity netconf-yang-push-subscription {
+       base cm-netconf;
+     }
+     identity redfish-polling {
+       base cm-redfish;
+     }
+   }
+   <CODE ENDS>
+
+5.2.  Provider interface module for Philatelist
+
+   <CODE BEGINS>
+   module ietf-poweff-provider {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-provider";
+     prefix ietf-poweff-provider;
+
+     import ietf-poweff-types {
+       prefix ietf-poweff-types;
+     }
+
+     organization
+       "IETF OPSA (Operations and Management Area) Working Group";
+     contact
+       "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+        WG List:  <mailto:opsawg@ietf.org>
+        Editor:  Jan Lindblad
+                 <mailto:jlindbla@cisco.com>
+        Editor:  Snezana Mitrovic
+                 <mailto:snmitrov@cisco.com>
+        Editor:  Marisol Palmero
+                 <mailto:mpalmero@cisco.com>";
+     description
+       "This YANG module defines the POWEFF Provider.
+
+        Copyright (c) 2021 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Simplified BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC XXXX
+        (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+        for full legal notices.";
+
+     revision 2023-10-12 {
+       description
+         "Initial revision of POWEFF Provider";
+       reference
+         "RFC XXXX: ...";
+     }
+
+     grouping provider-g {
+       container sensor-catalog {
+         config false;
+         container sensors {
+           list sensor {
+             key path;
+             leaf path { type ietf-poweff-types:xpath; }
+             leaf sensor-type { type identityref { base ietf-poweff-types:sensor-type; }}
+
+             leaf sensor-location {
+               type ietf-poweff-types:something;
+               description
+                 "Indicates the current location where the sensor is located
+                   in the chassis,typically refers to slot";
+             }
+             leaf sensor-state { // FIXME: What does this mean?
+               type ietf-poweff-types:something;
+               description
+                 "Current state of the sensor";
+             }
+             leaf sensor-current-reading { // FIXME: Do we want a copy of the value here?
+               type ietf-poweff-types:something;
+               description
+                 "Current reading of the sensor";
+             }
+             leaf sensor-precision {
+               type string;
+               description
+                 "Maximum deviation to be considered. This attribute mainly
+                 will apply to drawn power, which corresponds to PSU PowerIn
+                 measured power or calculated power; assuming discrepancy
+                 between Real Power, power collected from a power meter, and
+                 power measured or calculated from the metrics provided by
+                 the sensors";
+             }
+             container sensor-thresholds { // FIXME: Is this for generating alarms, or what?
+               description
+                 "Threshold values for the particular sensor.
+                 Default values shall beprovided as part of static data
+                 but when configurable need to be pulledfrom the device.
+                 Ideally, the sensor should allow configuing
+                 thesethreshold values";
+
+               leaf minor-low {
+                 type string;
+                 description
+                   "minor-low";
+               }
+               leaf minor-high {
+                 type string;
+                 description
+                   "minor-high";
+               }
+               leaf major-low {
+                 type string;
+                 description
+                   "major-low";
+               }
+               leaf major-high {
+                 type string;
+                 description
+                   "major-high";
+               }
+               leaf critical-low {
+                 type string;
+                 description
+                   "critical-low";
+               }
+               leaf critical-high {
+                 type string;
+                 description
+                   "critical-high";
+               }
+               leaf shutdown { // FIXME: What does this mean for a sensor?
+                 type string;
+                 description
+                   "shutdown";
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+   <CODE ENDS>
+
+5.3.  Collector interface module for Philatelist
+
+   <CODE BEGINS>
+   module ietf-poweff-collector {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-collector";
+     prefix ietf-poweff-collector;
+
+     import ietf-poweff-types {
+       prefix ietf-poweff-types;
+     }
+
+     organization
+       "IETF OPSA (Operations and Management Area) Working Group";
+     contact
+       "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+        WG List:  <mailto:opsawg@ietf.org>
+        Editor:  Jan Lindblad
+                 <mailto:jlindbla@cisco.com>
+        Editor:  Snezana Mitrovic
+                 <mailto:snmitrov@cisco.com>
+        Editor:  Marisol Palmero
+                 <mailto:mpalmero@cisco.com>";
+     description
+       "This YANG module defines the POWEFF Collector.
+
+        Copyright (c) 2021 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Simplified BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC XXXX
+        (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+        for full legal notices.";
+
+     revision 2023-10-12 {
+       description
+         "Initial revision of POWEFF Collector";
+       reference
+         "RFC XXXX: ...";
+     }
+
+   /*
+
+     A COLLECTOR programs one or more SOURCE(s) to generate a
+     STREAM of telemetry data.  The STREAM is sent to a specific
+     DESTINATION.
+
+     Each STREAM consists of timestamped sensor values from each
+     sensor in a sensor group.
+
+                +-------------+
+                |  COLLECTOR  |
+                +-------------+                     ___________
+                       |                           /           \
+             +------------------+                 ( DESTINATION )
+             v                  v                 |\___________/|
+       +------------+    +------------+  STREAM 1 |             |
+       |   SOURCE   |    |   SOURCE   |  =======> |             |
+       | - sensor 1 |    | - sensor 1 |           |             |
+       | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
+       | - sensor 3 |    | - sensor 7 |  =======> |             |
+       +------------+    +------------+           |             |
+                 \\                      STREAM 3 |             |
+                   =============================>  \___________/
+
+   */
+
+     grouping data-endpoint-g {
+       leaf url { type ietf-poweff-types:something; }
+       leaf organization { type ietf-poweff-types:something; }
+       leaf bucket { type ietf-poweff-types:something; }
+       container impl-specific {
+         list binding {
+           key key;
+           leaf key { type string; }
+           choice value-type {
+             leaf value { type string; }
+             leaf-list values { type string; ordered-by user; }
+             leaf env-var { type string; }
+           }
+         }
+       }
+     }
+
+     grouping sensor-group-g {
+       leaf method {
+         type identityref {
+           base ietf-poweff-types:collection-method;
+         }
+       }
+       container get-static-url-once {
+         when "derived-from-or-self(../method, 'ietf-poweff-types:get-static-url-once')";
+         leaf url { type ietf-poweff-types:something; }
+         leaf format { type ietf-poweff-types:something; } // JSON-IETF, XML, etc
+       }
+       container gnmi-polling {
+         when "derived-from-or-self(../method, 'ietf-poweff-types:gnmi-polling')";
+         leaf encoding { type ietf-poweff-types:something; } // self-describing-gpb
+         leaf protocol { type ietf-poweff-types:something; } // protocol grpc no-tls
+       }
+       container restconf-get-polling {
+         when "derived-from-or-self(../method, 'ietf-poweff-types:restconf-get-polling')";
+         leaf xxx { type string; }
+       }
+       container netconf-get-polling {
+         when "derived-from-or-self(../method, 'ietf-poweff-types:netconf-get-polling')";
+         leaf xxx { type string; }
+       }
+       container restconf-yang-push-subscription {
+         when "derived-from-or-self(../method, 'ietf-poweff-types:restconf-yang-push-subscription')";
+         leaf xxx { type string; }
+       }
+       container netconf-yang-push-subscription {
+         when "derived-from-or-self(../method, 'ietf-poweff-types:netconf-yang-push-subscription')";
+         leaf xxx { type string; }
+       }
+       container redfish-polling {
+         when "derived-from-or-self(../method, 'ietf-poweff-types:redfish-polling')";
+         leaf xxx { type string; }
+       }
+       leaf frequency {
+         when "derived-from(../method, 'ietf-poweff-types:cm-polled')";
+         type ietf-poweff-types:sample-frequency;
+       }
+       list path {
+         key path;
+         leaf path { type ietf-poweff-types:xpath; }
+         leaf sensor-type { type identityref { base ietf-poweff-types:sensor-type; }}
+         leaf attribution { type string; }
+       }
+     }
+
+     grouping collector-g {
+       container poweff-collector {
+         container destinations {
+           list destination {
+             key id;
+             leaf id { type ietf-poweff-types:something; }
+             uses data-endpoint-g;
+           }
+         }
+
+         container sensor-groups {
+           list sensor-group {
+             key id;
+             leaf id { type ietf-poweff-types:something; }
+             uses sensor-group-g;
+           }
+         }
+
+         container streams {
+           list stream {
+             key id;
+             leaf id { type ietf-poweff-types:something; }
+             leaf-list source { type string; } // Implementation specific meaning, possibly wildcards
+             list sensor-group {
+               key name;
+               leaf name { type leafref { path ../../../sensor-groups/sensor-group/id; }}
+             }
+             leaf destination { type leafref { path ../../../destinations/destination/id; }}
+           }
+         }
+       }
+     }
+   }
+   <CODE ENDS>
+
+5.4.  Aggregator interface module for Philatelist
+
+   <CODE BEGINS>
+   module ietf-poweff-aggregator {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-aggregator";
+     prefix ietf-poweff-aggregator;
+
+     import ietf-poweff-types {
+       prefix ietf-poweff-types;
+     }
+     import ietf-poweff-collector {
+       prefix ietf-poweff-collector;
+     }
+
+     organization
+       "IETF OPSA (Operations and Management Area) Working Group";
+     contact
+       "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+        WG List:  <mailto:opsawg@ietf.org>
+        Editor:  Jan Lindblad
+                 <mailto:jlindbla@cisco.com>
+        Editor:  Snezana Mitrovic
+                 <mailto:snmitrov@cisco.com>
+        Editor:  Marisol Palmero
+                 <mailto:mpalmero@cisco.com>";
+     description
+       "This YANG module defines the POWEFF Aggregator.
+
+        Copyright (c) 2021 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Simplified BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC XXXX
+        (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+        for full legal notices.";
+
+     revision 2023-10-12 {
+       description
+         "Initial revision of POWEFF Aggregator";
+       reference
+         "RFC XXXX: ...";
+     }
+
+   /*
+
+     An AGGREGATOR ensures data from one or more SOURCE(s) are
+     combined into a FLOW using a (sequence of) OPERATIONs (OPs)
+     to generate a new data set in the DESTINATION (which could
+     be a new collection in the same data storage system as the
+     SOURCE).
+
+                   +-------------+
+                   | AGGREGATOR  |
+                   +-------------+
+                          |
+              +-----------+-----------+
+              v                       v
+         ___________             ___________
+        /           \           /           \
+       (  SOURCE 1   )         ( DESTINATION )
+       |\___________/| FLOW 1  |\___________/|
+       |             | ======> |             |
+       |             |         |             |
+       |             | FLOW 2  |             |
+        \___________/  ===##=>  \___________/
+                          ||
+         ___________      ||
+        /           \     ||
+       (  SOURCE 2   )   //
+       |\___________/| ==
+       |             |
+       |             |
+       |             |
+        \___________/
+
+
+   */
+
+     grouping aggregator-g {
+       container poweff-aggregator {
+         container sources {
+           list source {
+             key id;
+             leaf id { type ietf-poweff-types:something; }
+             uses ietf-poweff-collector:data-endpoint-g;
+           }
+         }
+         container destinations {
+           list destination {
+             key id;
+             leaf id { type ietf-poweff-types:something; }
+             uses ietf-poweff-collector:data-endpoint-g;
+           }
+         }
+         container flows {
+           list flow {
+             key id;
+             leaf id { type string; }
+             choice chain-position {
+               container input {
+                 leaf source { type leafref { path ../../../../../sources/source/id; }}
+               }
+               container output {
+                 leaf destination { type leafref { path ../../../../../destinations/destination/id; }}
+               }
+               container middle {
+                 leaf-list inputs { type leafref { path ../../../../flows/flow/id; }}
+                 leaf pre-process-inputs { type leafref { path ../../../../operations/operation/id; }}
+                 leaf aggregate { type leafref { path ../../../../operations/operation/id; }}
+                 leaf post-process-output { type leafref { path ../../../../operations/operation/id; }}
+               }
+             }
+           }
+         }
+         container operations {
+           list operation {
+             key id;
+             leaf id { type ietf-poweff-types:something; }
+             choice op-type {
+               container linear-sum {}
+               container linear-average {}
+               container linear-max {}
+               container linear-min {}
+               container rolling-average {
+                 leaf timespan { type ietf-poweff-types:something; }
+               }
+               container filter-age {
+                 leaf min-age { type ietf-poweff-types:something; }
+                 leaf max-age { type ietf-poweff-types:something; }
+               }
+               container function {
+                 leaf name { type ietf-poweff-types:something; }
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+   <CODE ENDS>
+
+6.  Security Considerations
+
+   TODO Security
+
+7.  IANA Considerations
+
+   This document has no IANA actions.
+
+8.  References
+
+8.1.  Normative References
+
+   [I-D.draft-kll-yang-label-tsdb-00]
+              Larsson, K., "Mapping YANG Data to Label-Set Time Series",
+              Work in Progress, Internet-Draft, draft-kll-yang-label-
+              tsdb-00, 18 October 2023,
+              <https://datatracker.ietf.org/doc/html/draft-kll-yang-
+              label-tsdb-00>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/rfc/rfc7950>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+8.2.  Informative References
+
+   [I-D.draft-claise-netconf-metadata-for-collection-03]
+              Claise, B., Nayyar, M., and A. R. Sesani, "Per-Node
+              Capabilities for Optimum Operational Data Collection",
+              Work in Progress, Internet-Draft, draft-claise-netconf-
+              metadata-for-collection-03, 25 January 2022,
+              <https://datatracker.ietf.org/doc/html/draft-claise-
+              netconf-metadata-for-collection-03>.
+
+   [I-D.draft-ietf-opsawg-collected-data-manifest-01]
+              Claise, B., Quilbeuf, J., Lopez, D., Martinez-Casanueva,
+              I. D., and T. Graf, "A Data Manifest for Contextualized
+              Telemetry Data", Work in Progress, Internet-Draft, draft-
+              ietf-opsawg-collected-data-manifest-01, 10 July 2023,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-opsawg-
+              collected-data-manifest-01>.
+
+Acknowledgments
+
+   Kristian Larsson has provided invaluable insights, experience and
+   validation of the design.  Many thanks to the entire POWEFF team for
+   their committment, flexibility and hard work behind this.  Hat off to
+   Benoît Claise, who inspires by the extensive work produced in IETF
+   over the years, and in this area in particular.
+
+Author's Address
+
+   Jan Lindblad
+   Cisco
+   Email: jlindbla@cisco.com
