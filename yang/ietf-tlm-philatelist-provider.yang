@@ -1,0 +1,157 @@
+module ietf-tlm-philatelist-provider {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
+  prefix ietf-tlm-philatelist-provider;
+
+  import ietf-tlm-philatelist-types {
+    prefix ietf-tlm-philatelist-types;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+     WG List:  <mailto:opsawg@ietf.org>
+     Editor:  Jan Lindblad
+              <mailto:jlindbla@cisco.com>
+     Editor:  Snezana Mitrovic
+              <mailto:snmitrov@cisco.com>
+     Editor:  Marisol Palmero
+              <mailto:mpalmero@cisco.com>";
+  description
+    "This YANG module defines the Telemetry Philatelist Provider.
+
+     Copyright (c) 2021 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions  
+  
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
+  
+  revision 2024-02-14 {
+    description
+      "Restructured as part of the Telemetry Philatelist framework";
+    reference
+      "RFC XXXX: ...";
+  }
+  revision 2023-10-12 {
+    description
+      "Initial revision of POWEFF Provider";
+    reference
+      "RFC XXXX: ...";
+  }
+
+  grouping connection-g {
+    description "FIXME";
+
+    leaf method {
+      description "FIXME";
+      type identityref {
+        base ietf-tlm-philatelist-types:connection-method;
+      }
+      default ietf-tlm-philatelist-types:get-local-file-once;
+    }
+    container get-local-file-once {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-local-file-once')";
+      leaf filename { 
+        description "If not specified, uses the connection name";
+        type string; 
+      }
+    }
+    container get-static-url-once {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-static-url-once')";
+      leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+      leaf format { description "FIXME"; type ietf-tlm-philatelist-types:something; } // JSON-IETF, XML, etc
+    }
+    container gnmi-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:gnmi-polling')";
+      leaf encoding { description "FIXME"; type ietf-tlm-philatelist-types:something; } // self-describing-gpb
+      leaf protocol { description "FIXME"; type ietf-tlm-philatelist-types:something; } // protocol grpc no-tls
+    }
+    container restconf-get-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-get-polling')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container netconf-get-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-get-polling')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container restconf-yang-push-subscription {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-yang-push-subscription')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container netconf-yang-push-subscription {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-yang-push-subscription')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container redfish-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:redfish-polling')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    leaf frequency { 
+      description "FIXME";
+      when "derived-from(../method, 'ietf-tlm-philatelist-types:cm-polled')";
+      type ietf-tlm-philatelist-types:sample-frequency; 
+    }
+  }
+
+  grouping provider-g {
+    description "FIXME";
+    // Devices will implement this as config false; 
+    // Controllers as config true;
+    container dashs {
+      description "FIXME";
+      list dash {
+        description "FIXME";
+        key name;
+        leaf name {
+          description "FIXME";
+          type identityref {
+            base ietf-tlm-philatelist-types:dash-type;
+          }
+        }
+        list connection {
+          description "FIXME";
+          key name;
+          leaf name {
+            description "FIXME";
+            type leafref {
+              path ../../../../connections/connection/ctype;
+            }
+          }
+        }
+        container content {
+          description "FIXME";
+        }
+      }
+    }
+    container connections {
+      description "FIXME";
+      list connection {
+        description "FIXME";
+        key ctype;
+        leaf ctype {
+          description "FIXME";
+          type string;
+        }
+        uses connection-g;
+      }
+    }
+  }
+}

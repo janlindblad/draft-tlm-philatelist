@@ -1,0 +1,160 @@
+module ietf-tlm-philatelist-collector {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-collector";
+  prefix ietf-tlm-philatelist-collector;
+
+  import ietf-tlm-philatelist-types {
+    prefix ietf-tlm-philatelist-types;
+  }
+  import ietf-tlm-philatelist-provider {
+    prefix ietf-tlm-philatelist-provider;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+     WG List:  <mailto:opsawg@ietf.org>
+     Editor:  Jan Lindblad
+              <mailto:jlindbla@cisco.com>
+     Editor:  Snezana Mitrovic
+              <mailto:snmitrov@cisco.com>
+     Editor:  Marisol Palmero
+              <mailto:mpalmero@cisco.com>";
+  description
+    "This YANG module defines the Telemetry Philatelist Collector.
+
+     Copyright (c) 2021 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions  
+  
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
+  
+  revision 2024-02-14 {
+    description
+      "Restructured as part of the Telemetry Philatelist framework";
+    reference
+      "RFC XXXX: ...";
+  }
+  revision 2023-10-12 {
+    description
+      "Initial revision of POWEFF Collector";
+    reference
+      "RFC XXXX: ...";
+  }
+
+/*
+
+  A COLLECTOR programs one or more SOURCE(s) to generate a
+  STREAM of telemetry data.  The STREAM is sent to a specific
+  DESTINATION.
+  
+  Each STREAM consists of timestamped sensor values from each
+  sensor in a sensor group.
+
+             +-------------+
+             |  COLLECTOR  |
+             +-------------+                     ___________
+                    |                           /           \
+          +------------------+                 ( DESTINATION )
+          v                  v                 |\___________/|
+    +------------+    +------------+  STREAM 1 |             |
+    |   SOURCE   |    |   SOURCE   |  =======> |             |
+    | - sensor 1 |    | - sensor 1 |           |             |
+    | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
+    | - sensor 3 |    | - sensor 7 |  =======> |             |
+    +------------+    +------------+           |             |
+              \\                      STREAM 3 |             |
+                =============================>  \___________/
+
+*/
+
+  grouping data-endpoint-g {
+    description "FIXME";
+    leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+    leaf organization { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+    leaf bucket { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+    container impl-specific {
+      description "FIXME";
+      list binding {
+        description "FIXME";
+        key key;
+        leaf key { description "FIXME"; type string; }
+        choice value-type {
+          description "FIXME";
+          leaf value { description "FIXME"; type string; }
+          leaf-list values { description "FIXME"; type string; ordered-by user; }
+          leaf env-var { description "FIXME"; type string; }
+        }
+      }
+    }
+  }
+
+  container tlm-philatelist {
+    description "FIXME";
+    container organizations {
+      description "FIXME";
+      list organization {
+        description "FIXME";
+        key name;
+
+        leaf name {
+          description "FIXME";
+          type string;
+        }
+        container device-groups {
+          description "FIXME";
+          list device-group {
+            description "FIXME";
+            key name;
+            leaf name {
+              description "FIXME";
+              type string;
+            }
+            leaf-list devices {
+              description "FIXME";
+              // Points to the devices members of this device-group
+              // The exact meaning of these names is implementation specific
+              type string;
+            }
+            uses ietf-tlm-philatelist-provider:provider-g;
+          }
+        }
+        container tlm-streams {
+          description "FIXME";
+          list tlm-stream {
+            description "FIXME";
+            key id;
+            leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+            leaf-list source { description "FIXME"; type string; } // Implementation specific meaning, possibly wildcards
+            list source-list { 
+              description "FIXME";
+              key "device-group dash-name";
+              leaf device-group { description "FIXME"; type leafref { path ../../../../device-groups/device-group/name; }}
+              leaf dash-name { description "FIXME"; type leafref { path ../../../../device-groups/device-group/dashs/dash/name; }}
+            }
+            leaf destination { description "FIXME"; type leafref { path ../../../destinations/destination/id; }}
+          }
+        }
+        container destinations {
+          description "FIXME";
+          list destination {
+            description "FIXME";
+            key id;
+            leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+            uses data-endpoint-g;
+          }
+        }
+      }
+    }
+  }
+}

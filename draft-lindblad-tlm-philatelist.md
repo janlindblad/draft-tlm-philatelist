@@ -6,7 +6,7 @@ category: std
 docname: draft-lindblad-tlm-philatelist-latest
 submissiontype: IETF
 number:
-date: 2023-10-20
+date: 2024-03-14
 consensus: true
 v: 3
 area: OPS
@@ -35,6 +35,7 @@ author:
 normative:
   RFC7950:
   I-D.draft-kll-yang-label-tsdb-00:
+  I-D.draft-palmero-opsawg-ps-almo-00:
 
 informative:
   I-D.draft-ietf-opsawg-collected-data-manifest-01:
@@ -60,15 +61,13 @@ Data science issues like adding overlapping quantities, adding quantities of dif
 
 ## The Solution
 
-The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the data flows aggregated using any kind of operation.
+The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.
 
-To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the usa of YANG here does not limit the architecture to traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.
+To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.
 
 Initially developed in context of the Power and Energy Efficiency work (POWEFF), we realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.
 
 There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.
-
-In this initial version, we have done nothing to pull the proposed YANG modules out of its POWEFF roots and generalize it for general telemetry.  We believe the ideas and merits of this framework architecture will be apparent nonetheless in this first version.  For the next version, we certainly need to generalize the quantities measured and rename the YANG modules and node names.
 
 ## The Philatelist Name
 
@@ -202,12 +201,12 @@ An admin user or application can then copy the sensor definition from the sensor
   +--ro sensor-catalog
       +--ro sensors
         +--ro sensor* [path]
-            +--ro path?                     xpath
+            +--ro path?                     string
             +--ro sensor-type?              identityref
             +--ro sensor-location?          something
             +--ro sensor-state?             something
             +--ro sensor-current-reading?   something
-            +--ro sensor-precision?         string
+            +--ro sensor-precision?         something
 ~~~
 {: title="YANG tree diagram of the Provider sensor-catalog."}
 
@@ -264,10 +263,10 @@ Each source holds a number of sensors that may be queried or subscribed to.  The
   |     |  +-- xxx?                            something
   |     +-- frequency?                         sample-frequency
   |     +-- path* [path]
-  |        +-- path?                           xpath
+  |        +-- path?                           string
   |        +-- sensor-type?                    identityref
-  +-- streams
-    +-- stream* [id]
+  +-- tlm-streams
+    +-- tlm-stream* [id]
         +-- id?                                something
         +-- source*                            string
         +-- sensor-group* [name]
@@ -322,8 +321,8 @@ In this diagram, the sources and destination look like separate TSDBs, which the
 Each flow is associated with one or more inputs, one output and a series of processing operations.  Each input flow and output flow may have an pre-processing or post-processing operation applied to it separately.  Then all the input flows are combined using one or more aggregation operations.  Some basic operations have been defined in the Aggregator YANG module, but the set of operations has been designed to be maximally extensible.
 
 ~~~ yang-tree
-  +-- flows
-  |  +-- flow* [id]
+  +-- tlm-flows
+  |  +-- tlm-flow* [id]
   |     +-- id?                                string
   |     +-- (chain-position)?
   |        +--:(input)
@@ -371,12 +370,16 @@ Each flow is associated with one or more inputs, one output and a series of proc
 
 The operations listed above are basic aggregation operations.  Linear-sum is just adding all the input sources together, with linear interpolation when their data points don't align perfectly in time.  Rolling average is averaging the input flows over a given length of time.  The filter-age drops all data points that are outside the min to max age.  The function allows plugging in any other function the Aggregator may have defined, but more importantly, the operations choice is easily extended using YANG augment to include any other IETF or vendor specified extensions.
 
+## The Link to Assets
+
+In {{I-D.draft-palmero-opsawg-ps-almo-00}}, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the DMLMO structure and adds the possibility for an asset to point to a provider or aggregated data stream. FIXME
+
 # YANG-based Telemetry Outlook
 
 Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g. {{I-D.draft-ietf-opsawg-collected-data-manifest-01}} and {{
 I-D.draft-claise-netconf-metadata-for-collection-03}} come to mind.
 
-Even though this work has a solid foundation and shares many or most of the goals with this work, we (the POWEFF team) have not found it easy to apply the above work directly in the practical work we do.  So what we have tried to do is a very pragmatic approach to telemetry data collection the way we see it happening on the ground combined with the benefits of Model Driven Telemetry (MDT), in practice meaning YANG-based with additional YANG-modeled metadata.
+Even though that work has a solid foundation and shares many or most of the goals with this work, we (the POWEFF team) have not found it easy to apply the above work directly in the practical work we do.  So what we have tried to do is a very pragmatic approach to telemetry data collection the way we see it happening on the ground combined with the benefits of Model Driven Telemetry (MDT), in practice meaning YANG-based with additional YANG-modeled metadata.
 
 Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.
 
@@ -389,34 +392,42 @@ For the evolution of the YANG-based telemetry area, we believe this approach, co
 ## Base types module for Philatelist
 
 ~~~~ yang
-{::include yang/ietf-poweff-types.yang}
+{::include yang/ietf-tlm-philatelist-types.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-poweff-types@2023-10-12.yang”}
+sourcecode-name="ietf-tlm-philatelist-types@2024-02-14.yang”}
 
 ## Provider interface module for Philatelist
 
 ~~~~ yang
-{::include yang/ietf-poweff-provider.yang}
+{::include yang/ietf-tlm-philatelist-provider.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-poweff-provider@2023-10-12.yang”}
+sourcecode-name="ietf-tlm-philatelist-provider@2024-02-14.yang”}
 
 ## Collector interface module for Philatelist
 
 ~~~~ yang
-{::include yang/ietf-poweff-collector.yang}
+{::include yang/ietf-tlm-philatelist-collector.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-poweff-collector@2023-10-12.yang”}
+sourcecode-name="ietf-tlm-philatelist-collector@2024-02-14.yang”}
 
 ## Aggregator interface module for Philatelist
 
 ~~~~ yang
-{::include yang/ietf-poweff-aggregator.yang}
+{::include yang/ietf-tlm-philatelist-aggregator.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-poweff-aggregator@2023-10-12.yang”}
+sourcecode-name="ietf-tlm-philatelist-aggregator@2024-02-14.yang”}
+
+## Assets interface module for Philatelist
+
+~~~~ yang
+{::include yang/ietf-tlm-philatelist-assets.yang}
+~~~~
+{: sourcecode-markers="true"
+sourcecode-name="ietf-tlm-philatelist-assets@2024-02-14.yang”}
 
 # Security Considerations
 
@@ -427,6 +438,17 @@ TODO Security
 
 This document has no IANA actions.
 
+
+# Changes (to be deleted by RFC Editor)
+
+## From version -00 to -01
+- Split YANG modules, some contents going into poweff-specific modules
+- Renamed remaining YANG modules from -poweff- to -tlm-philatelist-
+- Updated text to reflect new module organization
+- Added optional linkage to DMLMO assets
+
+## Version -00
+- Initial version.
 
 --- back
 
