@@ -4,8 +4,8 @@
 
 NETMOD                                                       J. Lindblad
 Internet-Draft                                                     Cisco
-Intended status: Standards Track                         20 October 2023
-Expires: 22 April 2024
+Intended status: Standards Track                           14 March 2024
+Expires: 15 September 2024
 
 
 Philatelist, YANG-based collection and aggregation framework integrating
@@ -53,11 +53,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 April 2024.
+   This Internet-Draft will expire on 15 September 2024.
 
 Copyright Notice
 
-   Copyright (c) 2023 IETF Trust and the persons identified as the
+   Copyright (c) 2024 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -80,17 +80,22 @@ Table of Contents
      3.1.  The Provider Component
      3.2.  The Collector Component
      3.3.  The Processor and Aggregator Components
+     3.4.  The Link to Assets
    4.  YANG-based Telemetry Outlook
    5.  YANG Modules
      5.1.  Base types module for Philatelist
      5.2.  Provider interface module for Philatelist
      5.3.  Collector interface module for Philatelist
      5.4.  Aggregator interface module for Philatelist
+     5.5.  Assets interface module for Philatelist
    6.  Security Considerations
    7.  IANA Considerations
-   8.  References
-     8.1.  Normative References
-     8.2.  Informative References
+   8.  Changes (to be deleted by RFC Editor)
+     8.1.  From version -00 to -01
+     8.2.  Version -00
+   9.  References
+     9.1.  Normative References
+     9.2.  Informative References
    Acknowledgments
    Author's Address
 
@@ -124,12 +129,12 @@ Table of Contents
    architecture defines a few interfaces, but allows great freedom in
    the implementations with its plug-in architecture.  This allows
    flexibility enough that any kind of quantitiy can be measured, any
-   kind of collection protocol and mechanism employed, and the data
-   flows aggregated using any kind of operation.
+   kind of collection protocol and mechanism employed, and the telemetry
+   data flows aggregated using any kind of operation.
 
    To do this, YANG is used both to describe the quantities being
    measured, as well as act as the framework for the metadata
-   management.  Note that the usa of YANG here does not limit the
+   management.  Note that the use of YANG here does not limit the
    architecture to traditional YANG-based transport protocols.  YANG is
    used to describe the data, regardless of which format it arrives in.
 
@@ -144,13 +149,6 @@ Table of Contents
    transported bytes, VPN connections, music streaming hours, or number
    of cat videos, etc.), which means traditional performance metrics
    will play an equally important role in the collection.
-
-   In this initial version, we have done nothing to pull the proposed
-   YANG modules out of its POWEFF roots and generalize it for general
-   telemetry.  We believe the ideas and merits of this framework
-   architecture will be apparent nonetheless in this first version.  For
-   the next version, we certainly need to generalize the quantities
-   measured and rename the YANG modules and node names.
 
 1.3.  The Philatelist Name
 
@@ -320,12 +318,12 @@ Table of Contents
      +--ro sensor-catalog
          +--ro sensors
            +--ro sensor* [path]
-               +--ro path?                     xpath
+               +--ro path?                     string
                +--ro sensor-type?              identityref
                +--ro sensor-location?          something
                +--ro sensor-state?             something
                +--ro sensor-current-reading?   something
-               +--ro sensor-precision?         string
+               +--ro sensor-precision?         something
 
         Figure 4: YANG tree diagram of the Provider sensor-catalog.
 
@@ -398,10 +396,10 @@ Table of Contents
      |     |  +-- xxx?                            something
      |     +-- frequency?                         sample-frequency
      |     +-- path* [path]
-     |        +-- path?                           xpath
+     |        +-- path?                           string
      |        +-- sensor-type?                    identityref
-     +-- streams
-       +-- stream* [id]
+     +-- tlm-streams
+       +-- tlm-stream* [id]
            +-- id?                                something
            +-- source*                            string
            +-- sensor-group* [name]
@@ -479,8 +477,8 @@ Table of Contents
    the Aggregator YANG module, but the set of operations has been
    designed to be maximally extensible.
 
-     +-- flows
-     |  +-- flow* [id]
+     +-- tlm-flows
+     |  +-- tlm-flow* [id]
      |     +-- id?                                string
      |     +-- (chain-position)?
      |        +--:(input)
@@ -536,6 +534,18 @@ Table of Contents
    choice is easily extended using YANG augment to include any other
    IETF or vendor specified extensions.
 
+3.4.  The Link to Assets
+
+   In [I-D.draft-palmero-opsawg-ps-almo-00], the DMLMO team has built an
+   inventory strucure that describes systems, subsystems and their soft-
+   and hardware components.  They are called assets in the DMLMO YANG
+   models.  Some of the collected telemetry data streams may pertain to
+   quite precisely to these assets, and it may be interesting to see the
+   linkage.  For this reason, there is an optional module, ietf-tlm-
+   philatelist-assets, that augments the DMLMO structure and adds the
+   possibility for an asset to point to a provider or aggregated data
+   stream.  FIXME
+
 4.  YANG-based Telemetry Outlook
 
    Much work has already gone into the area of telemetry, YANG, and even
@@ -543,7 +553,7 @@ Table of Contents
    [I-D.draft-ietf-opsawg-collected-data-manifest-01] and
    [I-D.draft-claise-netconf-metadata-for-collection-03] come to mind.
 
-   Even though this work has a solid foundation and shares many or most
+   Even though that work has a solid foundation and shares many or most
    of the goals with this work, we (the POWEFF team) have not found it
    easy to apply the above work directly in the practical work we do.
    So what we have tried to do is a very pragmatic approach to telemetry
@@ -573,10 +583,10 @@ Table of Contents
 5.1.  Base types module for Philatelist
 
    <CODE BEGINS>
-   module ietf-poweff-types {
+   module ietf-tlm-philatelist-types {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-types";
-     prefix ietf-poweff-types;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-types";
+     prefix ietf-tlm-philatelist-types;
 
      organization
        "IETF OPSA (Operations and Management Area) Working Group";
@@ -591,7 +601,7 @@ Table of Contents
                  <mailto:mpalmero@cisco.com>";
      description
        "This YANG module defines basic quantities, measurement units
-       and sensor types for the POWEFF framework.
+        and sensor types for the Telemetry Philatelist framework.
 
         Copyright (c) 2021 IETF Trust and the persons identified as
         authors of the code. All rights reserved.
@@ -608,6 +618,12 @@ Table of Contents
         (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
         for full legal notices.";
 
+     revision 2024-02-14 {
+       description
+         "Restructured as part of the Telemetry Philatelist framework";
+       reference
+         "RFC XXXX: ...";
+     }
      revision 2023-10-12 {
        description
          "Initial revision of POWEFF types";
@@ -616,12 +632,15 @@ Table of Contents
      }
 
      typedef something { // FIXME: Used when we haven't decided the type yet
+       description "FIXME";
        type string;
      }
      typedef xpath {
+       description "FIXME";
        type string; // FIXME: Proper type needed
      }
      typedef sample-frequency {
+       description "FIXME";
        type string; // FIXME: Proper type needed
      }
 
@@ -649,269 +668,85 @@ Table of Contents
      identity sensor-quantity {
        description "Sensor's quantity being measured.";
      }
-     identity sq-voltage {
-       base sensor-quantity;
-       description "Sensor reports electric tension, voltage.";
-     }
-     identity sq-current {
-       base sensor-quantity;
-       description "Sensor reports electric current.";
-     }
-     identity sq-power {
-       base sensor-quantity;
-       description "Sensor reports power draw (energy per unit of time).";
-     }
-     identity sq-power-apparent {
-       base sq-power;
-       description "Sensor reports apparent power, i.e. average electrical
-         current times voltage (in VA).";
-     }
-     identity sq-power-true {
-       base sq-power;
-       description "Sensor reports true power, i.e. integral over current
-         and voltage at each instant in time.";
-     }
-     identity sq-energy {
-       base sensor-quantity;
-       description "Sensor reports actual energy drawn by asset.";
-     }
-     identity sq-co2-emission {
-       base sensor-quantity;
-       description "Sensor reports CO2 (carbon dioxide) emission by
-         asset.";
-     }
-     identity sq-co2eq-emission {
-       base sensor-quantity;
-       description "Sensor reports CO2 (carbon dioxide) equivalent
-         emission by asset.";
-     }
-     identity sq-temperature {
-       base sensor-quantity;
-       description "Sensor reports temperature of asset.";
-     }
 
      // ========== SENSOR-UNIT ==============================
      identity sensor-unit {
        description "Sensor's unit of reporting.";
      }
-     identity su-volt {
-       base sensor-unit;
-       base sq-voltage;
-       description "Sensor unit volt, V.";
-     }
-     identity su-ampere {
-       base sensor-unit;
-       base sq-current;
-       description "Sensor unit ampere, A.";
-     }
-     identity su-watt {
-       base sensor-unit;
-       base sq-power;
-       description "Sensor unit watt, W.";
-     }
-     identity su-voltampere {
-       base sensor-unit;
-       base sq-power;
-       description "Sensor unit Volt*Ampere, VA.";
-     }
-     identity su-kw {
-       base sensor-unit;
-       base sq-power;
-       description "Sensor unit kilowatt, kW.";
-     }
-     identity su-joule {
-       base sensor-unit;
-       base sq-energy;
-       description "Sensor unit joule, J.";
-     }
-     identity su-wh {
-       base sensor-unit;
-       base sq-energy;
-       description "Sensor unit watthour, Wh.";
-     }
-     identity su-kwh {
-       base sensor-unit;
-       base sq-energy;
-       description "Sensor unit kliowatthour, kWh.";
-     }
-     identity su-kelvin {
-       base sensor-unit;
-       base sq-temperature;
-       description "Sensor unit kelvin, K.";
-     }
-     identity su-celsius {
-       base sensor-unit;
-       base sq-temperature;
-       description "Sensor unit celsius, C.";
-     }
-     identity su-farenheit {
-       base sensor-unit;
-       base sq-temperature;
-       description "Sensor unit farenheit, F.";
-     }
-     identity su-gram {
-       base sensor-unit;
-       base sq-co2-emission;
-       description "Sensor unit gram, g.";
-     }
-     identity su-kg {
-       base sensor-unit;
-       base sq-co2-emission;
-       description "Sensor unit kliogram, kg.";
-     }
-     identity su-ton {
-       base sensor-unit;
-       base sq-co2-emission;
-       description "Sensor unit ton, t.";
+
+     // ========== DASH-TYPE ===================================
+     identity dash-type {
+       description "FIXME";
      }
 
-     // ========== SENSOR-TYPE ==============================
+     // ========== DASH-ITEM-TYPE ==============================
+     identity dash-item-type {
+       description "FIXME";
+     }
      identity sensor-type {
        description "Sensor's type, i.e. combination of class, quantity and
          unit.";
-     }
-     identity st-v-in {
-       base sensor-type;
-       base sc-input;
-       base sq-voltage;
-       base su-volt;
-       description "Sensor reporting Voltage In to asset.";
-     }
-     identity st-v-out {
-       base sensor-type;
-       base sc-output;
-       base sq-voltage;
-       base su-volt;
-       description "Sensor reporting Voltage Out of asset.";
-     }
-     identity st-i-in {
-       base sensor-type;
-       base sc-input;
-       base sq-current;
-       base su-ampere;
-       description "Sensor reporting Current In to asset.";
-     }
-     identity st-i-out {
-       base sensor-type;
-       base sc-output;
-       base sq-current;
-       base su-ampere;
-       description "Sensor reporting Current Out of asset.";
-     }
-     identity st-p-in-apparent-watt {
-       base sensor-type;
-       base sc-input;
-       base sq-power-apparent;
-       base su-voltampere;
-       description "Sensor reporting Power In to asset as apparent (I*U)
-         power.";
-     }
-     identity st-p-out-apparent-watt {
-       base sensor-type;
-       base sc-output;
-       base sq-power-apparent;
-       base su-voltampere;
-       description "Sensor reporting Power Out of asset as apparent (I*U)
-         power.";
-     }
-     identity st-p-in-true-watt {
-       base sensor-type;
-       base sc-input;
-       base sq-power-true;
-       base su-watt;
-       description "Sensor reporting Power In to asset as true power.";
-     }
-     identity st-p-out-true-watt {
-       base sensor-type;
-       base sc-output;
-       base sq-power-true;
-       base su-watt;
-       description "Sensor reporting Power Out of asset as true power.";
-     }
-     identity st-p-allocated-watt {
-       base sensor-type;
-       base sc-allocated;
-       base sq-power;
-       base su-watt;
-       description "Sensor reporting Allocated Power for asset.";
-     }
-     identity st-w-j {
-       base sensor-type;
-       base sq-energy;
-       base su-joule;
-       description "Sensor reporting energy draw of asset in J.";
-     }
-     identity st-w-wh {
-       base sensor-type;
-       base sq-energy;
-       base su-wh;
-       description "Sensor reporting energy draw of asset in Wh.";
-     }
-     identity st-w-kwh {
-       base sensor-type;
-       base sq-energy;
-       base su-kwh;
-       description "Sensor reporting energy draw of asset in kWh.";
-     }
-     identity st-t-k {
-       base sensor-type;
-       base sq-temperature;
-       base su-kelvin;
-       description "Sensor reporting Temperature of asset in K.";
-     }
-     identity st-t-c {
-       base sensor-type;
-       base sq-temperature;
-       base su-celsius;
-       description "Sensor reporting Temperature of asset in °C.";
-     }
-     identity st-t-f {
-       base sensor-type;
-       base sq-temperature;
-       base su-farenheit;
-       description "Sensor reporting Temperature of asset in °F.";
+       base dash-item-type;
      }
 
      // ========== COLLECTION-METHOD ==============================
 
-     identity collection-method;
+     identity connection-method {
+       description "FIXME";
+     }
+     identity get-local-file-once {
+       description "FIXME";
+       base connection-method;
+     }
      identity cm-polled {
-       base collection-method;
+       description "FIXME";
+       base connection-method;
      }
      identity cm-gnmi {
-       base collection-method;
+       description "FIXME";
+       base connection-method;
      }
      identity cm-restconf {
-       base collection-method;
+       description "FIXME";
+       base connection-method;
      }
      identity cm-netconf {
-       base collection-method;
+       description "FIXME";
+       base connection-method;
      }
      identity cm-redfish {
-       base collection-method;
+       description "FIXME";
+       base connection-method;
      }
      identity get-static-url-once {
-       base collection-method;
+       description "FIXME";
+       base connection-method;
      }
      identity gnmi-polling {
+       description "FIXME";
        base cm-gnmi;
        base cm-polled;
      }
      identity restconf-get-polling {
+       description "FIXME";
        base cm-restconf;
        base cm-polled;
      }
      identity netconf-get-polling {
+       description "FIXME";
        base cm-netconf;
        base cm-polled;
      }
      identity restconf-yang-push-subscription {
+       description "FIXME";
        base cm-restconf;
      }
      identity netconf-yang-push-subscription {
+       description "FIXME";
        base cm-netconf;
      }
      identity redfish-polling {
+       description "FIXME";
        base cm-redfish;
      }
    }
@@ -920,13 +755,13 @@ Table of Contents
 5.2.  Provider interface module for Philatelist
 
    <CODE BEGINS>
-   module ietf-poweff-provider {
+   module ietf-tlm-philatelist-provider {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-provider";
-     prefix ietf-poweff-provider;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
+     prefix ietf-tlm-philatelist-provider;
 
-     import ietf-poweff-types {
-       prefix ietf-poweff-types;
+     import ietf-tlm-philatelist-types {
+       prefix ietf-tlm-philatelist-types;
      }
 
      organization
@@ -941,7 +776,7 @@ Table of Contents
         Editor:  Marisol Palmero
                  <mailto:mpalmero@cisco.com>";
      description
-       "This YANG module defines the POWEFF Provider.
+       "This YANG module defines the Telemetry Philatelist Provider.
 
         Copyright (c) 2021 IETF Trust and the persons identified as
         authors of the code. All rights reserved.
@@ -958,6 +793,12 @@ Table of Contents
         (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
         for full legal notices.";
 
+     revision 2024-02-14 {
+       description
+         "Restructured as part of the Telemetry Philatelist framework";
+       reference
+         "RFC XXXX: ...";
+     }
      revision 2023-10-12 {
        description
          "Initial revision of POWEFF Provider";
@@ -965,86 +806,108 @@ Table of Contents
          "RFC XXXX: ...";
      }
 
+     grouping connection-g {
+       description "FIXME";
+
+       leaf method {
+         description "FIXME";
+         type identityref {
+           base ietf-tlm-philatelist-types:connection-method;
+         }
+         default ietf-tlm-philatelist-types:get-local-file-once;
+       }
+       container get-local-file-once {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-local-file-once')";
+         leaf filename {
+           description "If not specified, uses the connection name";
+           type string;
+         }
+       }
+       container get-static-url-once {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-static-url-once')";
+         leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+         leaf format { description "FIXME"; type ietf-tlm-philatelist-types:something; } // JSON-IETF, XML, etc
+       }
+       container gnmi-polling {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:gnmi-polling')";
+         leaf encoding { description "FIXME"; type ietf-tlm-philatelist-types:something; } // self-describing-gpb
+         leaf protocol { description "FIXME"; type ietf-tlm-philatelist-types:something; } // protocol grpc no-tls
+       }
+       container restconf-get-polling {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-get-polling')";
+         leaf xxx { description "FIXME"; type string; }
+       }
+       container netconf-get-polling {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-get-polling')";
+         leaf xxx { description "FIXME"; type string; }
+       }
+       container restconf-yang-push-subscription {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-yang-push-subscription')";
+         leaf xxx { description "FIXME"; type string; }
+       }
+       container netconf-yang-push-subscription {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-yang-push-subscription')";
+         leaf xxx { description "FIXME"; type string; }
+       }
+       container redfish-polling {
+         description "FIXME";
+         when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:redfish-polling')";
+         leaf xxx { description "FIXME"; type string; }
+       }
+       leaf frequency {
+         description "FIXME";
+         when "derived-from(../method, 'ietf-tlm-philatelist-types:cm-polled')";
+         type ietf-tlm-philatelist-types:sample-frequency;
+       }
+     }
+
      grouping provider-g {
-       container sensor-catalog {
-         config false;
-         container sensors {
-           list sensor {
-             key path;
-             leaf path { type ietf-poweff-types:xpath; }
-             leaf sensor-type { type identityref { base ietf-poweff-types:sensor-type; }}
-
-             leaf sensor-location {
-               type ietf-poweff-types:something;
-               description
-                 "Indicates the current location where the sensor is located
-                   in the chassis,typically refers to slot";
+       description "FIXME";
+       // Devices will implement this as config false;
+       // Controllers as config true;
+       container dashs {
+         description "FIXME";
+         list dash {
+           description "FIXME";
+           key name;
+           leaf name {
+             description "FIXME";
+             type identityref {
+               base ietf-tlm-philatelist-types:dash-type;
              }
-             leaf sensor-state { // FIXME: What does this mean?
-               type ietf-poweff-types:something;
-               description
-                 "Current state of the sensor";
-             }
-             leaf sensor-current-reading { // FIXME: Do we want a copy of the value here?
-               type ietf-poweff-types:something;
-               description
-                 "Current reading of the sensor";
-             }
-             leaf sensor-precision {
-               type string;
-               description
-                 "Maximum deviation to be considered. This attribute mainly
-                 will apply to drawn power, which corresponds to PSU PowerIn
-                 measured power or calculated power; assuming discrepancy
-                 between Real Power, power collected from a power meter, and
-                 power measured or calculated from the metrics provided by
-                 the sensors";
-             }
-             container sensor-thresholds { // FIXME: Is this for generating alarms, or what?
-               description
-                 "Threshold values for the particular sensor.
-                 Default values shall beprovided as part of static data
-                 but when configurable need to be pulledfrom the device.
-                 Ideally, the sensor should allow configuing
-                 thesethreshold values";
-
-               leaf minor-low {
-                 type string;
-                 description
-                   "minor-low";
-               }
-               leaf minor-high {
-                 type string;
-                 description
-                   "minor-high";
-               }
-               leaf major-low {
-                 type string;
-                 description
-                   "major-low";
-               }
-               leaf major-high {
-                 type string;
-                 description
-                   "major-high";
-               }
-               leaf critical-low {
-                 type string;
-                 description
-                   "critical-low";
-               }
-               leaf critical-high {
-                 type string;
-                 description
-                   "critical-high";
-               }
-               leaf shutdown { // FIXME: What does this mean for a sensor?
-                 type string;
-                 description
-                   "shutdown";
+           }
+           list connection {
+             description "FIXME";
+             key name;
+             leaf name {
+               description "FIXME";
+               type leafref {
+                 path ../../../../connections/connection/ctype;
                }
              }
            }
+           container content {
+             description "FIXME";
+           }
+         }
+       }
+       container connections {
+         description "FIXME";
+         list connection {
+           description "FIXME";
+           key ctype;
+           leaf ctype {
+             description "FIXME";
+             type string;
+           }
+           uses connection-g;
          }
        }
      }
@@ -1054,13 +917,16 @@ Table of Contents
 5.3.  Collector interface module for Philatelist
 
    <CODE BEGINS>
-   module ietf-poweff-collector {
+   module ietf-tlm-philatelist-collector {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-collector";
-     prefix ietf-poweff-collector;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-collector";
+     prefix ietf-tlm-philatelist-collector;
 
-     import ietf-poweff-types {
-       prefix ietf-poweff-types;
+     import ietf-tlm-philatelist-types {
+       prefix ietf-tlm-philatelist-types;
+     }
+     import ietf-tlm-philatelist-provider {
+       prefix ietf-tlm-philatelist-provider;
      }
 
      organization
@@ -1075,7 +941,7 @@ Table of Contents
         Editor:  Marisol Palmero
                  <mailto:mpalmero@cisco.com>";
      description
-       "This YANG module defines the POWEFF Collector.
+       "This YANG module defines the Telemetry Philatelist Collector.
 
         Copyright (c) 2021 IETF Trust and the persons identified as
         authors of the code. All rights reserved.
@@ -1092,6 +958,12 @@ Table of Contents
         (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
         for full legal notices.";
 
+     revision 2024-02-14 {
+       description
+         "Restructured as part of the Telemetry Philatelist framework";
+       reference
+         "RFC XXXX: ...";
+     }
      revision 2023-10-12 {
        description
          "Initial revision of POWEFF Collector";
@@ -1126,98 +998,80 @@ Table of Contents
    */
 
      grouping data-endpoint-g {
-       leaf url { type ietf-poweff-types:something; }
-       leaf organization { type ietf-poweff-types:something; }
-       leaf bucket { type ietf-poweff-types:something; }
+       description "FIXME";
+       leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+       leaf organization { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+       leaf bucket { description "FIXME"; type ietf-tlm-philatelist-types:something; }
        container impl-specific {
+         description "FIXME";
          list binding {
+           description "FIXME";
            key key;
-           leaf key { type string; }
+           leaf key { description "FIXME"; type string; }
            choice value-type {
-             leaf value { type string; }
-             leaf-list values { type string; ordered-by user; }
-             leaf env-var { type string; }
+             description "FIXME";
+             leaf value { description "FIXME"; type string; }
+             leaf-list values { description "FIXME"; type string; ordered-by user; }
+             leaf env-var { description "FIXME"; type string; }
            }
          }
        }
      }
 
-     grouping sensor-group-g {
-       leaf method {
-         type identityref {
-           base ietf-poweff-types:collection-method;
-         }
-       }
-       container get-static-url-once {
-         when "derived-from-or-self(../method, 'ietf-poweff-types:get-static-url-once')";
-         leaf url { type ietf-poweff-types:something; }
-         leaf format { type ietf-poweff-types:something; } // JSON-IETF, XML, etc
-       }
-       container gnmi-polling {
-         when "derived-from-or-self(../method, 'ietf-poweff-types:gnmi-polling')";
-         leaf encoding { type ietf-poweff-types:something; } // self-describing-gpb
-         leaf protocol { type ietf-poweff-types:something; } // protocol grpc no-tls
-       }
-       container restconf-get-polling {
-         when "derived-from-or-self(../method, 'ietf-poweff-types:restconf-get-polling')";
-         leaf xxx { type string; }
-       }
-       container netconf-get-polling {
-         when "derived-from-or-self(../method, 'ietf-poweff-types:netconf-get-polling')";
-         leaf xxx { type string; }
-       }
-       container restconf-yang-push-subscription {
-         when "derived-from-or-self(../method, 'ietf-poweff-types:restconf-yang-push-subscription')";
-         leaf xxx { type string; }
-       }
-       container netconf-yang-push-subscription {
-         when "derived-from-or-self(../method, 'ietf-poweff-types:netconf-yang-push-subscription')";
-         leaf xxx { type string; }
-       }
-       container redfish-polling {
-         when "derived-from-or-self(../method, 'ietf-poweff-types:redfish-polling')";
-         leaf xxx { type string; }
-       }
-       leaf frequency {
-         when "derived-from(../method, 'ietf-poweff-types:cm-polled')";
-         type ietf-poweff-types:sample-frequency;
-       }
-       list path {
-         key path;
-         leaf path { type ietf-poweff-types:xpath; }
-         leaf sensor-type { type identityref { base ietf-poweff-types:sensor-type; }}
-         leaf attribution { type string; }
-       }
-     }
+     container tlm-philatelist {
+       description "FIXME";
+       container organizations {
+         description "FIXME";
+         list organization {
+           description "FIXME";
+           key name;
 
-     grouping collector-g {
-       container poweff-collector {
-         container destinations {
-           list destination {
-             key id;
-             leaf id { type ietf-poweff-types:something; }
-             uses data-endpoint-g;
+           leaf name {
+             description "FIXME";
+             type string;
            }
-         }
-
-         container sensor-groups {
-           list sensor-group {
-             key id;
-             leaf id { type ietf-poweff-types:something; }
-             uses sensor-group-g;
-           }
-         }
-
-         container streams {
-           list stream {
-             key id;
-             leaf id { type ietf-poweff-types:something; }
-             leaf-list source { type string; } // Implementation specific meaning, possibly wildcards
-             list sensor-group {
+           container device-groups {
+             description "FIXME";
+             list device-group {
+               description "FIXME";
                key name;
-               leaf name { type leafref { path ../../../sensor-groups/sensor-group/id; }}
+               leaf name {
+                 description "FIXME";
+                 type string;
+               }
+               leaf-list devices {
+                 description "FIXME";
+                 // Points to the devices members of this device-group
+                 // The exact meaning of these names is implementation specific
+                 type string;
+               }
+               uses ietf-tlm-philatelist-provider:provider-g;
              }
-             leaf destination { type leafref { path ../../../destinations/destination/id; }}
+           }
+           container tlm-streams {
+             description "FIXME";
+             list tlm-stream {
+               description "FIXME";
+               key id;
+               leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+               leaf-list source { description "FIXME"; type string; } // Implementation specific meaning, possibly wildcards
+               list source-list {
+                 description "FIXME";
+                 key "device-group dash-name";
+                 leaf device-group { description "FIXME"; type leafref { path ../../../../device-groups/device-group/name; }}
+                 leaf dash-name { description "FIXME"; type leafref { path ../../../../device-groups/device-group/dashs/dash/name; }}
+               }
+               leaf destination { description "FIXME"; type leafref { path ../../../destinations/destination/id; }}
+             }
+           }
+           container destinations {
+             description "FIXME";
+             list destination {
+               description "FIXME";
+               key id;
+               leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+               uses data-endpoint-g;
+             }
            }
          }
        }
@@ -1228,16 +1082,16 @@ Table of Contents
 5.4.  Aggregator interface module for Philatelist
 
    <CODE BEGINS>
-   module ietf-poweff-aggregator {
+   module ietf-tlm-philatelist-aggregator {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-poweff-aggregator";
-     prefix ietf-poweff-aggregator;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-aggregator";
+     prefix ietf-tlm-philatelist-aggregator;
 
-     import ietf-poweff-types {
-       prefix ietf-poweff-types;
+     import ietf-tlm-philatelist-types {
+       prefix ietf-tlm-philatelist-types;
      }
-     import ietf-poweff-collector {
-       prefix ietf-poweff-collector;
+     import ietf-tlm-philatelist-collector {
+       prefix ietf-tlm-philatelist-collector;
      }
 
      organization
@@ -1252,7 +1106,7 @@ Table of Contents
         Editor:  Marisol Palmero
                  <mailto:mpalmero@cisco.com>";
      description
-       "This YANG module defines the POWEFF Aggregator.
+       "This YANG module defines the Telemetry Philatelist Aggregator.
 
         Copyright (c) 2021 IETF Trust and the persons identified as
         authors of the code. All rights reserved.
@@ -1269,6 +1123,12 @@ Table of Contents
         (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
         for full legal notices.";
 
+     revision 2024-02-14 {
+       description
+         "Restructured as part of the Telemetry Philatelist framework";
+       reference
+         "RFC XXXX: ...";
+     }
      revision 2023-10-12 {
        description
          "Initial revision of POWEFF Aggregator";
@@ -1312,64 +1172,180 @@ Table of Contents
    */
 
      grouping aggregator-g {
-       container poweff-aggregator {
+       description "FIXME";
+       container tlm-philatelist-aggregator {
+         description "FIXME";
          container sources {
+           description "FIXME";
            list source {
+             description "FIXME";
              key id;
-             leaf id { type ietf-poweff-types:something; }
-             uses ietf-poweff-collector:data-endpoint-g;
+             leaf id {
+               description "FIXME";
+               type ietf-tlm-philatelist-types:something;
+             }
+             uses ietf-tlm-philatelist-collector:data-endpoint-g;
            }
          }
          container destinations {
+           description "FIXME";
            list destination {
+             description "FIXME";
              key id;
-             leaf id { type ietf-poweff-types:something; }
-             uses ietf-poweff-collector:data-endpoint-g;
+             leaf id {
+               description "FIXME";
+               type ietf-tlm-philatelist-types:something;
+             }
+             uses ietf-tlm-philatelist-collector:data-endpoint-g;
            }
          }
-         container flows {
-           list flow {
+         container tlm-flows {
+           description "FIXME";
+           list tlm-flow {
+             description "FIXME";
              key id;
-             leaf id { type string; }
+             leaf id { description "FIXME"; type string; }
              choice chain-position {
+               description "FIXME";
                container input {
-                 leaf source { type leafref { path ../../../../../sources/source/id; }}
+                 description "FIXME";
+                 leaf source {
+                   description "FIXME";
+                   type leafref {
+                     path ../../../../../sources/source/id;
+                   }
+                 }
                }
                container output {
-                 leaf destination { type leafref { path ../../../../../destinations/destination/id; }}
+                 description "FIXME";
+                 leaf destination { description "FIXME"; type leafref { path ../../../../../destinations/destination/id; }}
                }
                container middle {
-                 leaf-list inputs { type leafref { path ../../../../flows/flow/id; }}
-                 leaf pre-process-inputs { type leafref { path ../../../../operations/operation/id; }}
-                 leaf aggregate { type leafref { path ../../../../operations/operation/id; }}
-                 leaf post-process-output { type leafref { path ../../../../operations/operation/id; }}
+                 description "FIXME";
+                 leaf-list inputs { description "FIXME"; type leafref { path ../../../../flows/flow/id; }}
+                 leaf pre-process-inputs { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
+                 leaf aggregate { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
+                 leaf post-process-output { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
                }
              }
            }
          }
          container operations {
+           description "FIXME";
            list operation {
+             description "FIXME";
              key id;
-             leaf id { type ietf-poweff-types:something; }
+             leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
              choice op-type {
-               container linear-sum {}
-               container linear-average {}
-               container linear-max {}
-               container linear-min {}
+               description "FIXME";
+               container linear-sum { description "FIXME"; }
+               container linear-average { description "FIXME"; }
+               container linear-max { description "FIXME"; }
+               container linear-min { description "FIXME"; }
                container rolling-average {
-                 leaf timespan { type ietf-poweff-types:something; }
+                 description "FIXME";
+                 leaf timespan { description "FIXME"; type ietf-tlm-philatelist-types:something; }
                }
                container filter-age {
-                 leaf min-age { type ietf-poweff-types:something; }
-                 leaf max-age { type ietf-poweff-types:something; }
+                 description "FIXME";
+                 leaf min-age { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+                 leaf max-age { description "FIXME";type ietf-tlm-philatelist-types:something; }
                }
                container function {
-                 leaf name { type ietf-poweff-types:something; }
+                 description "FIXME";
+                 leaf name { description "FIXME"; type ietf-tlm-philatelist-types:something; }
                }
              }
            }
          }
        }
+     }
+   }
+   <CODE ENDS>
+
+5.5.  Assets interface module for Philatelist
+
+   <CODE BEGINS>
+   module ietf-tlm-philatelist-assets {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-assets";
+     prefix ietf-tlm-philatelist-assets;
+
+     import ietf-lmo {
+       prefix ietf-lmo;
+     }
+     import ietf-lmo-assets {
+       prefix ietf-lmo-assets;
+     }
+     import ietf-tlm-philatelist-collector {
+       prefix ietf-tlm-philatelist-collector;
+     }
+
+     organization
+       "IETF OPSA (Operations and Management Area) Working Group";
+     contact
+       "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+        WG List:  <mailto:opsawg@ietf.org>
+        Editor:  Jan Lindblad
+                 <mailto:jlindbla@cisco.com>
+        Editor:  Snezana Mitrovic
+                 <mailto:snmitrov@cisco.com>
+        Editor:  Marisol Palmero
+                 <mailto:mpalmero@cisco.com>";
+     description
+       "This YANG module defines the Telemetry Philatelist linkage to
+        DMLMO Assets.
+
+        Copyright (c) 2021 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Simplified BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC XXXX
+        (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+        for full legal notices.";
+
+     revision 2024-02-14 {
+       description
+         "Initial revision.";
+       reference
+         "RFC XXXX: ...";
+     }
+
+     grouping asset-pointer-g {
+         description "FIXME";
+       leaf pertains-to-asset-class {
+         description "FIXME";
+         type leafref {
+           path /ietf-lmo:lmos/ietf-lmo:lmo/ietf-lmo:lmo-class;
+         }
+         must "derived-from-or-self(current(), 'ietf-lmo-assets:asset')";
+         must "../pertains-to-asset-id";
+       }
+       leaf pertains-to-asset-id {
+         description "FIXME";
+         type leafref {
+           path "/ietf-lmo:lmos/ietf-lmo:lmo"+
+             "[ietf-lmo:lmo-class=current()/../pertains-to-asset-class]"+
+             "/ietf-lmo:inst/ietf-lmo:id";
+         }
+       }
+     }
+
+     // Augment the telemetry destination with an asset-pointer-g
+     augment "/ietf-tlm-philatelist-collector:tlm-philatelist"+
+             "/ietf-tlm-philatelist-collector:organizations"+
+             "/ietf-tlm-philatelist-collector:organization"+
+             "/ietf-tlm-philatelist-collector:destinations"+
+             "/ietf-tlm-philatelist-collector:destination" {
+       description "FIXME";
+       uses asset-pointer-g;
      }
    }
    <CODE ENDS>
@@ -1382,9 +1358,26 @@ Table of Contents
 
    This document has no IANA actions.
 
-8.  References
+8.  Changes (to be deleted by RFC Editor)
 
-8.1.  Normative References
+8.1.  From version -00 to -01
+
+   *  Split YANG modules, some contents going into poweff-specific
+      modules
+
+   *  Renamed remaining YANG modules from -poweff- to -tlm-philatelist-
+
+   *  Updated text to reflect new module organization
+
+   *  Added optional linkage to DMLMO assets
+
+8.2.  Version -00
+
+   *  Initial version.
+
+9.  References
+
+9.1.  Normative References
 
    [I-D.draft-kll-yang-label-tsdb-00]
               Larsson, K., "Mapping YANG Data to Label-Set Time Series",
@@ -1392,6 +1385,14 @@ Table of Contents
               tsdb-00, 18 October 2023,
               <https://datatracker.ietf.org/doc/html/draft-kll-yang-
               label-tsdb-00>.
+
+   [I-D.draft-palmero-opsawg-ps-almo-00]
+              Palmero, M., Brockners, F., Kumar, S., Cardona, C., and D.
+              Lopez, "Asset Lifecycle Management and Operations, Problem
+              Statement", Work in Progress, Internet-Draft, draft-
+              palmero-opsawg-ps-almo-00, 29 June 2023,
+              <https://datatracker.ietf.org/doc/html/draft-palmero-
+              opsawg-ps-almo-00>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1406,7 +1407,7 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-8.2.  Informative References
+9.2.  Informative References
 
    [I-D.draft-claise-netconf-metadata-for-collection-03]
               Claise, B., Nayyar, M., and A. R. Sesani, "Per-Node
