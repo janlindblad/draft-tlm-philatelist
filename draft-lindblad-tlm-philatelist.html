@@ -1809,8 +1809,8 @@ module ietf-tlm-philatelist-provider {
   namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
   prefix ietf-tlm-philatelist-provider;
 
-  import ietf-tlm-philatelist-types {
-    prefix ietf-tlm-philatelist-types;
+  import ietf-tlm-philatelist-dashboard {
+    prefix ietf-tlm-philatelist-dashboard;
   }
 
   organization
@@ -1855,110 +1855,9 @@ module ietf-tlm-philatelist-provider {
       "RFC XXXX: ...";
   }
 
-  grouping connection-g {
+  container tlm-provider {
     description "FIXME";
-
-    leaf method {
-      description "FIXME";
-      type identityref {
-        base ietf-tlm-philatelist-types:connection-method;
-      }
-      default ietf-tlm-philatelist-types:get-local-file-once;
-    }
-    container get-local-file-once {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-local-file-once')";
-      leaf filename {
-        description "If not specified, uses the connection name";
-        type string;
-      }
-    }
-    container get-static-url-once {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-static-url-once')";
-      leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-      leaf format { description "FIXME"; type ietf-tlm-philatelist-types:something; } // JSON-IETF, XML, etc
-    }
-    container gnmi-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:gnmi-polling')";
-      leaf encoding { description "FIXME"; type ietf-tlm-philatelist-types:something; } // self-describing-gpb
-      leaf protocol { description "FIXME"; type ietf-tlm-philatelist-types:something; } // protocol grpc no-tls
-    }
-    container restconf-get-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-get-polling')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container netconf-get-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-get-polling')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container restconf-yang-push-subscription {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-yang-push-subscription')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container netconf-yang-push-subscription {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-yang-push-subscription')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container redfish-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:redfish-polling')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    leaf frequency {
-      description "FIXME";
-      when "derived-from(../method, 'ietf-tlm-philatelist-types:cm-polled')";
-      type ietf-tlm-philatelist-types:sample-frequency;
-    }
-  }
-
-  grouping provider-g {
-    description "FIXME";
-    // Devices will implement this as config false;
-    // Controllers as config true;
-    container dashs {
-      description "FIXME";
-      list dash {
-        description "FIXME";
-        key name;
-        leaf name {
-          description "FIXME";
-          type identityref {
-            base ietf-tlm-philatelist-types:dash-type;
-          }
-        }
-        list connection {
-          description "FIXME";
-          key name;
-          leaf name {
-            description "FIXME";
-            type leafref {
-              path ../../../../connections/connection/ctype;
-            }
-          }
-        }
-        container content {
-          description "FIXME";
-        }
-      }
-    }
-    container connections {
-      description "FIXME";
-      list connection {
-        description "FIXME";
-        key ctype;
-        leaf ctype {
-          description "FIXME";
-          type string;
-        }
-        uses connection-g;
-      }
-    }
+    uses ietf-tlm-philatelist-dashboard:provider-g;
   }
 }
 
@@ -1981,8 +1880,8 @@ module ietf-tlm-philatelist-collector {
   import ietf-tlm-philatelist-types {
     prefix ietf-tlm-philatelist-types;
   }
-  import ietf-tlm-philatelist-provider {
-    prefix ietf-tlm-philatelist-provider;
+  import ietf-tlm-philatelist-dashboard {
+    prefix ietf-tlm-philatelist-dashboard;
   }
 
   organization
@@ -2101,9 +2000,10 @@ module ietf-tlm-philatelist-collector {
               // The exact meaning of these names is implementation specific
               type string;
             }
-            uses ietf-tlm-philatelist-provider:provider-g;
+            uses ietf-tlm-philatelist-dashboard:provider-g;
           }
         }
+
         container tlm-streams {
           description "FIXME";
           list tlm-stream {
@@ -2115,7 +2015,7 @@ module ietf-tlm-philatelist-collector {
               description "FIXME";
               key "device-group dash-name";
               leaf device-group { description "FIXME"; type leafref { path ../../../../device-groups/device-group/name; }}
-              leaf dash-name { description "FIXME"; type leafref { path ../../../../device-groups/device-group/dashs/dash/name; }}
+              leaf dash-name { description "FIXME"; type leafref { path ../../../../device-groups/device-group/dashboards/dashboard/id; }}
             }
             leaf destination { description "FIXME"; type leafref { path ../../../destinations/destination/id; }}
           }
@@ -2129,6 +2029,22 @@ module ietf-tlm-philatelist-collector {
             uses data-endpoint-g;
           }
         }
+      }
+    }
+  }
+
+  augment /tlm-philatelist/organizations/organization/device-groups/device-group/dash-items/dash-item/label/value-source {
+    description "FIXME";
+    case controller-managed-value {
+      leaf controller-managed-value {
+        description "FIXME";
+        type empty;
+      }
+    }
+    case controller-provided-value {
+      leaf controller-provided-value {
+        description "FIXME";
+        type string;
       }
     }
   }
@@ -2236,8 +2152,64 @@ module ietf-tlm-philatelist-aggregator {
 
   grouping aggregator-g {
     description "FIXME";
-    container tlm-philatelist-aggregator {
+    container tlm-flows {
       description "FIXME";
+      list tlm-flow {
+        description "FIXME";
+        key id;
+        leaf id { description "FIXME"; type string; }
+        choice chain-position {
+          description "FIXME";
+          container input {
+            description "FIXME";
+            leaf source {
+              description "FIXME";
+              type leafref {
+                path ../../../../../sources/source/id;
+              }
+            }
+          }
+          container output {
+            description "FIXME";
+            leaf destination { description "FIXME"; type leafref { path ../../../../../destinations/destination/id; }}
+          }
+          container middle {
+            description "FIXME";
+            leaf-list inputs { description "FIXME"; type leafref { path ../../../../flows/flow/id; }}
+            leaf pre-process-inputs { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
+            leaf aggregate { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
+            leaf post-process-output { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
+          }
+        }
+      }
+    }
+    container operations {
+      description "FIXME";
+      list operation {
+        description "FIXME";
+        key id;
+        leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+        choice op-type {
+          description "FIXME";
+          container linear-sum { description "FIXME"; }
+          container linear-average { description "FIXME"; }
+          container linear-max { description "FIXME"; }
+          container linear-min { description "FIXME"; }
+          container rolling-average {
+            description "FIXME";
+            leaf timespan { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+          }
+          container filter-age {
+            description "FIXME";
+            leaf min-age { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+            leaf max-age { description "FIXME";type ietf-tlm-philatelist-types:something; }
+          }
+          container function {
+            description "FIXME";
+            leaf name { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+          }
+        }
+      }
       container sources {
         description "FIXME";
         list source {
@@ -2250,78 +2222,14 @@ module ietf-tlm-philatelist-aggregator {
           uses ietf-tlm-philatelist-collector:data-endpoint-g;
         }
       }
-      container destinations {
-        description "FIXME";
-        list destination {
-          description "FIXME";
-          key id;
-          leaf id {
-            description "FIXME";
-            type ietf-tlm-philatelist-types:something;
-          }
-          uses ietf-tlm-philatelist-collector:data-endpoint-g;
-        }
-      }
-      container tlm-flows {
-        description "FIXME";
-        list tlm-flow {
-          description "FIXME";
-          key id;
-          leaf id { description "FIXME"; type string; }
-          choice chain-position {
-            description "FIXME";
-            container input {
-              description "FIXME";
-              leaf source {
-                description "FIXME";
-                type leafref {
-                  path ../../../../../sources/source/id;
-                }
-              }
-            }
-            container output {
-              description "FIXME";
-              leaf destination { description "FIXME"; type leafref { path ../../../../../destinations/destination/id; }}
-            }
-            container middle {
-              description "FIXME";
-              leaf-list inputs { description "FIXME"; type leafref { path ../../../../flows/flow/id; }}
-              leaf pre-process-inputs { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
-              leaf aggregate { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
-              leaf post-process-output { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
-            }
-          }
-        }
-      }
-      container operations {
-        description "FIXME";
-        list operation {
-          description "FIXME";
-          key id;
-          leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-          choice op-type {
-            description "FIXME";
-            container linear-sum { description "FIXME"; }
-            container linear-average { description "FIXME"; }
-            container linear-max { description "FIXME"; }
-            container linear-min { description "FIXME"; }
-            container rolling-average {
-              description "FIXME";
-              leaf timespan { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-            }
-            container filter-age {
-              description "FIXME";
-              leaf min-age { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-              leaf max-age { description "FIXME";type ietf-tlm-philatelist-types:something; }
-            }
-            container function {
-              description "FIXME";
-              leaf name { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-            }
-          }
-        }
-      }
     }
+  }
+
+  augment "/ietf-tlm-philatelist-collector:tlm-philatelist"+
+          "/ietf-tlm-philatelist-collector:organizations"+
+          "/ietf-tlm-philatelist-collector:organization" {
+    description "FIXME";
+
   }
 }
 
