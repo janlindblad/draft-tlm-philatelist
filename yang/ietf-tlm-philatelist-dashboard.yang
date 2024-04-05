@@ -1,0 +1,243 @@
+module ietf-tlm-philatelist-dashboard {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-dashboard";
+  prefix ietf-tlm-philatelist-dashboard;
+
+  import ietf-tlm-philatelist-types {
+    prefix ietf-tlm-philatelist-types;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+     WG List:  <mailto:opsawg@ietf.org>
+     Editor:  Jan Lindblad
+              <mailto:jlindbla@cisco.com>
+     Editor:  Snezana Mitrovic
+              <mailto:snmitrov@cisco.com>
+     Editor:  Marisol Palmero
+              <mailto:mpalmero@cisco.com>";
+  description
+    "This YANG module defines the Telemetry Philatelist Dashboard.
+
+     Copyright (c) 2021 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions  
+  
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
+  
+  revision 2024-02-14 {
+    description
+      "Restructured as part of the Telemetry Philatelist framework";
+    reference
+      "RFC XXXX: ...";
+  }
+  revision 2023-10-12 {
+    description
+      "Initial revision of POWEFF Provider";
+    reference
+      "RFC XXXX: ...";
+  }
+
+  grouping access-g {
+    description "FIXME";
+
+    leaf method {
+      description "FIXME";
+      type identityref {
+        base ietf-tlm-philatelist-types:connection-method;
+      }
+      default ietf-tlm-philatelist-types:get-local-file-once;
+    }
+    container get-local-file-once {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-local-file-once')";
+      leaf filename { 
+        description "If not specified, uses the connection name";
+        type string; 
+      }
+    }
+    container get-static-url-once {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-static-url-once')";
+      leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+      leaf format { description "FIXME"; type ietf-tlm-philatelist-types:something; } // JSON-IETF, XML, etc
+    }
+    container gnmi-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:gnmi-polling')";
+      leaf encoding { description "FIXME"; type ietf-tlm-philatelist-types:something; } // self-describing-gpb
+      leaf protocol { description "FIXME"; type ietf-tlm-philatelist-types:something; } // protocol grpc no-tls
+    }
+    container restconf-get-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-get-polling')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container netconf-get-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-get-polling')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container restconf-yang-push-subscription {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-yang-push-subscription')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container netconf-yang-push-subscription {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-yang-push-subscription')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    container redfish-polling {
+      description "FIXME";
+      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:redfish-polling')";
+      leaf xxx { description "FIXME"; type string; }
+    }
+    leaf frequency { 
+      description "FIXME";
+      when "derived-from(../method, 'ietf-tlm-philatelist-types:cm-polled')";
+      type ietf-tlm-philatelist-types:sample-frequency; 
+    }
+  }
+
+  grouping provider-g {
+    description "Top-level provider grouping.  Devices will implement
+      this as a config false container, or as a piece of instance data
+      that a controller can read. Controllers implement this data
+      structure as config true, configurable and readable by the 
+      operators.";
+    container dashboards {
+      description "Each device may support one or more dashboards. 
+        Clients can then choose the most advanced dashboard they are
+        aware of.";
+      list dashboard {
+        description "List of dashboards supported by a given device.";
+        key id;
+        leaf id {
+          description "Formal dashboard id. The dashboard-items in this
+            dashboard are found in ../content, and what items are
+            available there depends on this dashboard id .";
+          type identityref {
+            base ietf-tlm-philatelist-types:dash-type;
+          }
+        }
+        list items {
+          description "FIXME";
+          key tsdb-path;
+          leaf tsdb-path {
+            description "FIXME";
+            type leafref {
+              path ../../../../dash-items/dash-item/tsdb-path;
+            }
+          }
+        }
+      }
+    }
+    container dash-items {
+      description "FIXME";
+      list dash-item {
+        description "...";
+        key tsdb-path;
+        leaf tsdb-path {
+          description "FIXME";
+          type string;
+          // interfaces_interface_statistics_in_unicast_pkts
+        }
+        leaf item-type { 
+          description "FIXME";
+          type identityref { 
+            base ietf-tlm-philatelist-types:dash-item-type; 
+          }
+        }
+        container accuracy {
+          description "FIXME";
+          when "derived-from(../item-type, 'ietf-tlm-philatelist-types:sensor-type')";
+          leaf max-error-relative {
+            type ietf-tlm-philatelist-types:something;
+            description "";
+          }
+          leaf max-error-constant {
+            type ietf-tlm-philatelist-types:something;
+            description "";
+          }
+        }
+        list label {
+          description "FIXME";
+          key name;
+          leaf name {
+            description "FIXME";
+            type string;
+          }
+          choice value-source {
+            description "FIXME";
+            leaf-list static-values {
+              description "FIXME";
+              type string;
+            }
+            leaf-list runtime-values {
+              description "FIXME";
+              type leafref {
+                path ../../../dash-item/tsdb-path;
+              }
+            }
+          }
+        }
+        leaf access-path {
+          description "FIXME";
+          type string;
+          //  /if:interfaces/interface[name="$(interfaces_interface_name)"]/statistics/in-unicast-pkts
+          //  1.3.6.1.2.1.2.2.1.11.$(interfaces_interface_num)
+          //  /redfish/v1/Systems/VM1/EthernetInterfaces/$(interfaces_interface_num)/EthernetInterfaceMetrics/DroppedPackets
+        }
+        leaf access-params {
+          description "FIXME";
+          type leafref {
+            path ../../../accesses/access/id;
+          }
+        }
+      }
+    }
+    container accesses {
+      description "FIXME";
+      list access {
+        description "FIXME";
+        key id;
+        leaf id {
+          description "FIXME";
+          type string;
+        }
+        uses access-g;
+      }
+    }
+    container prefix-mappings {
+      description "FIXME";
+      list prefix-mapping {
+        description "FIXME";
+        key prefix;
+        leaf prefix {
+          description "FIXME";
+          type string;
+        }
+        leaf namespace {
+          description "FIXME";
+          type string;
+        }
+        leaf module-name {
+          description "FIXME";
+          type string;
+        }
+      }
+    }
+  }
+}

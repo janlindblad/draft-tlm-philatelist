@@ -3,8 +3,8 @@ module ietf-tlm-philatelist-provider {
   namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
   prefix ietf-tlm-philatelist-provider;
 
-  import ietf-tlm-philatelist-types {
-    prefix ietf-tlm-philatelist-types;
+  import ietf-tlm-philatelist-dashboard {
+    prefix ietf-tlm-philatelist-dashboard;
   }
 
   organization
@@ -49,109 +49,8 @@ module ietf-tlm-philatelist-provider {
       "RFC XXXX: ...";
   }
 
-  grouping connection-g {
+  container tlm-provider {
     description "FIXME";
-
-    leaf method {
-      description "FIXME";
-      type identityref {
-        base ietf-tlm-philatelist-types:connection-method;
-      }
-      default ietf-tlm-philatelist-types:get-local-file-once;
-    }
-    container get-local-file-once {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-local-file-once')";
-      leaf filename { 
-        description "If not specified, uses the connection name";
-        type string; 
-      }
-    }
-    container get-static-url-once {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:get-static-url-once')";
-      leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-      leaf format { description "FIXME"; type ietf-tlm-philatelist-types:something; } // JSON-IETF, XML, etc
-    }
-    container gnmi-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:gnmi-polling')";
-      leaf encoding { description "FIXME"; type ietf-tlm-philatelist-types:something; } // self-describing-gpb
-      leaf protocol { description "FIXME"; type ietf-tlm-philatelist-types:something; } // protocol grpc no-tls
-    }
-    container restconf-get-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-get-polling')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container netconf-get-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-get-polling')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container restconf-yang-push-subscription {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:restconf-yang-push-subscription')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container netconf-yang-push-subscription {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:netconf-yang-push-subscription')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    container redfish-polling {
-      description "FIXME";
-      when "derived-from-or-self(../method, 'ietf-tlm-philatelist-types:redfish-polling')";
-      leaf xxx { description "FIXME"; type string; }
-    }
-    leaf frequency { 
-      description "FIXME";
-      when "derived-from(../method, 'ietf-tlm-philatelist-types:cm-polled')";
-      type ietf-tlm-philatelist-types:sample-frequency; 
-    }
-  }
-
-  grouping provider-g {
-    description "FIXME";
-    // Devices will implement this as config false; 
-    // Controllers as config true;
-    container dashs {
-      description "FIXME";
-      list dash {
-        description "FIXME";
-        key name;
-        leaf name {
-          description "FIXME";
-          type identityref {
-            base ietf-tlm-philatelist-types:dash-type;
-          }
-        }
-        list connection {
-          description "FIXME";
-          key name;
-          leaf name {
-            description "FIXME";
-            type leafref {
-              path ../../../../connections/connection/ctype;
-            }
-          }
-        }
-        container content {
-          description "FIXME";
-        }
-      }
-    }
-    container connections {
-      description "FIXME";
-      list connection {
-        description "FIXME";
-        key ctype;
-        leaf ctype {
-          description "FIXME";
-          type string;
-        }
-        uses connection-g;
-      }
-    }
+    uses ietf-tlm-philatelist-dashboard:provider-g;
   }
 }

@@ -6,8 +6,8 @@ module ietf-tlm-philatelist-collector {
   import ietf-tlm-philatelist-types {
     prefix ietf-tlm-philatelist-types;
   }
-  import ietf-tlm-philatelist-provider {
-    prefix ietf-tlm-philatelist-provider;
+  import ietf-tlm-philatelist-dashboard {
+    prefix ietf-tlm-philatelist-dashboard;
   }
 
   organization
@@ -126,9 +126,10 @@ module ietf-tlm-philatelist-collector {
               // The exact meaning of these names is implementation specific
               type string;
             }
-            uses ietf-tlm-philatelist-provider:provider-g;
+            uses ietf-tlm-philatelist-dashboard:provider-g;
           }
         }
+
         container tlm-streams {
           description "FIXME";
           list tlm-stream {
@@ -140,7 +141,7 @@ module ietf-tlm-philatelist-collector {
               description "FIXME";
               key "device-group dash-name";
               leaf device-group { description "FIXME"; type leafref { path ../../../../device-groups/device-group/name; }}
-              leaf dash-name { description "FIXME"; type leafref { path ../../../../device-groups/device-group/dashs/dash/name; }}
+              leaf dash-name { description "FIXME"; type leafref { path ../../../../device-groups/device-group/dashboards/dashboard/id; }}
             }
             leaf destination { description "FIXME"; type leafref { path ../../../destinations/destination/id; }}
           }
@@ -154,6 +155,22 @@ module ietf-tlm-philatelist-collector {
             uses data-endpoint-g;
           }
         }
+      }
+    }
+  }
+
+  augment /tlm-philatelist/organizations/organization/device-groups/device-group/dash-items/dash-item/label/value-source {
+    description "FIXME";
+    case controller-managed-value {
+      leaf controller-managed-value {
+        description "FIXME";
+        type empty;
+      }
+    }
+    case controller-provided-value {
+      leaf controller-provided-value {
+        description "FIXME";
+        type string;
       }
     }
   }
