@@ -1,5 +1,5 @@
 ---
-title: "Philatelist, YANG-based collection and aggregation framework integrating Telemetry data and Time Series Databases"
+title: "Philatelist, YANG-based Network Controller collection and aggregation framework integrating Telemetry data and Time Series Databases"
 abbrev: "Philatelist"
 category: std
 
@@ -34,6 +34,7 @@ author:
 
 normative:
   RFC7950:
+  RFC9195:
   I-D.draft-kll-yang-label-tsdb-00:
   I-D.draft-palmero-opsawg-ps-almo-00:
 
@@ -45,7 +46,7 @@ informative:
 
 Timestamped telemetry data is collected en masse today.  Mature tools are typically used, but the data is often collected in an ad hoc manner.  While the dashboard graphs look great, the resulting data is often of questionable quality, not well defined, and hard to compare with seemingly similar data from other organizations.
 
-This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more dependable and comparable results.
+This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more dependable and comparable results.  This framework is implemented in Network Controllers, but certainly also concerns how data is collected from all kinds of Network Elements.
 
 --- middle
 
@@ -105,6 +106,71 @@ Sensor Path
 : A textual representation of the sensor's address within the system.
 
 # Architecure Overview
+
+## Functional Role Diagram
+
+The following role diagram explains the basic concepts of the architecture. Many of the functional roles would exist in many instances in a real deployment.
+
+On top we have a Network Orchestrator that ensures the Network Controller functions get a suitable configuration. The Collector, Index and Aggregator functions run on Network Controllers. Collectors and Aggregators are responsible for ensuring there is a TSDB Partition (also known as bucket, interval, segment, etc. in various TSDB implementations) to receive the potentially large volumes of telemetry data that they produce themselves, or in the case of the collector, may configure a Provider Network Element to send to the TSDB.
+~~~
+                    +--------------+ 
+                    |   Network    |
+                    | Orchestrator |
+                    +------+-------+ 
+                           |
+       +-------------------+-------------------+
+       v                   v                   v
++--------------+    +--------------+    +--------------+ 
+|  *Collector* |    |   *Index*    |    | *Aggregator* |
+|   Network    |--->|   Network    |<---|   Network    |
+|  Controller  |    |  Controller  |    |  Controller  |
++--------------+    +--------------+    +--------------+ 
+       |   /\  \\                :                  /\
+       |   ||    \\              :                  ||
+       v   ||      \\          ____________         ||
++--------------+     \\       /            \       //
+|  *Provider*  |       ====> (     TSDB     ) <====
+|   Network    | ==========> |\____________/| 
+|   Element    | ==========> |              |
++--------------+             | *Partition*  |
+                             |              |
+                              \____________/
+
+~~~
+{: title="Philatelist Functional Role Diagram."}
+
+In the figure, single line arrows indicate control/configuration flow.
+Double line arrows indicate telemetry data flow. The dotted line
+between the Index and the TSDB indicates that the index tracks the TSDB
+partition contents. 
+
+## Interface Diagram
+
+In addition to the functional roles, there are some interfaces that are shared between different roles. They have been factored out into separate modules so that they can be imported and used by mutiple roles.
+
+~~~
+        Dashboard                    Partition
+            |                            |
+           / \                          / \
+   Provider   Collector           
+                ------- Collector
+               /
+Dashboard  ---<
+               \
+                --------
+~~~
+{: title="Philatelist Functional Role Diagram."}
+
+
+            DASHBOARD            STORAGE
+           /         \          /        \
+   PROVIDER           COLLECTOR           AGGREGATOR
+Network Element   Network Controller  Network Controller
+
+
+
+
+## Collection Data Flow Tree Diagram
 
 The deployment of a Philatelist framework consists of a collection of plug-in compomnents with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.
 
@@ -179,7 +245,7 @@ On top of the stack, we may often find a (graphical) user interface (11), for hu
 
 ## The Provider Component
 
-A Provider is a source of telemetry data that also offers a YANG-based management interface.  Each provider typically has a large number of "sensors" that can be polled or in some cases subscribed to.
+A Provider is a Network ELement that is the source of telemetry data that also offers a YANG-based management interface.  Each provider typically has a large number of "sensors" that can be polled or in some cases subscribed to.
 
 One problem with the sensors is that they are spread around inside the source system, and may not be trivial to locate.  Also, the metadata assciated with the sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.
 
@@ -216,7 +282,7 @@ The sensor types are defined as YANG identities, making them maximally extensibl
 
 ## The Collector Component
 
-Collector components collect data points from sources, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the source to the destination TSDB and that the data has a YANG description and is tagged with necessary metadata.  How the collector agrees with a source to deliver data in a timely manner is beyond the scope of this document.
+Collector components are parts of a Network Controller that collect data points from sources, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the source to the destination TSDB and that the data has a YANG description and is tagged with necessary metadata.  How the collector agrees with a source to deliver data in a timely manner is beyond the scope of this document.
 
 ~~~
 
@@ -279,7 +345,7 @@ The sensor groups are then arranged into streams from a collection of sources (t
 
 ## The Processor and Aggregator Components
 
-Processor components take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in in the input data, or fill in approximate values where there are holes in the input data.
+Processor components are parts of a Network Controller that take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in in the input data, or fill in approximate values where there are holes in the input data.
 
 Aggregator components take multiple incoming data flows and combine them, typically by adding them together, taking possible differences in cadence in the input data flows into account.
 
@@ -386,6 +452,11 @@ Many essential data sources in real world deployments do not support any YANG-ba
 In particular, this draft depends on the mapping of YANG-based structures to the typical TSDB tag-based formats described in {{I-D.draft-kll-yang-label-tsdb-00}}.
 
 For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the data flow interfaces with rigor regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.
+
+## File format
+
+FIXME        [RFC9195](https://datatracker.ietf.org/doc/rfc9195/)
+
 
 # YANG Modules
 

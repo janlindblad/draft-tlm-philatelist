@@ -15,23 +15,31 @@ module ietf-tlm-philatelist-types {
      Editor:  Marisol Palmero
               <mailto:mpalmero@cisco.com>";
   description
-    "This YANG module defines basic quantities, measurement units
-     and sensor types for the Telemetry Philatelist framework.
+    "This YANG module defines base identities for quantities, 
+    measurement units, connection methods, sensor and control types
+    for the Telemetry Philatelist framework.
 
-     Copyright (c) 2021 IETF Trust and the persons identified as
-     authors of the code. All rights reserved.
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
 
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions  
-  
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
+      
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
   
   revision 2024-02-14 {
     description
@@ -39,129 +47,128 @@ module ietf-tlm-philatelist-types {
     reference
       "RFC XXXX: ...";
   }
-  revision 2023-10-12 {
-    description
-      "Initial revision of POWEFF types";
-    reference
-      "RFC XXXX: ...";
-  }
 
-  typedef something { // FIXME: Used when we haven't decided the type yet
-    description "FIXME";
+  typedef something { 
     type string;
+    description 
+      "FIXME: Used when we haven't decided the type yet
+      ";
   }
   typedef xpath {
-    description "FIXME";
-    type string; // FIXME: Proper type needed
+    type string;
+    description 
+      "FIXME: Proper type needed
+      ";
   }
   typedef sample-frequency {
-    description "FIXME";
-    type string; // FIXME: Proper type needed
+    type string; 
+    description 
+      "FIXME: Proper type needed
+      ";
   }
 
   // ========== SENSOR-CLASS ==============================
   identity sensor-class {
-    description "Sensor's relation to the asset it sits on.";
+    description 
+      "Sensor's relation to the asset it sits on.
+      ";
   }
   identity sc-input {
     base sensor-class;
-    description "Sensor reports input quantity of the asset it sits 
-      on.";
+    description 
+      "Sensor reports input quantity of the asset it sits on.
+      ";
   }
   identity sc-output {
     base sensor-class;
-    description "Sensor reports output quantity of the asset it sits 
-      on.";
+    description 
+      "Sensor reports output quantity of the asset it sits on.
+      ";
   }
   identity sc-allocated {
     base sensor-class;
-    description "Sensor reports (maximum) allocated quantity of the 
-      asset it sits on.";
+    description 
+      "Sensor reports (maximum) allocated quantity of the asset
+      it sits on.
+      ";
   }
 
   // ========== SENSOR-QUANTITY ==============================
   identity sensor-quantity {
-    description "Sensor's quantity being measured.";
+    description 
+      "Sensor's quantity being measured.
+      ";
   }
   
   // ========== SENSOR-UNIT ==============================
   identity sensor-unit {
-    description "Sensor's unit of reporting.";
+    description 
+      "Sensor's unit of reporting.
+      ";
   }
 
   // ========== DASH-TYPE ===================================
   identity dash-type {
-    description "FIXME";
+    description 
+      "The base identity for all dashboard types.
+      Dashboards are predefined collections of sensors and/or controls
+      that a Network Element publishes towards a Network Controller,
+      which uses the dashboard to find use case relevant telemetry
+      collection and control points.
+      ";
   }
 
   // ========== DASH-ITEM-TYPE ==============================
   identity dash-item-type {
-    description "FIXME";
+    description 
+      "The base identity for an individual item on a dashboard.
+      This is further subdivided into controls and sensors, which
+      are even further subdivided into sensors measuring e.g.
+      temperature in Celsius.
+      ";
   }
   identity sensor-type {
-    description "Sensor's type, i.e. combination of class, quantity and
-      unit.";
     base dash-item-type;
+    description 
+      "Sensor's type, i.e. combination of class, quantity and unit.
+      Sensor class tells whether the sensor measures some quantity
+      on the inside or outside of the component it pertains to.
+      E.g. whether it is measuring the incoming our outgoing current
+      from a power supply.
+      Sensor quantity tells what the sensor is measuring.
+      E.g. temperature, current or number of packets
+      Sensor unit tells about the sensor measurement unit.
+      E.g. Celsius, Farenheit or Kelvin. Or energy in kWh or J.
+      ";
   }
 
-  // ========== COLLECTION-METHOD ==============================
+  // ========== CONNECTION-METHOD ==============================
 
   identity connection-method {
-    description "FIXME";
+    description 
+      "Base identity for all kinds of connection methods.
+      ";
   }
   identity get-local-file-once {
-    description "FIXME";
     base connection-method;
-  }
-  identity cm-polled {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-gnmi {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-restconf {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-netconf {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-redfish {
-    description "FIXME";
-    base connection-method;
+    description 
+      "Connection method identity for the case where a file contains
+      the dashboard information in lieu of the Network Element itself.
+      ";
   }
   identity get-static-url-once {
-    description "FIXME";
     base connection-method;
+    description
+      "Connection method identity for the case where a URL contains
+      the dashboard information in lieu of the Network Element itself.
+      The URL may or may not be hosted on the Network Element.
+      ";
   }
-  identity gnmi-polling {
-    description "FIXME";
-    base cm-gnmi;
-    base cm-polled;
-  }
-  identity restconf-get-polling {
-    description "FIXME";
-    base cm-restconf;
-    base cm-polled;
-  }
-  identity netconf-get-polling {  
-    description "FIXME";
-    base cm-netconf;
-    base cm-polled;
-  }
-  identity restconf-yang-push-subscription {
-    description "FIXME";
-    base cm-restconf;
-  }
-  identity netconf-yang-push-subscription {
-    description "FIXME";
-    base cm-netconf;
-  }
-  identity redfish-polling {
-    description "FIXME";
-    base cm-redfish;
+  identity cm-polled {
+    base connection-method;
+    description 
+      "Connection method identity for all mechanisms that are based on
+      the client regularly polling the server.
+      ";
   }
 }
