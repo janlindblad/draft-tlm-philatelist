@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>Philatelist, YANG-based collection and aggregation framework integrating Telemetry data and Time Series Databases</title>
+<title>Philatelist, YANG-based Network Controller collection and aggregation framework integrating Telemetry data and Time Series Databases</title>
 <meta content="Jan Lindblad" name="author">
 <meta content="
        Timestamped telemetry data is collected en masse today.  Mature tools are typically used, but the data is often collected in an ad hoc manner.  While the dashboard graphs look great, the resulting data is often of questionable quality, not well defined, and hard to compare with seemingly similar data from other organizations. 
-       This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more dependable and comparable results. 
+       This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more transparent, dependable and comparable results.  This framework is implemented in the Network Controller layer, but is rooted in data that is collected from all kinds of Network Elements and related systems. 
     " name="description">
 <meta content="xml2rfc 3.20.1" name="generator">
 <meta content="YANG" name="keyword">
@@ -1031,11 +1031,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Philatelist</td>
-<td class="right">March 2024</td>
+<td class="right">April 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Lindblad</td>
-<td class="center">Expires 15 September 2024</td>
+<td class="center">Expires 17 October 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1048,12 +1048,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-lindblad-tlm-philatelist-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-03-14" class="published">14 March 2024</time>
+<time datetime="2024-04-15" class="published">15 April 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-09-15">15 September 2024</time></dd>
+<dd class="expires"><time datetime="2024-10-17">17 October 2024</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1063,11 +1063,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">Philatelist, YANG-based collection and aggregation framework integrating Telemetry data and Time Series Databases</h1>
+<h1 id="title">Philatelist, YANG-based Network Controller collection and aggregation framework integrating Telemetry data and Time Series Databases</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">Timestamped telemetry data is collected en masse today.  Mature tools are typically used, but the data is often collected in an ad hoc manner.  While the dashboard graphs look great, the resulting data is often of questionable quality, not well defined, and hard to compare with seemingly similar data from other organizations.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more dependable and comparable results.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more transparent, dependable and comparable results.  This framework is implemented in the Network Controller layer, but is rooted in data that is collected from all kinds of Network Elements and related systems.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1099,7 +1099,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 15 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 17 October 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1149,16 +1149,28 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecure-overview" class="internal xref">Architecure Overview</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-the-provider-component" class="internal xref">The Provider Component</a></p>
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-functional-role-diagram" class="internal xref">Functional Role Diagram</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-the-collector-component" class="internal xref">The Collector Component</a></p>
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-dashboards" class="internal xref">Dashboards</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
-                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-the-processor-and-aggregato" class="internal xref">The Processor and Aggregator Components</a></p>
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-collection-data-flow-tree-d" class="internal xref">Collection Data Flow Tree Diagram</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
-                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-the-link-to-assets" class="internal xref">The Link to Assets</a></p>
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-the-provider-component" class="internal xref">The Provider Component</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-the-collector-component" class="internal xref">The Collector Component</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.6">
+                <p id="section-toc.1-1.3.2.6.1"><a href="#section-3.6" class="auto internal xref">3.6</a>.  <a href="#name-the-index-component" class="internal xref">The Index Component</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.7">
+                <p id="section-toc.1-1.3.2.7.1"><a href="#section-3.7" class="auto internal xref">3.7</a>.  <a href="#name-the-processor-and-aggregato" class="internal xref">The Processor and Aggregator Components</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8">
+                <p id="section-toc.1-1.3.2.8.1"><a href="#section-3.8" class="auto internal xref">3.8</a>.  <a href="#name-the-link-to-assets" class="internal xref">The Link to Assets</a></p>
 </li>
             </ul>
 </li>
@@ -1172,16 +1184,22 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-base-types-module-for-phila" class="internal xref">Base types module for Philatelist</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-provider-interface-module-f" class="internal xref">Provider interface module for Philatelist</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-dashboard-abstract-interfac" class="internal xref">Dashboard abstract interface module for Philatelist</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
-                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-collector-interface-module-" class="internal xref">Collector interface module for Philatelist</a></p>
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-provider-interface-module-f" class="internal xref">Provider interface module for Philatelist</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
-                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-aggregator-interface-module" class="internal xref">Aggregator interface module for Philatelist</a></p>
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-index-interface-module-for-" class="internal xref">Index interface module for Philatelist</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.5">
-                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-assets-interface-module-for" class="internal xref">Assets interface module for Philatelist</a></p>
+                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-collector-interface-module-" class="internal xref">Collector interface module for Philatelist</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.6">
+                <p id="section-toc.1-1.5.2.6.1"><a href="#section-5.6" class="auto internal xref">5.6</a>.  <a href="#name-aggregator-interface-module" class="internal xref">Aggregator interface module for Philatelist</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.7">
+                <p id="section-toc.1-1.5.2.7.1"><a href="#section-5.7" class="auto internal xref">5.7</a>.  <a href="#name-assets-interface-module-for" class="internal xref">Assets interface module for Philatelist</a></p>
 </li>
             </ul>
 </li>
@@ -1195,10 +1213,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-changes-to-be-deleted-by-rf" class="internal xref">Changes (to be deleted by RFC Editor)</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
-                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-from-version-00-to-01" class="internal xref">From version -00 to -01</a></p>
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-from-version-01-to-02" class="internal xref">From version -01 to -02</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-version-00" class="internal xref">Version -00</a></p>
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-from-version-00-to-01" class="internal xref">From version -00 to -01</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-version-00" class="internal xref">Version -00</a></p>
 </li>
             </ul>
 </li>
@@ -1233,8 +1254,8 @@ svg :is([fill="white"], [fill^="#fff"]) {
         <h3 id="name-the-problem">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-the-problem" class="section-name selfRef">The Problem</a>
         </h3>
-<p id="section-1.1-1">Many organizations today are collecting large amounts of telemetry data from their networks and data centers for a variety of purposes.  Much (most?) of this data is funneled into a Time Series Database (TSDB) for display in a dashboard or further (AI-backed) processing and decision making.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<p id="section-1.1-2">While this data collection is often handled using standard tools, there generally seems to be little commonality when it comes to what is meaured, how the data is aggregated, or definitions of the measured quantities (if any).<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-1">Many organizations today are collecting large amounts of telemetry data from their networks and data centers for a variety of purposes.  Much (most?) of this data is funneled into a Time Series Database (TSDB) for display in a graphical dashboard or further (AI-backed) processing and decision making.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">While this data collection is often handled using existing and stable tools, there generally seems to be little commonality when it comes to what is meaured, how the data is aggregated, or definitions of the measured quantities (if any).<a href="#section-1.1-2" class="pilcrow">¶</a></p>
 <p id="section-1.1-3">Data science issues like adding overlapping quantities, adding quantities of different units of measurement, or quantities with different scopes, are likely common.  Such errors are hard to detect given the ad hoc nature of the collection.  This often leads to uncertainty regarding the quality of the conclusions drawn from the collected data.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1244,8 +1265,8 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-the-solution" class="section-name selfRef">The Solution</a>
         </h3>
 <p id="section-1.2-1">The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
-<p id="section-1.2-2">To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
-<p id="section-1.2-3">Initially developed in context of the Power and Energy Efficiency work (POWEFF), we realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-2">To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to devices supporting traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">Initially developed in context of the Power and Energy Efficiency work (POWEFF), the authors realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
 <p id="section-1.2-4">There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1311,14 +1332,72 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-architecure-overview">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecure-overview" class="section-name selfRef">Architecure Overview</a>
       </h2>
-<p id="section-3-1">The deployment of a Philatelist framework consists of a collection of plug-in compomnents with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<span id="name-example-philatelist-compone"></span><figure id="figure-2">
-        <div class="alignLeft art-text artwork" id="section-3-2.1">
+<div id="functional-role-diagram">
+<section id="section-3.1">
+        <h3 id="name-functional-role-diagram">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-functional-role-diagram" class="section-name selfRef">Functional Role Diagram</a>
+        </h3>
+<p id="section-3.1-1">The following role diagram explains the basic concepts of the architecture. Many of the functional units would exist in many instances in a real deployment. For example, in a real deployment there would be lots of Network Elements with the Provider role.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">On top we have a Network Orchestrator that ensures the Network Controller functions get a suitable configuration. The Collector, Index and Aggregator functions run as part of one or more Network Controllers. Collectors and Aggregators are responsible for ensuring there is a TSDB Partition (also known as bucket, interval, segment, etc. in various TSDB implementations) to receive the potentially large volumes of telemetry data that they produce themselves, or in the case of the Collector, may configure a Provider Network Element to send the collected data to the TSDB, or to the Collector itself, which then passes it on to the TSDB.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<span id="name-philatelist-functional-role"></span><figure id="figure-2">
+          <div class="alignLeft art-text artwork" id="section-3.1-3.1">
+<pre>
+                    +--------------+
+                    |   Network    |
+                    | Orchestrator |
+                    +------+-------+
+                           |
+       +-------------------+-------------------+
+       v                   v                   v
++--------------+    +--------------+    +--------------+
+|  *Collector* |    |   *Index*    |    | *Aggregator* |
+|   Network    |---&gt;|   Network    |&lt;---|   Network    |
+|  Controller  |    |  Controller  |    |  Controller  |
++--------------+    +--------------+    +--------------+
+       |   /\  \\                :                  /\
+       |   ||    \\              :                  ||
+       v   ||      \\          ____________         ||
++--------------+     \\       /            \       //
+|  *Provider*  |       ====&gt; (     TSDB     ) &lt;====
+|   Network    | ==========&gt; |\____________/|
+|   Element    | ==========&gt; |              |
++--------------+             | *Partition*  |
+                             |              |
+                              \____________/
+
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-philatelist-functional-role" class="selfRef">Philatelist Functional Role Diagram.</a>
+          </figcaption></figure>
+<p id="section-3.1-4">In the figure, single line arrows indicate control/configuration flow.
+Double line arrows indicate telemetry data flow. The dotted line
+between the Index and the TSDB indicates that the index reflects the TSDB
+partition contents.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="dashboards">
+<section id="section-3.2">
+        <h3 id="name-dashboards">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-dashboards" class="section-name selfRef">Dashboards</a>
+        </h3>
+<p id="section-3.2-1">In addition to the functional roles, there is a concept of Dashboards, which is used both within Providers and Collectors. A Dashboard is a particular collection of sensors and controls that have been predefined for particular use cases.  Network Elements may implement and publish one or more of these predefined Dashboards, and Controllers may know how to interpret one or more of them. Dashboards contain one or more dashboard items, each one a sensor or control.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">For example, a particular Network Element might publish two dashboards. One Dashboard might be called "Current Power Draw" and contain only a single dashboard item which allows the Controller to read out the Network Element's total power draw at this instance. The second Dashboard might be called "Subsystem Power" and contain a tree of dashboard items, which allows the Controller to read out the current power draw of the Network Element's various subsystems.  The contents of each Dashboard is defined as a YANG structure in some standards document, or might be a vendor specific YANG definition.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">A key point of this architecture is that Dashboard descriptions (in YANG) can be provided also for Network Elements that offer no YANG-based management interfaces at all, or for Network Elements hosting a YANG-based interface, but that were released prior to this document being written.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="collection-data-flow-tree-diagram">
+<section id="section-3.3">
+        <h3 id="name-collection-data-flow-tree-d">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-collection-data-flow-tree-d" class="section-name selfRef">Collection Data Flow Tree Diagram</a>
+        </h3>
+<p id="section-3.3-1">The deployment of a Philatelist framework consists of a collection of Controller plug-in compomnents with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<span id="name-example-philatelist-compone"></span><figure id="figure-3">
+          <div class="alignLeft art-text artwork" id="section-3.3-2.1">
 <pre>
                       +-----------------+
                       | USER INTERFACE  |
-                      |    Dashboard    |
-                      |                 |
+                      |   Graph View    |
                       +--------------11-+
                                |
                       +-----------------+
@@ -1367,25 +1446,27 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 
 </pre>
 </div>
-<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
 <a href="#name-example-philatelist-compone" class="selfRef">Example Philatelist component deployment.</a>
-        </figcaption></figure>
-<p id="section-3-3">Each component in the above diagram, represents a logical function.  Many boxes could be running within a single server, or they could be fully distrubuted, or anything in between.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">Provider components (61, 82, 91) are running on a telemetry source system that supports a YANG-based telemetry data server.  The telemetry data flows from the telemetry source system to a Time Series Database (TSDB).<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">Collector components (51, 72, 81) ensure the Providers are programmed properly to deliver the telemetry data to the TSDB designated by the collector.  In some cases this flow may be direct from the source to the TSDB, in other cases, it may be going through the collector.  In some cases the collector may be polling the source, in others it may have set up an automatic, periodic subscription.<a href="#section-3-5" class="pilcrow">¶</a></p>
-<p id="section-3-6">Many telemetry source systems will not have any on-board YANG-based telemetry server.  Such servers will instead be managed by a collector specialized to handle a particular kind of source server (53, 54).  These specialized collectors are still responsible to set up a telemetry data stream from them to the collector's TSDB.  In this case, the collector will also supply a YANG description (52, 55) of the incoming data stream.<a href="#section-3-6" class="pilcrow">¶</a></p>
-<p id="section-3-7">Processor components (21, 41, 71) are transforming the data stream in some way, e.g. converting from one unit of measurement to another, or adjusting the data values recorded to also include some aspect that this particular sensor is not taking into account.<a href="#section-3-7" class="pilcrow">¶</a></p>
-<p id="section-3-8">Aggregator components (31, 42, 43, 44) combine the time series telemetry data flows using some operation, e.g. summing, averaging or computing the max or min over them.  In this example there are aggregators for Network, Storage, Compute and the entire Data Center<a href="#section-3-8" class="pilcrow">¶</a></p>
-<p id="section-3-9">On top of the stack, we may often find a (graphical) user interface (11), for human consumption of the intelligence acquired by the system.  Equally relevant is of course an (AI) application making decisions based on findings in the aggregated telemetry flow.<a href="#section-3-9" class="pilcrow">¶</a></p>
+          </figcaption></figure>
+<p id="section-3.3-3">Each component in the above diagram, represents a logical function.  Many of the functions represented by these boxes could be running within a single server, or they could be fully distrubuted, or, perhaps more likely, something in between.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">Provider components (61, 82, 91) are running on a Network Element system that supports a YANG-based telemetry data server.  The telemetry data flows from the telemetry source system to a Time Series Database (TSDB).<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-5">Collector components (51, 72, 81) ensure the Providers are programmed properly to deliver the telemetry data to the TSDB Partition designated by the Collector.  In some cases this flow may be direct (e.g. via a message bus) from the Provider to the TSDB, in other cases, it may be going through the Collector.  In some cases the collector may be polling the Provider, in others it may have set up an automatic, periodic subscription.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.3-6">Many telemetry Provider systems will not have any on-board YANG-based telemetry server.  Such servers will instead be managed by a Collector capable of handling a particular kind of Provider (53, 54).  Such a Collector is still responsible to set up a telemetry data stream to the Collector's TSDB.  In this case, the Collector will also supply a YANG description (52, 55) of the incoming data stream.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+<p id="section-3.3-7">Processor components (21, 41, 71) are transforming the data stream in some way, e.g. converting from one unit of measurement to another, or adjusting the data values recorded to also include some aspect that this particular sensor is not taking into account.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<p id="section-3.3-8">Aggregator components (31, 42, 43, 44) combine the time series telemetry data flows using some operation, e.g. summing, averaging or computing the max or min over them.  In this example there are aggregators for Network, Storage, Compute and the entire Data Center<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<p id="section-3.3-9">On top of the stack, we may often find a (graphical) user interface (11), for human consumption of the intelligence acquired by the system.  Equally relevant is of course an (AI) application making decisions based on findings in the aggregated telemetry flow.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
+</section>
+</div>
 <div id="the-provider-component">
-<section id="section-3.1">
+<section id="section-3.4">
         <h3 id="name-the-provider-component">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-the-provider-component" class="section-name selfRef">The Provider Component</a>
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-the-provider-component" class="section-name selfRef">The Provider Component</a>
         </h3>
-<p id="section-3.1-1">A Provider is a source of telemetry data that also offers a YANG-based management interface.  Each provider typically has a large number of "sensors" that can be polled or in some cases subscribed to.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">One problem with the sensors is that they are spread around inside the source system, and may not be trivial to locate.  Also, the metadata assciated with the sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<span id="name-example-of-scattered-potent"></span><figure id="figure-3">
-          <div class="alignLeft art-text artwork" id="section-3.1-3.1">
+<p id="section-3.4-1">A Provider is a Network Element that is the source of telemetry data that may or may not offer a YANG-based management interface.  Each Provider typically has a large number of "sensors" that can be polled or in some cases subscribed to. It may also offer some controls (configurables or actionables).<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-2">One problem with the sensors is that the sensors relevant for a given use case are often spread around inside the Provider system, and many may not know about all of them.  Also, the metadata assciated with each sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+<span id="name-example-of-scattered-potent"></span><figure id="figure-4">
+          <div class="alignLeft art-text artwork" id="section-3.4-3.1">
 <pre>
     /hardware/component[name="psu3"]/.../sensor-data/value
     ...
@@ -1395,208 +1476,307 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
     ...
 </pre>
 </div>
-<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
 <a href="#name-example-of-scattered-potent" class="selfRef">Example of scattered potential sensors in a device.</a>
           </figcaption></figure>
-<p id="section-3.1-4">To solve these problems, the Provider YANG module contains a sensor-catalog list.  Essentially a list of all interesting sensors available on the system, with their sensor paths and machine parsable units, definition and any other metadata.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<p id="section-3.1-5">An admin user or application can then copy the sensor definition from the sensor catalog and insert into the configuration in the colletor.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
-<span id="name-yang-tree-diagram-of-the-pr"></span><figure id="figure-4">
-          <div class="lang-yang-tree sourcecode" id="section-3.1-6.1">
+<p id="section-3.4-4">To solve these problems, the Provider YANG module contains a list of Dashboards.  Each dashboard contains the sensors and controls useful for some particular use case. The contents of the Dashboards is often defined by a standard, but could also be defined in proprietary YANG modules. Each dashboard item is listed with their sensor paths and machine parsable units, definition and any other metadata.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
+<p id="section-3.4-5">An admin user or application can then copy the sensor definition from the Dashboard and insert into the Collector's configuration with items to collect and send to the TSDB.<a href="#section-3.4-5" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-pr"></span><figure id="figure-5">
+          <div class="lang-yang-tree sourcecode" id="section-3.4-6.1">
 <pre>
-  +--ro sensor-catalog
-      +--ro sensors
-        +--ro sensor* [path]
-            +--ro path?                     string
-            +--ro sensor-type?              identityref
-            +--ro sensor-location?          something
-            +--ro sensor-state?             something
-            +--ro sensor-current-reading?   something
-            +--ro sensor-precision?         something
+module: ietf-tlm-philatelist-provider
+  +--rw tlm-provider
+     +--rw dashboards
+     |  +--rw dashboard* [id]
+     |     +--rw id       identityref
+     |     +--rw items* [tsdb-path]
+     |        +--rw tsdb-path    -&gt; ../../../../dash-items/dash-item/tsdb-path
+     +--rw dash-items
+     |  +--rw dash-item* [tsdb-path]
+     |     +--rw tsdb-path        string
+     |     +--rw item-type        identityref
+     |     +--rw accuracy
+     |     |  +--rw max-error-relative?   ietf-tlm-philatelist-types:something
+     |     |  +--rw max-error-offset?     ietf-tlm-philatelist-types:something
+     |     +--rw label* [name]
+     |     |  +--rw name                    string
+     |     |  +--rw (value-source)?
+     |     |     +--:(static-values)
+     |     |     |  +--rw static-values*    string
+     |     |     +--:(runtime-values)
+     |     |        +--rw runtime-values*   -&gt; ../../../dash-item/tsdb-path
+     |     +--rw access-path?     string
+     |     +--rw access-params?   -&gt; ../../../accesses/access/id
 </pre>
 </div>
-<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
-<a href="#name-yang-tree-diagram-of-the-pr" class="selfRef">YANG tree diagram of the Provider sensor-catalog.</a>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-yang-tree-diagram-of-the-pr" class="selfRef">YANG tree diagram of the Provider Dashboard list.</a>
           </figcaption></figure>
-<p id="section-3.1-7">Note: The "something" YANG-type is used in many places in this document.  That is just a temporarty placeholder we use until we have figured out what the appropriate type should be.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
-<p id="section-3.1-8">The sensor types are defined as YANG identities, making them maximally extensible.  Examples of sensor types might be energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+<p id="section-3.4-7">Note: The "something" YANG-type is used in many places in this document.  That is just a temporarty placeholder we use until we have figured out what the appropriate type should be.<a href="#section-3.4-7" class="pilcrow">¶</a></p>
+<p id="section-3.4-8">The each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dasboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identitity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.<a href="#section-3.4-8" class="pilcrow">¶</a></p>
+<p id="section-3.4-9">Each dashboard item has an access path and access parameters. These are a mapping into the access mechanism the Collector must use to poll or subscribe to the sensor value.<a href="#section-3.4-9" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-pro"></span><figure id="figure-6">
+          <div class="lang-yang-tree sourcecode" id="section-3.4-10.1">
+<pre>
+module: ietf-tlm-philatelist-provider
+  +--rw tlm-provider
+     +--rw accesses
+     |  +--rw access* [id]
+     |     +--rw id                                 string
+     |     +--rw method?                            identityref
+     |     +--rw get-local-file-once
+     |     |  +--rw filename?   string
+     |     +--rw get-static-url-once
+     |     |  +--rw url?   ietf-tlm-philatelist-types:something
+     |     +--rw gnmi-polling
+     |     |  +--rw encoding?   ietf-tlm-philatelist-types:something
+     |     |  +--rw protocol?   ietf-tlm-philatelist-types:something
+     |     +--rw restconf-get-polling
+     |     |  +--rw xxx?   string
+     |     +--rw netconf-get-polling
+     |     |  +--rw xxx?   string
+     |     +--rw restconf-yang-push-subscription
+     |     |  +--rw xxx?   string
+     |     +--rw netconf-yang-push-subscription
+     |     |  +--rw xxx?   string
+     |     +--rw redfish-polling
+     |     |  +--rw xxx?   string
+     |     +--rw frequency?                         ietf-tlm-philatelist-types:sample-frequency
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-yang-tree-diagram-of-the-pro" class="selfRef">YANG tree diagram of the Provider Accesses list.</a>
+          </figcaption></figure>
+<p id="section-3.4-11">The list of access methods contains a number of YANG-based and non-YANG based access methods, but this set of access methods can also be extended by YANG-augmentation. The get-local-file-once access method allows reading fixed values from a data sheet encoded in YANG-instance data file format <span>[<a href="#RFC9195" class="cite xref">RFC9195</a>]</span>, and  the get-static-url-once access method does the same from a given URL. That URL may be served from the Network Element, or from the Collector itself or anywhere else on the network or even internet.<a href="#section-3.4-11" class="pilcrow">¶</a></p>
+<p id="section-3.4-12">The access-path leaf discussed above (/tlm-provider/dash-items/dash-item/access-path) contains the path to the item that should be read or subscribed to. If the dast-item in question is for a YANG-based interface, then that path would be an XPath expression, with prefixes. Those prefixes need to be mapped to XML namespaces (NETCONF) or YANG module names (RESTCONF). That mapping is provided by the prefix-mappings list.<a href="#section-3.4-12" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-prov"></span><figure id="figure-7">
+          <div class="lang-yang-tree sourcecode" id="section-3.4-13.1">
+<pre>
+module: ietf-tlm-philatelist-provider
+  +--rw tlm-provider
+     +--rw prefix-mappings
+        +--rw prefix-mapping* [prefix]
+           +--rw prefix         string
+           +--rw namespace?     string
+           +--rw module-name?   string
+</pre>
+</div>
+<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
+<a href="#name-yang-tree-diagram-of-the-prov" class="selfRef">YANG tree diagram of the Provider Prefix Mapping list.</a>
+          </figcaption></figure>
 </section>
 </div>
 <div id="the-collector-component">
-<section id="section-3.2">
+<section id="section-3.5">
         <h3 id="name-the-collector-component">
-<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-the-collector-component" class="section-name selfRef">The Collector Component</a>
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-the-collector-component" class="section-name selfRef">The Collector Component</a>
         </h3>
-<p id="section-3.2-1">Collector components collect data points from sources, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the source to the destination TSDB and that the data has a YANG description and is tagged with necessary metadata.  How the collector agrees with a source to deliver data in a timely manner is beyond the scope of this document.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<span id="name-example-of-collector-settin"></span><figure id="figure-5">
-          <div class="alignLeft art-text artwork" id="section-3.2-2.1">
+<p id="section-3.5-1">The Collector component is part of a Network Controller that collect telemetry data from Providers, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the Provider to the destination TSDB, and that the data has a YANG description and is tagged with necessary metadata.  How the Collector agrees with a Provider to deliver data in a timely manner is beyond the scope of this document.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+<span id="name-example-of-collector-settin"></span><figure id="figure-8">
+          <div class="alignLeft art-text artwork" id="section-3.5-2.1">
 <pre>
          +-------------+
          |  COLLECTOR  |
          +-------------+                     ___________
                 |                           /           \
-      +------------------+                 ( DESTINATION )
+      +------------------+                 (    TSDB     )
       v                  v                 |\___________/|
 +------------+    +------------+  STREAM 1 |             |
-|   SOURCE   |    |   SOURCE   |  =======&gt; |             |
-| - sensor 1 |    | - sensor 1 |           |             |
+|  PROVIDER  |    |  PROVIDER  |  =======&gt; |             |
+| - sensor 1 |    | - sensor 1 |           |  Partition  |
 | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
 | - sensor 3 |    | - sensor 7 |  =======&gt; |             |
 +------------+    +------------+           |             |
           \\                      STREAM 3 |             |
             =============================&gt;  \___________/
-
-</pre>
-</div>
-<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
-<a href="#name-example-of-collector-settin" class="selfRef">Example of Collector setting up three streams of telemetry data from two sources to one desitination.</a>
-          </figcaption></figure>
-<p id="section-3.2-3">Each source holds a number of sensors that may be queried or subscribed to.  The collector arranges the sensors into sensour groups that presumably are logically related, and that are collected using the same method.  A number of collection methods (some YANG-based, some not) are modeled directly in the ietf-poweff-collector.yang module, but the set is designed to be easily extensible.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
-<span id="name-yang-tree-diagram-of-the-co"></span><figure id="figure-6">
-          <div class="lang-yang-tree sourcecode" id="section-3.2-4.1">
-<pre>
-  +-- sensor-groups
-  |  +-- sensor-group* [id]
-  |     +-- id?                                something
-  |     +-- method?                            identityref
-  |     +-- get-static-url-once
-  |     |  +-- url?                            something
-  |     |  +-- format?                         something
-  |     +-- gnmi-polling
-  |     |  +-- encoding?                       something
-  |     |  +-- protocol?                       something
-  |     +-- restconf-get-polling
-  |     |  +-- xxx?                            something
-  |     +-- netconf-get-polling
-  |     |  +-- xxx?                            something
-  |     +-- restconf-yang-push-subscription
-  |     |  +-- xxx?                            something
-  |     +-- netconf-yang-push-subscription
-  |     |  +-- xxx?                            something
-  |     +-- redfish-polling
-  |     |  +-- xxx?                            something
-  |     +-- frequency?                         sample-frequency
-  |     +-- path* [path]
-  |        +-- path?                           string
-  |        +-- sensor-type?                    identityref
-  +-- tlm-streams
-    +-- tlm-stream* [id]
-        +-- id?                                something
-        +-- source*                            string
-        +-- sensor-group* [name]
-        |  +-- name?   -&gt; ../../../sensor-groups/sensor-group/id
-        +-- destination?    -&gt; ../../../destinations/destination/id
-</pre>
-</div>
-<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
-<a href="#name-yang-tree-diagram-of-the-co" class="selfRef">YANG tree diagram of the Collector sensor-groups and streams.</a>
-          </figcaption></figure>
-<p id="section-3.2-5">The sensor groups are then arranged into streams from a collection of sources (that support the same set of sensor groups) to a destination.  This structure has been chosen with the assumption that there will be many source devices with the same set of sensor groups, and we want to minimize repetition.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="the-processor-and-aggregator-components">
-<section id="section-3.3">
-        <h3 id="name-the-processor-and-aggregato">
-<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-the-processor-and-aggregato" class="section-name selfRef">The Processor and Aggregator Components</a>
-        </h3>
-<p id="section-3.3-1">Processor components take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in in the input data, or fill in approximate values where there are holes in the input data.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">Aggregator components take multiple incoming data flows and combine them, typically by adding them together, taking possible differences in cadence in the input data flows into account.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">Processor and Aggregator components provide a YANG model of the output data, just like the Collector components, so that all data flowing in the system has a YANG description and is associated with metadata.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">Note: In the current version of the YANG modules, a Processor is simply an Aggregator with a single input and output.  Unless we see a need to keep these two component types separate, we might remove the Processor component and keep it baked in with the Aggregator.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
-<span id="name-example-of-an-aggregator-se"></span><figure id="figure-7">
-          <div class="alignLeft art-text artwork" id="section-3.3-5.1">
-<pre>
-                +-------------+
-                | AGGREGATOR  |
-                +-------------+
-                       |
-           +-----------+-----------+
-           v                       v
-      ___________             ___________
-     /           \           /           \
-    (  SOURCE 1   )         ( DESTINATION )
-    |\___________/| FLOW 1  |\___________/|
-    |             | ======&gt; |             |
-    |             |         |             |
-    |             | FLOW 2  |             |
-     \___________/  ===##=&gt;  \___________/
-                       ||
-      ___________      ||
-     /           \     ||
-    (  SOURCE 2   )   //
-    |\___________/| ==
-    |             |
-    |             |
-    |             |
-     \___________/
-
-</pre>
-</div>
-<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
-<a href="#name-example-of-an-aggregator-se" class="selfRef">Example of an Aggregator setting up two flows of telemetry data from two sources to one desitination.</a>
-          </figcaption></figure>
-<p id="section-3.3-6">In this diagram, the sources and destination look like separate TSDBs, which they might be.  They may also be different buckets within the same TSDB.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
-<p id="section-3.3-7">Each flow is associated with one or more inputs, one output and a series of processing operations.  Each input flow and output flow may have an pre-processing or post-processing operation applied to it separately.  Then all the input flows are combined using one or more aggregation operations.  Some basic operations have been defined in the Aggregator YANG module, but the set of operations has been designed to be maximally extensible.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
-<span id="name-yang-tree-diagram-of-the-ag"></span><figure id="figure-8">
-          <div class="lang-yang-tree sourcecode" id="section-3.3-8.1">
-<pre>
-  +-- tlm-flows
-  |  +-- tlm-flow* [id]
-  |     +-- id?                                string
-  |     +-- (chain-position)?
-  |        +--:(input)
-  |        |  +-- input
-  |        |     +-- source?
-  |        |           -&gt; ../../../../../sources/source/id
-  |        +--:(output)
-  |        |  +-- output
-  |        |     +-- destination?
-  |        |           -&gt; ../../../../../destinations/destination/id
-  |        +--:(middle)
-  |           +-- middle
-  |              +-- inputs*
-  |              |     -&gt; ../../../../flows/flow/id
-  |              +-- pre-process-inputs?
-  |              |     -&gt; ../../../../operations/operation/id
-  |              +-- aggregate?
-  |              |     -&gt; ../../../../operations/operation/id
-  |              +-- post-process-output?
-  |                    -&gt; ../../../../operations/operation/id
-  +-- operations
-    +-- operation* [id]
-        +-- id?                                something
-        +-- (op-type)?
-          +--:(linear-sum)
-          |  +-- linear-sum
-          +--:(linear-average)
-          |  +-- linear-average
-          +--:(linear-max)
-          |  +-- linear-max
-          +--:(linear-min)
-          |  +-- linear-min
-          +--:(rolling-average)
-          |  +-- rolling-average
-          |     +-- timespan?                  something
-          +--:(filter-age)
-          |  +-- filter-age
-          |     +-- min-age?                   something
-          |     +-- max-age?                   something
-          +--:(function)
-              +-- function
-                +-- name?                      something
 </pre>
 </div>
 <figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
-<a href="#name-yang-tree-diagram-of-the-ag" class="selfRef">YANG tree diagram of the Aggregator flows and operations.</a>
+<a href="#name-example-of-collector-settin" class="selfRef">Example of Collector setting up three streams of telemetry data from two Providers to one TSDB Partition.</a>
           </figcaption></figure>
-<p id="section-3.3-9">The operations listed above are basic aggregation operations.  Linear-sum is just adding all the input sources together, with linear interpolation when their data points don't align perfectly in time.  Rolling average is averaging the input flows over a given length of time.  The filter-age drops all data points that are outside the min to max age.  The function allows plugging in any other function the Aggregator may have defined, but more importantly, the operations choice is easily extended using YANG augment to include any other IETF or vendor specified extensions.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
+<p id="section-3.5-3">The top of the Collector model contains a list of organizations, as a single Collector component might be doing collection work for different organizations (customers, departments, scopes) that must not be intermixed. Each organization has a list of device-groups pointing out specific Network Elements. Each group has a list of dashboards that will be queried. Since each Provider has a list of supported dashboards, the Collector simply copies the dashboards it is interested in to its own collection list.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-to"></span><figure id="figure-9">
+          <div class="lang-yang-tree sourcecode" id="section-3.5-4.1">
+<pre>
+module: ietf-tlm-philatelist-collector
+  +--rw tlm-collector
+     +--rw organizations
+        +--rw organization* [name]
+           +--rw name             string
+           +--rw device-groups
+           |  +--rw device-group* [name]
+           |     +--rw name               string
+           |     +--rw devices*           string
+           |     +--rw dashboards
+           |     |  +--rw dashboard* [id]
+           |     |     +--rw id       identityref
+           |     |     +--rw items* [tsdb-path]
+           |     |        +--rw tsdb-path    -&gt; ../../../../dash-items/dash-item/tsdb-path
+</pre>
+</div>
+<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
+<a href="#name-yang-tree-diagram-of-the-to" class="selfRef">YANG tree diagram of the top part of the Collector model.</a>
+          </figcaption></figure>
+<p id="section-3.5-5">The Collector model also contains the same dash-item list as shown above in the Provider model. This allows the Collector configuration to hold a local copy of the dashboards and dash-items it finds relevant, to guide its own collection work.<a href="#section-3.5-5" class="pilcrow">¶</a></p>
+<p id="section-3.5-6">Finally, the Collector keeps a list of streams to work with, pointing out the sources (device-group and dash-name) and destination (a TSDB Partition).<a href="#section-3.5-6" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-co"></span><figure id="figure-10">
+          <div class="lang-yang-tree sourcecode" id="section-3.5-7.1">
+<pre>
+module: ietf-tlm-philatelist-collector
+  +--rw tlm-collector
+     +--rw organizations
+        +--rw organization* [name]
+           +--rw tlm-streams
+              +--rw tlm-stream* [id]
+                 +--rw id             ietf-tlm-philatelist-types:something
+                 +--rw sources* [device-group dash-name]
+                 |  +--rw device-group    -&gt; ../../../../device-groups/device-group/name
+                 |  +--rw dash-name       -&gt; ../../../../device-groups/device-group/dashboards/dashboard/id
+                 +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
+</pre>
+</div>
+<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<a href="#name-yang-tree-diagram-of-the-co" class="selfRef">YANG tree diagram of the Collector tlm-streams.</a>
+          </figcaption></figure>
+<p id="section-3.5-8">The sensor groups are then arranged into streams from a collection of sources (that support the same set of sensor groups) to a destination.  This structure has been chosen with the assumption that there will be many source devices with the same set of sensor groups, and we want to minimize repetition.<a href="#section-3.5-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-index-component">
+<section id="section-3.6">
+        <h3 id="name-the-index-component">
+<a href="#section-3.6" class="section-number selfRef">3.6. </a><a href="#name-the-index-component" class="section-name selfRef">The Index Component</a>
+        </h3>
+<p id="section-3.6-1">When Collectors collect, and when Aggregators process and aggregate telemetry data, they need to send this data to a TSDB Partition as destination. To keep track of which data is sent where, and what the connection details are for that partition, the Network Controller implements the Index YANG module. Both the Collector and Aggregator modules reference this module.<a href="#section-3.6-1" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-in"></span><figure id="figure-11">
+          <div class="lang-yang-tree sourcecode" id="section-3.6-2.1">
+<pre>
+module: ietf-tlm-philatelist-index
+  +--rw tlm-index
+     +--rw partitions
+        +--rw partition* [id]
+           +--rw id               ietf-tlm-philatelist-types:something
+           +--rw url?             ietf-tlm-philatelist-types:something
+           +--rw organization?    ietf-tlm-philatelist-types:something
+           +--rw partition?       ietf-tlm-philatelist-types:something
+           +--rw impl-specific
+              +--rw binding* [key]
+                 +--rw key              string
+                 +--rw (value-type)?
+                    +--:(value)
+                    |  +--rw value?     string
+                    +--:(values)
+                    |  +--rw values*    string
+                    +--:(env-var)
+                       +--rw env-var?   string
+</pre>
+</div>
+<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<a href="#name-yang-tree-diagram-of-the-in" class="selfRef">YANG tree diagram of the Index TSDB Partitions.</a>
+          </figcaption></figure>
+<p id="section-3.6-3">The implementation specific part of the model is for integration with specific TSDB implenentations. Each such integration may need a specific sef of key-value bindings, that can be provided in this list.<a href="#section-3.6-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-processor-and-aggregator-components">
+<section id="section-3.7">
+        <h3 id="name-the-processor-and-aggregato">
+<a href="#section-3.7" class="section-number selfRef">3.7. </a><a href="#name-the-processor-and-aggregato" class="section-name selfRef">The Processor and Aggregator Components</a>
+        </h3>
+<p id="section-3.7-1">Processor components are parts of a Network Controller that take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in in the input data, or fill in approximate values where there are holes in the input data.<a href="#section-3.7-1" class="pilcrow">¶</a></p>
+<p id="section-3.7-2">Aggregator components take multiple incoming data flows and combine them, typically by adding them together, taking possible differences in cadence in the input data flows into account.<a href="#section-3.7-2" class="pilcrow">¶</a></p>
+<p id="section-3.7-3">Processor and Aggregator components provide a YANG model of their output data, just like the Collector components, so that all data flowing in the system has a YANG description and is associated with metadata.<a href="#section-3.7-3" class="pilcrow">¶</a></p>
+<p id="section-3.7-4">Note: In the current version of the YANG modules, a Processor is simply an Aggregator with a single input and output.  Unless we see a need to keep these two component types separate, we might remove the Processor component and keep it baked in with the Aggregator.<a href="#section-3.7-4" class="pilcrow">¶</a></p>
+<span id="name-example-of-an-aggregator-se"></span><figure id="figure-12">
+          <div class="alignLeft art-text artwork" id="section-3.7-5.1">
+<pre>
+                  +-------------+
+                  | AGGREGATOR  |
+                  +-------------+
+                         |
+            +------------+------------+
+            v                         v
+        ___________               ___________
+       /  SOURCE   \             /DESTINATION\
+      ( PARTITION 1 )           (  PARTITION  )
+      |\___________/| STREAM 1  |\___________/|
+      |             | ========&gt; |             |
+      |             |           |             |
+      |             | STREAM 2  |             |
+       \___________/  ===##===&gt;  \___________/
+                         ||
+        ___________      ||
+       /  SOURCE   \     ||
+      ( PARTITION 2 )   //
+      |\___________/| ==
+      |             |
+      |             |
+      |             |
+       \___________/
+</pre>
+</div>
+<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
+<a href="#name-example-of-an-aggregator-se" class="selfRef">Example of an Aggregator setting up two streams of telemetry data from two sources to one desitination.</a>
+          </figcaption></figure>
+<p id="section-3.7-6">In this diagram, the sources and destination look like separate TSDBs, which they might be.  They may also be different partitions within the same TSDB.<a href="#section-3.7-6" class="pilcrow">¶</a></p>
+<p id="section-3.7-7">Each stream is associated with one or more inputs, one output and a processing operation.  All the input streams are combined using one or more aggregation operations.  Some basic operations have been defined in the Aggregator YANG module, but the set of operations has been designed to be maximally extensible.<a href="#section-3.7-7" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-top"></span><figure id="figure-13">
+          <div class="lang-yang-tree sourcecode" id="section-3.7-8.1">
+<pre>
+module: ietf-tlm-philatelist-aggregator
+  +--rw tlm-aggregator
+     +--rw aggregations
+     |  +--rw aggregation* [id]
+     |     +--rw id           string
+     |     +--rw input* [source]
+     |     |  +--rw source    ietf-tlm-philatelist-index:partition-ref-t
+     |     +--rw operation?   -&gt; ../../../operations/operation/id
+     |     +--rw output
+     |        +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
+</pre>
+</div>
+<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
+<a href="#name-yang-tree-diagram-of-the-top" class="selfRef">YANG tree diagram of the top Aggregator model.</a>
+          </figcaption></figure>
+<p id="section-3.7-9">The operations listed below are basic aggregation operations.  Linear-sum is just adding all the input sources together, with linear interpolation when their data points don't align perfectly in time.  Rolling average is averaging the input flows over a given length of time.  The filter-age drops all data points that are outside the min to max age.  The function allows plugging in any other function the Aggregator may have defined, but more importantly, the operations choice is easily extended using YANG augment to include any other IETF or vendor specified augmentations.<a href="#section-3.7-9" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-diagram-of-the-ag"></span><figure id="figure-14">
+          <div class="lang-yang-tree sourcecode" id="section-3.7-10.1">
+<pre>
+module: ietf-tlm-philatelist-aggregator
+  +--rw tlm-aggregator
+     +--rw operations
+        +--rw operation* [id]
+           +--rw id                       ietf-tlm-philatelist-types:something
+           +--rw (op-type)?
+              +--:(linear-sum)
+              |  +--rw linear-sum
+              +--:(linear-average)
+              |  +--rw linear-average
+              +--:(linear-max)
+              |  +--rw linear-max
+              +--:(linear-min)
+              |  +--rw linear-min
+              +--:(rolling-average)
+              |  +--rw rolling-average
+              |     +--rw timespan?   ietf-tlm-philatelist-types:something
+              +--:(filter-age)
+              |  +--rw filter-age
+              |     +--rw min-age?   ietf-tlm-philatelist-types:something
+              |     +--rw max-age?   ietf-tlm-philatelist-types:something
+              +--:(function)
+                 +--rw function
+                    +--rw name?   ietf-tlm-philatelist-types:something
+</pre>
+</div>
+<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
+<a href="#name-yang-tree-diagram-of-the-ag" class="selfRef">YANG tree diagram of the Aggregator operations list.</a>
+          </figcaption></figure>
 </section>
 </div>
 <div id="the-link-to-assets">
-<section id="section-3.4">
+<section id="section-3.8">
         <h3 id="name-the-link-to-assets">
-<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-the-link-to-assets" class="section-name selfRef">The Link to Assets</a>
+<a href="#section-3.8" class="section-number selfRef">3.8. </a><a href="#name-the-link-to-assets" class="section-name selfRef">The Link to Assets</a>
         </h3>
-<p id="section-3.4-1">In <span>[<a href="#I-D.draft-palmero-opsawg-ps-almo-00" class="cite xref">I-D.draft-palmero-opsawg-ps-almo-00</a>]</span>, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the DMLMO structure and adds the possibility for an asset to point to a provider or aggregated data stream. FIXME<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.8-1">In <span>[<a href="#I-D.draft-palmero-opsawg-ps-almo-00" class="cite xref">I-D.draft-palmero-opsawg-ps-almo-00</a>]</span>, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.<a href="#section-3.8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1606,11 +1786,13 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-yang-based-telemetry-outloo">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-yang-based-telemetry-outloo" class="section-name selfRef">YANG-based Telemetry Outlook</a>
       </h2>
-<p id="section-4-1">Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g. <span>[<a href="#I-D.draft-ietf-opsawg-collected-data-manifest-01" class="cite xref">I-D.draft-ietf-opsawg-collected-data-manifest-01</a>]</span> and <span>[<a href="#I-D.draft-claise-netconf-metadata-for-collection-03" class="cite xref">I-D.draft-claise-netconf-metadata-for-collection-03</a>]</span> come to mind.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">Even though that work has a solid foundation and shares many or most of the goals with this work, we (the POWEFF team) have not found it easy to apply the above work directly in the practical work we do.  So what we have tried to do is a very pragmatic approach to telemetry data collection the way we see it happening on the ground combined with the benefits of Model Driven Telemetry (MDT), in practice meaning YANG-based with additional YANG-modeled metadata.<a href="#section-4-2" class="pilcrow">¶</a></p>
-<p id="section-4-3">Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">In particular, this draft depends on the mapping of YANG-based structures to the typical TSDB tag-based formats described in <span>[<a href="#I-D.draft-kll-yang-label-tsdb-00" class="cite xref">I-D.draft-kll-yang-label-tsdb-00</a>]</span>.<a href="#section-4-4" class="pilcrow">¶</a></p>
-<p id="section-4-5">For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the data flow interfaces with rigor regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<p id="section-4-1">Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g.
+<span>[<a href="#I-D.draft-ietf-opsawg-collected-data-manifest-01" class="cite xref">I-D.draft-ietf-opsawg-collected-data-manifest-01</a>]</span>,
+<span>[<a href="#I-D.draft-claise-netconf-metadata-for-collection-03" class="cite xref">I-D.draft-claise-netconf-metadata-for-collection-03</a>]</span> and
+<span>[<a href="#I-D.draft-netana-nmop-yang-kafka-integration-01" class="cite xref">I-D.draft-netana-nmop-yang-kafka-integration-01</a>]</span> come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">In particular, this draft depends on the mapping of YANG-based structures to the typical TSDB tag-based formats described in <span>[<a href="#I-D.draft-kll-yang-label-tsdb-00" class="cite xref">I-D.draft-kll-yang-label-tsdb-00</a>]</span>.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the telemetry data stream interfaces with rigor and transparency regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.<a href="#section-4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="yang-modules">
@@ -1642,154 +1824,161 @@ module ietf-tlm-philatelist-types {
      Editor:  Marisol Palmero
               &lt;mailto:mpalmero@cisco.com&gt;";
   description
-    "This YANG module defines basic quantities, measurement units
-     and sensor types for the Telemetry Philatelist framework.
+    "This YANG module defines base identities for quantities,
+    measurement units, connection methods, sensor and control types
+    for the Telemetry Philatelist framework.
 
-     Copyright (c) 2021 IETF Trust and the persons identified as
-     authors of the code. All rights reserved.
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
 
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
 
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
 
-  revision 2024-02-14 {
+  revision 2024-04-15 {
     description
       "Restructured as part of the Telemetry Philatelist framework";
     reference
       "RFC XXXX: ...";
   }
-  revision 2023-10-12 {
-    description
-      "Initial revision of POWEFF types";
-    reference
-      "RFC XXXX: ...";
-  }
 
-  typedef something { // FIXME: Used when we haven't decided the type yet
-    description "FIXME";
+  typedef something {
     type string;
+    description
+      "FIXME: Used when we haven't decided the type yet
+      ";
   }
   typedef xpath {
-    description "FIXME";
-    type string; // FIXME: Proper type needed
+    type string;
+    description
+      "FIXME: Proper type needed
+      ";
   }
   typedef sample-frequency {
-    description "FIXME";
-    type string; // FIXME: Proper type needed
+    type string;
+    description
+      "FIXME: Proper type needed
+      ";
   }
 
   // ========== SENSOR-CLASS ==============================
   identity sensor-class {
-    description "Sensor's relation to the asset it sits on.";
+    description
+      "Sensor's relation to the asset it sits on.
+      ";
   }
   identity sc-input {
     base sensor-class;
-    description "Sensor reports input quantity of the asset it sits
-      on.";
+    description
+      "Sensor reports input quantity of the asset it sits on.
+      ";
   }
   identity sc-output {
     base sensor-class;
-    description "Sensor reports output quantity of the asset it sits
-      on.";
+    description
+      "Sensor reports output quantity of the asset it sits on.
+      ";
   }
   identity sc-allocated {
     base sensor-class;
-    description "Sensor reports (maximum) allocated quantity of the
-      asset it sits on.";
+    description
+      "Sensor reports (maximum) allocated quantity of the asset
+      it sits on.
+      ";
   }
 
   // ========== SENSOR-QUANTITY ==============================
   identity sensor-quantity {
-    description "Sensor's quantity being measured.";
+    description
+      "Sensor's quantity being measured.
+      ";
   }
 
   // ========== SENSOR-UNIT ==============================
   identity sensor-unit {
-    description "Sensor's unit of reporting.";
+    description
+      "Sensor's unit of reporting.
+      ";
   }
 
   // ========== DASH-TYPE ===================================
   identity dash-type {
-    description "FIXME";
+    description
+      "The base identity for all dashboard types.
+      Dashboards are predefined collections of sensors and/or controls
+      that a Network Element publishes towards a Network Controller,
+      which uses the dashboard to find use case relevant telemetry
+      collection and control points.
+      ";
   }
 
   // ========== DASH-ITEM-TYPE ==============================
   identity dash-item-type {
-    description "FIXME";
+    description
+      "The base identity for an individual item on a dashboard.
+      This is further subdivided into controls and sensors, which
+      are even further subdivided into sensors measuring e.g.
+      temperature in Celsius.
+      ";
   }
   identity sensor-type {
-    description "Sensor's type, i.e. combination of class, quantity and
-      unit.";
     base dash-item-type;
+    description
+      "Sensor's type, i.e. combination of class, quantity and unit.
+      Sensor class tells whether the sensor measures some quantity
+      on the inside or outside of the component it pertains to.
+      E.g. whether it is measuring the incoming our outgoing current
+      from a power supply.
+      Sensor quantity tells what the sensor is measuring.
+      E.g. temperature, current or number of packets
+      Sensor unit tells about the sensor measurement unit.
+      E.g. Celsius, Farenheit or Kelvin. Or energy in kWh or J.
+      ";
   }
 
-  // ========== COLLECTION-METHOD ==============================
+  // ========== CONNECTION-METHOD ==============================
 
   identity connection-method {
-    description "FIXME";
+    description
+      "Base identity for all kinds of connection methods.
+      ";
   }
   identity get-local-file-once {
-    description "FIXME";
     base connection-method;
-  }
-  identity cm-polled {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-gnmi {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-restconf {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-netconf {
-    description "FIXME";
-    base connection-method;
-  }
-  identity cm-redfish {
-    description "FIXME";
-    base connection-method;
+    description
+      "Connection method identity for the case where a file contains
+      the dashboard information in lieu of the Network Element itself.
+      ";
   }
   identity get-static-url-once {
-    description "FIXME";
     base connection-method;
+    description
+      "Connection method identity for the case where a URL contains
+      the dashboard information in lieu of the Network Element itself.
+      The URL may or may not be hosted on the Network Element.
+      ";
   }
-  identity gnmi-polling {
-    description "FIXME";
-    base cm-gnmi;
-    base cm-polled;
-  }
-  identity restconf-get-polling {
-    description "FIXME";
-    base cm-restconf;
-    base cm-polled;
-  }
-  identity netconf-get-polling {
-    description "FIXME";
-    base cm-netconf;
-    base cm-polled;
-  }
-  identity restconf-yang-push-subscription {
-    description "FIXME";
-    base cm-restconf;
-  }
-  identity netconf-yang-push-subscription {
-    description "FIXME";
-    base cm-netconf;
-  }
-  identity redfish-polling {
-    description "FIXME";
-    base cm-redfish;
+  identity cm-polled {
+    base connection-method;
+    description
+      "Connection method identity for all mechanisms that are based on
+      the client regularly polling the server.
+      ";
   }
 }
 
@@ -1797,12 +1986,604 @@ module ietf-tlm-philatelist-types {
 </div>
 </section>
 </div>
-<div id="provider-interface-module-for-philatelist">
+<div id="dashboard-abstract-interface-module-for-philatelist">
 <section id="section-5.2">
-        <h3 id="name-provider-interface-module-f">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-provider-interface-module-f" class="section-name selfRef">Provider interface module for Philatelist</a>
+        <h3 id="name-dashboard-abstract-interfac">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-dashboard-abstract-interfac" class="section-name selfRef">Dashboard abstract interface module for Philatelist</a>
         </h3>
 <div class="breakable lang-yang sourcecode" id="section-5.2-1">
+<pre>&lt;CODE BEGINS&gt;
+module ietf-tlm-philatelist-dashboard {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-dashboard";
+  prefix ietf-tlm-philatelist-dashboard;
+
+  import ietf-tlm-philatelist-types {
+    prefix ietf-tlm-philatelist-types;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   &lt;https://datatracker.ietf.org/wg/opsawg/&gt;
+     WG List:  &lt;mailto:opsawg@ietf.org&gt;
+     Editor:  Jan Lindblad
+              &lt;mailto:jlindbla@cisco.com&gt;
+     Editor:  Snezana Mitrovic
+              &lt;mailto:snmitrov@cisco.com&gt;
+     Editor:  Marisol Palmero
+              &lt;mailto:mpalmero@cisco.com&gt;";
+  description
+    "This YANG module defines the Telemetry Philatelist Dashboard.
+
+    These definitions are used both by Philatelist Network Controllers,
+    and Philatelist Network Elements. Network Elements that are unaware
+    of the Philatelist framework may also be covered when a
+    'proxy mechanism' for the Philatelist information is added.
+
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
+
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
+
+  revision 2024-04-15 {
+    description
+      "Restructured as part of the Telemetry Philatelist framework";
+    reference
+      "RFC XXXX: ...";
+  }
+
+  identity cm-gnmi {
+    base ietf-tlm-philatelist-types:connection-method;
+    description
+      "Connection method identity for gNMI-based mechanisms.
+      ";
+  }
+  identity cm-restconf {
+    base ietf-tlm-philatelist-types:connection-method;
+    description
+      "Connection method identity for RESTCONF-based mechanisms.
+      ";
+  }
+  identity cm-netconf {
+    base ietf-tlm-philatelist-types:connection-method;
+    description
+      "Connection method identity for NETCONF-based mechanisms.
+      ";
+  }
+  identity cm-redfish {
+    base ietf-tlm-philatelist-types:connection-method;
+    description
+      "Connection method identity for Redfish-based mechanisms.
+      ";
+  }
+  identity gnmi-polling {
+    base cm-gnmi;
+    base ietf-tlm-philatelist-types:cm-polled;
+    description
+      "Connection method identity for gNMI-based polling mechanisms.
+      ";
+  }
+  identity restconf-get-polling {
+    base cm-restconf;
+    base ietf-tlm-philatelist-types:cm-polled;
+    description
+      "Connection method identity for RESTCONF-based polling
+      mechanisms.
+      ";
+  }
+  identity netconf-get-polling {
+    base cm-netconf;
+    base ietf-tlm-philatelist-types:cm-polled;
+    description
+      "Connection method identity for NETCONF-based polling
+      mechanisms.
+      ";
+  }
+  identity restconf-yang-push-subscription {
+    base cm-restconf;
+    description
+      "Connection method identity for RESTCONF-based
+      subscription mechanisms.
+      ";
+  }
+  identity netconf-yang-push-subscription {
+    base cm-netconf;
+    description
+      "Connection method identity for NETCONF-based
+      subscription mechanisms.
+      ";
+  }
+  identity redfish-polling {
+    base cm-redfish;
+    description
+      "Connection method identity for Redfish-based polling
+      mechanisms.
+      ";
+  }
+  grouping access-g {
+    description
+      "Grouping describing the basic set of access methods offered by
+      Philatelist servers, i.e. Network Elements. The set of access
+      mechanisms may be extended by servers offering additional
+      mechanisms.  This grouping is also used by Network Controllers,
+      when they need to find a way to interact with the
+      Network Elements.
+      ";
+
+    leaf method {
+      type identityref {
+        base ietf-tlm-philatelist-types:connection-method;
+      }
+      default ietf-tlm-philatelist-types:get-local-file-once;
+      description
+        "Discriminator pointing out which access mechanusm is offered.
+        This value controls which detailed configuration nodes will be
+        available.
+        ";
+    }
+    container get-local-file-once {
+      when "derived-from-or-self(../method,
+            'ietf-tlm-philatelist-types:get-local-file-once')";
+      description
+        "The server itself does not offer any access mechanism for this
+        dashboard item. Instead, philatelist controllers will need to
+        read static values from a local on the controller. How the file
+        appears in a relevant location on the controller is outside the
+        scope of this specification.
+        The file format used MUST adhere to RFC9195
+        (https://datatracker.ietf.org/doc/rfc9195/)
+        ";
+      leaf filename {
+        type string;
+        description
+          "The name of the file containing the static data for the
+          dashboard item. If the filename is not specified, the
+          controller should look for a file with the same name as the
+          connection name.
+          ";
+      }
+    }
+    container get-static-url-once {
+      when "derived-from-or-self(../method,
+            'ietf-tlm-philatelist-types:get-static-url-once')";
+      description
+        "The server points to a URL the controller can use to download
+        a file with static values for this dashboard item. The URL may
+        or may not be pointing to the server itself, and could
+        potentially even point to a URL on the controller itself.
+        How the static file contents pointed to by the URL appears on
+        the webserver is outside the scope of this specification.
+        ";
+      leaf url {
+        type ietf-tlm-philatelist-types:something;
+        description
+          "The URL that the controller should read in order to get the
+          static data about the dashboard item.
+          The file format used MUST adhere to RFC9195
+          (https://datatracker.ietf.org/doc/rfc9195/)
+          ";
+      }
+    }
+    container gnmi-polling {
+      when "derived-from-or-self(../method, 'gnmi-polling')";
+      description
+        "The server points to a gNMI interface the controller can poll
+        at regular intervals to read the current sensor value for this
+        dashboard item.
+        ";
+      leaf encoding {
+        type ietf-tlm-philatelist-types:something;
+        description
+          "The encoding of the data provided by this mechanism, such as
+          self-describing-gpb
+          ";
+      }
+      leaf protocol {
+        type ietf-tlm-philatelist-types:something;
+        description
+          "The exact protocol parameters for this gNMI endpoint, such as
+          grpc no-tls
+          ";
+      }
+    }
+    container restconf-get-polling {
+      when "derived-from-or-self(../method, 'restconf-get-polling')";
+      description "FIXME";
+      leaf xxx { type string; description "FIXME"; }
+    }
+    container netconf-get-polling {
+      when "derived-from-or-self(../method, 'netconf-get-polling')";
+      leaf xxx { type string; description "FIXME"; }
+      description "FIXME";
+    }
+    container restconf-yang-push-subscription {
+      when "derived-from-or-self(../method,
+            'restconf-yang-push-subscription')";
+      leaf xxx { type string; description "FIXME"; }
+      description "FIXME";
+    }
+    container netconf-yang-push-subscription {
+      when "derived-from-or-self(../method,
+            'netconf-yang-push-subscription')";
+      leaf xxx { type string; description "FIXME"; }
+      description "FIXME";
+    }
+    container redfish-polling {
+      when "derived-from-or-self(../method, 'redfish-polling')";
+      leaf xxx { type string; description "FIXME"; }
+      description "FIXME";
+    }
+    leaf frequency {
+      when "derived-from(../method,
+            'ietf-tlm-philatelist-types:cm-polled')";
+      type ietf-tlm-philatelist-types:sample-frequency;
+      description
+        "The frequency with which the sensor data value collection
+        should happen. E.g. once per 30 minutes, once per 5 minutes,
+        once per 30 seconds or on-change.
+        ";
+    }
+  }
+
+  grouping provider-g {
+    description
+      "Top-level provider grouping.  Devices will implement
+      this as a config false container, or as a piece of instance data
+      that a controller can read. Controllers implement this data
+      structure as config true, configurable and readable by the
+      operators.
+      ";
+    container dashboards {
+      description
+        "Each device may support one or more dashboards.
+        Controllers can then choose the most advanced dashboard they
+        are aware of and interested in. A dashboard contains
+        a list of sensors and/or controls that a controller may find
+        useful for some particular use case.
+        ";
+      list dashboard {
+        key id;
+        description
+          "List of dashboards supported by a given device or
+          controller.
+          ";
+        leaf id {
+          type identityref {
+            base ietf-tlm-philatelist-types:dash-type;
+          }
+          description
+            "Formal dashboard id. The dashboard-items in this
+            dashboard are found in ../items, and what items are
+            available there depends on this dashboard id .
+            ";
+        }
+        list items {
+          key tsdb-path;
+          description
+            "List of dashboard items. Some of the items are sensors
+            which provide data to be read, some may be controls that
+            the controller may use.
+            ";
+          leaf tsdb-path {
+            type leafref {
+              path ../../../../dash-items/dash-item/tsdb-path;
+            }
+            description
+              "Path to the sensor or control item on the dashboard.
+              The format of the path is TSDB style, i.e. used MUST
+              conform to the I-D.draft-kll-yang-label-tsdb, e.g.
+              interfaces_interface_statistics_in_unicast_pkts
+              Each dashboard item may point to multiple sensors, as in
+              the example above, where each interface would have
+              a counter of incoming unicase packets.
+              Each dashboard item may occur in more than one dashboard,
+              and is therefore further desribed in
+              ../../../../dash-items/dash-item
+              ";
+          }
+        }
+      }
+    }
+    container dash-items {
+      description
+        "Container for all dashboard items. Each item may be part of
+        (referenced by) multiple dashboards.
+        ";
+      list dash-item {
+        key tsdb-path;
+        description
+          "Dashboard item, a sensor or control item that is part of a
+          dashboard, i.e. a collection of sensors and controls relevant
+          for a particular use case.
+          Each dashboard item may occur in more than one dashboard.
+          ";
+        leaf tsdb-path {
+          type string;
+          description
+            "Path to the sensor or control item on the dashboard.
+            The format of the path is TSDB style, i.e. used MUST
+            conform to the I-D.draft-kll-yang-label-tsdb, e.g.
+            interfaces_interface_statistics_in_unicast_pkts
+            Each dashboard item may point to multiple sensors, as in
+            the example above, where each interface would have
+            a counter of incoming unicase packets.
+            ";
+        }
+        leaf item-type {
+          type identityref {
+            base ietf-tlm-philatelist-types:dash-item-type;
+          }
+          mandatory true;
+          description
+            "The item type describes the type of dashboard item this
+            is, including if it is a sensor or contol, sitting on the
+            inside or outside of the parent component, the measurement
+            quantity (e.g. temperature) and unit (e.g. Celsius).
+            See the ietf-tlm-philatelist-types:dash-item-type for a
+            more detailed explanation, or if you intend to define a new
+            type of dashboard item.
+            ";
+        }
+        container accuracy {
+          when "derived-from(../item-type,
+                'ietf-tlm-philatelist-types:sensor-type')";
+          description
+            "The accuracy of the dasboard item (sensor). The accuracy
+            described using two parameters. One is the max deviation
+            relative to the sensor reading, the other one is a constant
+            deviation offset.
+
+            Example 1: if a sensor might produce values between
+            0 and 1000, and the sensor currently reports 555, but
+            the actual value is 531, that could be reported as a
+            5% relative error with offset 0.
+
+            Example 2: if a sensor might produce values between
+            0 and 1000, and the sensor currently reports 0, but
+            the actual value is 2, that could be reported as a
+            0% relative error with offset 2 (or some slightly
+            highger value, e.g. 5).
+
+            The accuracy MUST be described such that there is a 96%
+            confidence that the actual value V is within the reported
+            value R so that:
+
+              (measured-error) =  | R - V |
+              (error-margin)   =  | R * (max-error-relative) |
+                                   + (max-error-offset)
+              p( (measured-error) &lt; (error-margin) ) &gt;= 0.96
+            ";
+          leaf max-error-relative {
+            type ietf-tlm-philatelist-types:something;
+            description
+              "The part of the accuracy claim that depends on (varies
+              in proportion to) the reported value.
+              ";
+          }
+          leaf max-error-offset {
+            type ietf-tlm-philatelist-types:something;
+            description
+              "The part of the accuracy claim that does not depend on
+              (does not vary with) the reported value.
+              ";
+          }
+        }
+        list label {
+          key name;
+          description
+            "List of TSDB path labels. A single TSDB path often refer
+            to a whole collection of readable sensors. Each such sensor
+            is distinguished by the values associated with labels in
+            the path. Those labels are listed here.
+
+            Example: interfaces_interface_statistics_in_unicast_pkts
+            might have one label interfaces_interface_name. Concrete
+            readouts going into the TSDB might have values like
+
+            Metric: interfaces_interface_statistics_in_unicast_pkts
+            Value: 5432100
+            Labels:
+              host = router-01
+              interfaces_interface_name = eth0
+
+            As can be seen in the example, a controller might inject
+            labels that are not part of the tsdb-path (host), but helps
+            the controller keep track of the incoming data streams.
+            ";
+          reference
+            I-D.draft-kll-yang-label-tsdb;
+          leaf name {
+            type string;
+            description
+              "The name of the label, in TSDB path notation.
+              E.g. interfaces_interface_name
+              ";
+          }
+          choice value-source {
+            description
+              "The source of the values associated with the labels.
+              Label values may be provided in several ways:
+              + the server may provide values in runtime, in which
+                case the runtime-values points to the dashboard item
+                to read to get the actual values.
+              + the controller or operator may pick one or more values
+                 by configuration, in which case they are listed under
+                static-values .
+              + the controller may pick one or more values using some
+                internal mechanism of its own, in which case they
+                will not be visible here.
+              ";
+            leaf-list static-values {
+              type string;
+              description
+                "One or more values configured by the controller or
+                operator designating which instances of this TSDB path
+                to collect data about.
+
+                Example: if the label name for this label entry is
+                interfaces_interface_name, this could be a configured
+                list of interface names to collect data about.
+                ";
+            }
+            leaf-list runtime-values {
+              type leafref {
+                path ../../../dash-item/tsdb-path;
+              }
+              description
+                "One or more dashboard items to read label values from.
+
+                Example: if the label name for this label entry is
+                interfaces_interface_name, this could point to a
+                dashboard item that collects the names of all
+                interfaces, or all interfaces relevant for a particular
+                purpose or customer.
+                ";
+            }
+          }
+        }
+        leaf access-path {
+          type string;
+          description
+            "This is the path used by the client (Network Controller)
+            when asking the server (Network Element) for data.
+            The format of the access-path depends on the specific
+            access mechanism. If the access mechanism is YANG-based,
+            this access path will be an XPath string. If the access
+            mechanism is SNMP, it would be an OID. A redfish access
+            mechanism would use a endpoint-local URL.
+
+            In all cases, references to the label values, as defined in
+            ../label/name, may occur. Such references are written as
+
+                $(label_name)
+
+            i.e. a dollar-sign, a left-parenthesis,
+            the name of the label - case sensitite and without
+            whitespace - and finally a right-parenthesis.
+
+            Example 1: The access path for a NETCONF get-based node
+            interfaces_interface_statistics_in_unicast_pkts
+            might have access path
+
+            /if:interfaces/interface[name='$(interfaces_interface_nam
+            e)']/statistics/in-unicast-pkts
+
+            Any prefixes used (as if: above) are mapped to the
+            corresponding namespace (NETCONF) or module name (RESTCONF)
+            using the ../../../prefix-mappings list.
+
+            Example 2: The access path for an SNMP get-based node
+            interfaces_interface_statistics_in_unicast_pkts
+            might have access path
+
+            1.3.6.1.2.1.2.2.1.11.$(interfaces_interface_num)
+
+            Example 3: The access path for a Redfish-based node
+            Systems_EthernetInterfaces_EthernetInterfaceMetrics_Droppe
+            dPackets
+            might have access path
+
+            /redfish/v1/Systems/VM1/EthernetInterfaces/$(interfaces_in
+            terface_num)/EthernetInterfaceMetrics/DroppedPackets
+            ";
+        }
+        leaf access-params {
+          type leafref {
+            path ../../../accesses/access/id;
+          }
+          description
+            "Points to the specific access method to be used with this
+            dashboard item.
+            ";
+        }
+      }
+    }
+    container accesses {
+      description
+        "Holds a list of all the access methods that have been defined
+        for dashboard items on the Network Element.
+        ";
+      list access {
+        key id;
+        description
+          "One specific access method to be used with some dashboard
+          items.
+          ";
+        leaf id {
+          type string;
+          description
+            "Name for this access method.
+            ";
+        }
+        uses access-g;
+      }
+    }
+    container prefix-mappings {
+      description
+        "Contains the mappings for prefixes used in the access-path
+        to the XML namespace (NETCONF) or module name (RESTCONF).
+        ";
+      list prefix-mapping {
+        key prefix;
+        description
+          "List of access-path prefixes and their mapping to
+          namespace and module name.
+          ";
+        leaf prefix {
+          type string;
+          description
+            "Prefix, as used in the dash-item/access-path.
+            The prefix is case sensitive, and should not contain
+            the ending colon (:).
+            ";
+        }
+        leaf namespace {
+          type string;
+          description
+            "XML namespace corresponding to the prefix name.
+            Used by NETCONF-based access mechanisms.
+            ";
+        }
+        leaf module-name {
+          type string;
+          description
+            "YANG module name corresponding to the prefix name.
+            Used by RESTCONF-based access mechanisms.
+            ";
+        }
+      }
+    }
+  }
+}
+
+&lt;CODE ENDS&gt;</pre><a href="#section-5.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="provider-interface-module-for-philatelist">
+<section id="section-5.3">
+        <h3 id="name-provider-interface-module-f">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-provider-interface-module-f" class="section-name selfRef">Provider interface module for Philatelist</a>
+        </h3>
+<div class="breakable lang-yang sourcecode" id="section-5.3-1">
 <pre>&lt;CODE BEGINS&gt;
 module ietf-tlm-philatelist-provider {
   yang-version 1.1;
@@ -1825,52 +2606,271 @@ module ietf-tlm-philatelist-provider {
      Editor:  Marisol Palmero
               &lt;mailto:mpalmero@cisco.com&gt;";
   description
-    "This YANG module defines the Telemetry Philatelist Provider.
+    "This YANG module defines the Telemetry Philatelist Provider
+    interface.
 
-     Copyright (c) 2021 IETF Trust and the persons identified as
-     authors of the code. All rights reserved.
+    This module is used by Network Elements that have built-in support
+    for the Philatelist provider interface, or by a proxy mechanism
+    representing some/all of them, when not supported directly.
 
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
 
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
 
-  revision 2024-02-14 {
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
+
+  revision 2024-04-15 {
     description
       "Restructured as part of the Telemetry Philatelist framework";
     reference
       "RFC XXXX: ...";
   }
-  revision 2023-10-12 {
-    description
-      "Initial revision of POWEFF Provider";
-    reference
-      "RFC XXXX: ...";
-  }
 
   container tlm-provider {
-    description "FIXME";
+    description
+      "Container with telemetry collection dashboards for
+      Network Elements with built-in support for the Philatelist
+      collection framework.
+      ";
     uses ietf-tlm-philatelist-dashboard:provider-g;
   }
 }
 
-&lt;CODE ENDS&gt;</pre><a href="#section-5.2-1" class="pilcrow">¶</a>
+&lt;CODE ENDS&gt;</pre><a href="#section-5.3-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="index-interface-module-for-philatelist">
+<section id="section-5.4">
+        <h3 id="name-index-interface-module-for-">
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-index-interface-module-for-" class="section-name selfRef">Index interface module for Philatelist</a>
+        </h3>
+<div class="breakable lang-yang sourcecode" id="section-5.4-1">
+<pre>&lt;CODE BEGINS&gt;
+module ietf-tlm-philatelist-index {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-index";
+  prefix ietf-tlm-philatelist-index;
+
+  import ietf-tlm-philatelist-types {
+    prefix ietf-tlm-philatelist-types;
+  }
+
+  organization
+    "IETF OPSA (Operations and Management Area) Working Group";
+  contact
+    "WG Web:   &lt;https://datatracker.ietf.org/wg/opsawg/&gt;
+     WG List:  &lt;mailto:opsawg@ietf.org&gt;
+     Editor:  Jan Lindblad
+              &lt;mailto:jlindbla@cisco.com&gt;
+     Editor:  Snezana Mitrovic
+              &lt;mailto:snmitrov@cisco.com&gt;
+     Editor:  Marisol Palmero
+              &lt;mailto:mpalmero@cisco.com&gt;";
+  description
+    'This YANG module defines the Telemetry Philatelist Index.
+    These definitions are intended for Philatelist Network Controllers.
+
+    A Network Controller with the Collector role programs one or more
+    SOURCES (typically Network Elements) to generate a STREAM of
+    telemetry data. The STREAM is sent to a specific DESTINATION
+    in a Time Series Database (TSDB).
+
+    Each STREAM consists of timestamped sensor values from each
+    sensor in a sensor group.
+
+               +-------------+
+               |  COLLECTOR  |
+               +-------------+                     ___________
+                      |                           /DESTINATION\
+            +------------------+                 (  PARTITION  )
+            v                  v                 |\___________/|
+      +------------+    +------------+  STREAM 1 |             |
+      |   SOURCE   |    |   SOURCE   |  =======&gt; |             |
+      | - sensor 1 |    | - sensor 1 |           |             |
+      | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
+      | - sensor 3 |    | - sensor 7 |  =======&gt; |             |
+      +------------+    +------------+           |             |
+                \\                      STREAM 3 |             |
+                  =============================&gt;  \___________/
+
+    '+"
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
+
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
+
+  revision 2024-04-15 {
+    description
+      "Restructured as part of the Telemetry Philatelist framework";
+    reference
+      "RFC XXXX: ...";
+  }
+
+  typedef partition-ref-t {
+    type leafref {
+      path
+        "/ietf-tlm-philatelist-index:tlm-index"+
+        "/ietf-tlm-philatelist-index:partitions"+
+        "/ietf-tlm-philatelist-index:partition"+
+        "/ietf-tlm-philatelist-index:id";
+    }
+    description
+      "Pointer to a specific TSDB partition
+      (aka. bucket, interval, segment, etc.)
+      ";
+  }
+  grouping tsdb-partition-g {
+    description
+      "Grouping for identifying and connecting to a specific TSDB
+      partition (aka. bucket, interval, segment, etc.)
+      ";
+    leaf url {
+      type ietf-tlm-philatelist-types:something;
+      description
+        "The URL to use to connect to the TSDB.
+        ";
+    }
+    leaf organization {
+      type ietf-tlm-philatelist-types:something;
+      description
+        "The organization this partition belongs to.
+        Leaving this unset means the 'default' organization.
+        ";
+    }
+    leaf partition {
+      type ietf-tlm-philatelist-types:something;
+      description
+        "The TSDB partition (aka. bucket, interval, segment, etc.)
+        that the collected data is stored in.
+        ";
+    }
+    container impl-specific {
+      description
+        "Implementation specific key-valye pairs for establising and
+        maintaining the collection connections.
+        ";
+      list binding {
+        key key;
+        description
+          "List of key-valye bindings. The meaning of these key-value
+          paris is implementation dependent.
+          ";
+        leaf key {
+          type string;
+          description
+            "The key part of the key-value pair.
+            The set of key values that are defined is implementation
+            dependent.
+            ";
+        }
+        choice value-type {
+          description
+            "The value part of the key-value pair. The value part may
+            have several different formats, and implementations may
+            augment yet other formats into this choice.
+            ";
+          leaf value {
+            type string;
+            description
+              "The value part of the key-value pair as a simple string
+              value.
+              ";
+          }
+          leaf-list values {
+            type string;
+            ordered-by user;
+            description
+              "The value part of the key-value pair as a collection of
+              string values.
+              ";
+          }
+          leaf env-var {
+            type string;
+            description
+              "The value part of the key-value pair. The actual value
+              is provided by an operating system environment variable.
+              The name of that environment variable is given by this
+              leaf. Case sensitive.
+              The set of environment variable names that are defined is
+              implementation dependent.
+              ";
+          }
+        }
+      }
+    }
+  }
+
+  container tlm-index {
+    description
+      "List of TSDB Partitions referenced by this Network Controller.
+      ";
+    container partitions {
+      description
+        "Container for all the TSDB Partition access information.
+        ";
+      list partition {
+        key id;
+        description
+          "TSDB Partition access information for the Partitions that
+          this Network Controller is aware of.
+          ";
+        leaf id {
+          type ietf-tlm-philatelist-types:something;
+          description
+            "The Network Controller's internal identifier for this
+            TSDB Partition.
+            ";
+        }
+        uses tsdb-partition-g;
+      }
+    }
+  }
+}
+
+&lt;CODE ENDS&gt;</pre><a href="#section-5.4-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="collector-interface-module-for-philatelist">
-<section id="section-5.3">
+<section id="section-5.5">
         <h3 id="name-collector-interface-module-">
-<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-collector-interface-module-" class="section-name selfRef">Collector interface module for Philatelist</a>
+<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-collector-interface-module-" class="section-name selfRef">Collector interface module for Philatelist</a>
         </h3>
-<div class="breakable lang-yang sourcecode" id="section-5.3-1">
+<div class="breakable lang-yang sourcecode" id="section-5.5-1">
 <pre>&lt;CODE BEGINS&gt;
 module ietf-tlm-philatelist-collector {
   yang-version 1.1;
@@ -1883,6 +2883,9 @@ module ietf-tlm-philatelist-collector {
   import ietf-tlm-philatelist-dashboard {
     prefix ietf-tlm-philatelist-dashboard;
   }
+  import ietf-tlm-philatelist-index {
+    prefix ietf-tlm-philatelist-index;
+  }
 
   organization
     "IETF OPSA (Operations and Management Area) Working Group";
@@ -1896,170 +2899,203 @@ module ietf-tlm-philatelist-collector {
      Editor:  Marisol Palmero
               &lt;mailto:mpalmero@cisco.com&gt;";
   description
-    "This YANG module defines the Telemetry Philatelist Collector.
+    'This YANG module defines the Telemetry Philatelist Collector.
+    These definitions are intended for Philatelist Network Controllers.
 
-     Copyright (c) 2021 IETF Trust and the persons identified as
-     authors of the code. All rights reserved.
+    A Network Controller with the Collector role programs one or more
+    SOURCES (typically Network Elements) to generate a STREAM of
+    telemetry data. A SOURCE may be a Provider, or a proxy mechanism
+    standing in for the Provider.
+    The STREAM is then sent to a specific DESTINATION PARTITION
+    in a Time Series Database (TSDB). Partitions are also known as
+    buckets, intervals, segments, etc. in various implementations.
 
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions
+    Each STREAM consists of timestamped sensor values from each
+    sensor in a sensor group.
 
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
+               +-------------+
+               |  COLLECTOR  |
+               +-------------+                     ___________
+                      |                           /DESTINATION\
+            +------------------+                 (  PARTITION  )
+            v                  v                 |\___________/|
+      +------------+    +------------+  STREAM 1 |             |
+      |   SOURCE   |    |   SOURCE   |  =======&gt; |             |
+      | - sensor 1 |    | - sensor 1 |           |             |
+      | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
+      | - sensor 3 |    | - sensor 7 |  =======&gt; |             |
+      +------------+    +------------+           |             |
+                \\                      STREAM 3 |             |
+                  =============================&gt;  \___________/
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+    '+"
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
 
-  revision 2024-02-14 {
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
+
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
+
+  revision 2024-04-15 {
     description
       "Restructured as part of the Telemetry Philatelist framework";
     reference
       "RFC XXXX: ...";
   }
-  revision 2023-10-12 {
+
+  container tlm-collector {
     description
-      "Initial revision of POWEFF Collector";
-    reference
-      "RFC XXXX: ...";
-  }
-
-/*
-
-  A COLLECTOR programs one or more SOURCE(s) to generate a
-  STREAM of telemetry data.  The STREAM is sent to a specific
-  DESTINATION.
-
-  Each STREAM consists of timestamped sensor values from each
-  sensor in a sensor group.
-
-             +-------------+
-             |  COLLECTOR  |
-             +-------------+                     ___________
-                    |                           /           \
-          +------------------+                 ( DESTINATION )
-          v                  v                 |\___________/|
-    +------------+    +------------+  STREAM 1 |             |
-    |   SOURCE   |    |   SOURCE   |  =======&gt; |             |
-    | - sensor 1 |    | - sensor 1 |           |             |
-    | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
-    | - sensor 3 |    | - sensor 7 |  =======&gt; |             |
-    +------------+    +------------+           |             |
-              \\                      STREAM 3 |             |
-                =============================&gt;  \___________/
-
-*/
-
-  grouping data-endpoint-g {
-    description "FIXME";
-    leaf url { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-    leaf organization { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-    leaf bucket { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-    container impl-specific {
-      description "FIXME";
-      list binding {
-        description "FIXME";
-        key key;
-        leaf key { description "FIXME"; type string; }
-        choice value-type {
-          description "FIXME";
-          leaf value { description "FIXME"; type string; }
-          leaf-list values { description "FIXME"; type string; ordered-by user; }
-          leaf env-var { description "FIXME"; type string; }
-        }
-      }
-    }
-  }
-
-  container tlm-philatelist {
-    description "FIXME";
+      "Root container for the Philatelist Collector function.
+      ";
     container organizations {
-      description "FIXME";
+      description
+        "List of organizations that the collected data pertains to.
+        Data belonging to one organization will not mix with that of
+        another.
+        ";
       list organization {
-        description "FIXME";
         key name;
+        description
+          "Organization that this collection process pertains to.
+          ";
 
         leaf name {
-          description "FIXME";
           type string;
+          description
+            "Collector's name of the organization.
+            ";
         }
         container device-groups {
-          description "FIXME";
+          description
+            "List of device-groups.
+            ";
           list device-group {
-            description "FIXME";
             key name;
+            description
+              "A device-group contains a group of similar devices that will
+              have collection performed in the same way.
+              ";
             leaf name {
-              description "FIXME";
               type string;
+              description
+                "Name of the device-group.
+                ";
             }
             leaf-list devices {
-              description "FIXME";
-              // Points to the devices members of this device-group
-              // The exact meaning of these names is implementation specific
               type string;
+              description
+                "Points to the devices members of this device-group.
+                The exact meaning of these names is implementation specific.
+                ";
             }
             uses ietf-tlm-philatelist-dashboard:provider-g;
           }
         }
 
         container tlm-streams {
-          description "FIXME";
+          description
+            "List of telemetry streams pertainin to this organization.
+            ";
           list tlm-stream {
-            description "FIXME";
             key id;
-            leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-            leaf-list source { description "FIXME"; type string; } // Implementation specific meaning, possibly wildcards
-            list source-list {
-              description "FIXME";
-              key "device-group dash-name";
-              leaf device-group { description "FIXME"; type leafref { path ../../../../device-groups/device-group/name; }}
-              leaf dash-name { description "FIXME"; type leafref { path ../../../../device-groups/device-group/dashboards/dashboard/id; }}
+            description
+              "A stream of telemetry data that is collected from a
+              device-group that share a particular dashboard.
+              ";
+            leaf id {
+              type ietf-tlm-philatelist-types:something;
+              description
+                "Identifier of the telemetry stream.
+                ";
             }
-            leaf destination { description "FIXME"; type leafref { path ../../../destinations/destination/id; }}
-          }
-        }
-        container destinations {
-          description "FIXME";
-          list destination {
-            description "FIXME";
-            key id;
-            leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-            uses data-endpoint-g;
+            list sources {
+              key "device-group dash-name";
+              description
+                "List of sources to collect from. Each source points to
+                a device-group and a dashboard name to collect from
+                each device in the device-group.
+                ";
+              leaf device-group {
+                type leafref {
+                  path ../../../../device-groups/device-group/name;
+                }
+                description
+                  "The device-group to collect from.
+                  ";
+              }
+              leaf dash-name {
+                type leafref {
+                  path ../../../../device-groups/device-group/dashboards/dashboard/id;
+                }
+                description
+                  "The name of the dashboard
+                  ";
+              }
+            }
+            leaf destination {
+              type ietf-tlm-philatelist-index:partition-ref-t;
+              description
+                "The TSDB Partition (bucket, interval, segment, etc.)
+                that the collected telemetry data is sent to.
+                ";
+            }
           }
         }
       }
     }
   }
 
-  augment /tlm-philatelist/organizations/organization/device-groups/device-group/dash-items/dash-item/label/value-source {
-    description "FIXME";
+  augment /tlm-collector/organizations/organization/device-groups/device-group/dash-items/dash-item/label/value-source {
+    description
+      "Some additional value-sources that the collector enables
+      (that are not available to providers).
+      ";
     case controller-managed-value {
       leaf controller-managed-value {
-        description "FIXME";
         type empty;
+        description
+          "The Collector will determine the label value by its
+          own discretion.
+          ";
       }
     }
     case controller-provided-value {
       leaf controller-provided-value {
-        description "FIXME";
         type string;
+        description
+          "The Collector will determine the label value by its
+          own discretion, and that value is configured here.
+          ";
       }
     }
   }
 }
 
-&lt;CODE ENDS&gt;</pre><a href="#section-5.3-1" class="pilcrow">¶</a>
+&lt;CODE ENDS&gt;</pre><a href="#section-5.5-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="aggregator-interface-module-for-philatelist">
-<section id="section-5.4">
+<section id="section-5.6">
         <h3 id="name-aggregator-interface-module">
-<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-aggregator-interface-module" class="section-name selfRef">Aggregator interface module for Philatelist</a>
+<a href="#section-5.6" class="section-number selfRef">5.6. </a><a href="#name-aggregator-interface-module" class="section-name selfRef">Aggregator interface module for Philatelist</a>
         </h3>
-<div class="breakable lang-yang sourcecode" id="section-5.4-1">
+<div class="breakable lang-yang sourcecode" id="section-5.6-1">
 <pre>&lt;CODE BEGINS&gt;
 module ietf-tlm-philatelist-aggregator {
   yang-version 1.1;
@@ -2069,8 +3105,8 @@ module ietf-tlm-philatelist-aggregator {
   import ietf-tlm-philatelist-types {
     prefix ietf-tlm-philatelist-types;
   }
-  import ietf-tlm-philatelist-collector {
-    prefix ietf-tlm-philatelist-collector;
+  import ietf-tlm-philatelist-index {
+    prefix ietf-tlm-philatelist-index;
   }
 
   organization
@@ -2085,164 +3121,195 @@ module ietf-tlm-philatelist-aggregator {
      Editor:  Marisol Palmero
               &lt;mailto:mpalmero@cisco.com&gt;";
   description
-    "This YANG module defines the Telemetry Philatelist Aggregator.
+    'This YANG module defines the Telemetry Philatelist Aggregator.
+    These definitions are intended for Philatelist Network Controllers.
 
-     Copyright (c) 2021 IETF Trust and the persons identified as
-     authors of the code. All rights reserved.
+    An AGGREGATOR ensures data from one or more SOURCE(s) are
+    combined into a FLOW using a (sequence of) OPERATIONs (OPs)
+    to generate a new data set in the DESTINATION (which could
+    be a new collection in the same data storage system as the
+    SOURCE).
 
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions
+                  +-------------+
+                  | AGGREGATOR  |
+                  +-------------+
+                         |
+            +------------+------------+
+            v                         v
+        ___________               ___________
+       /  SOURCE   \             /DESTINATION\
+      ( PARTITION 1 )           (  PARTITION  )
+      |\___________/| STREAM 1  |\___________/|
+      |             | ========&gt; |             |
+      |             |           |             |
+      |             | STREAM 2  |             |
+       \___________/  ===##===&gt;  \___________/
+                         ||
+        ___________      ||
+       /  SOURCE   \     ||
+      ( PARTITION 2 )   //
+      |\___________/| ==
+      |             |
+      |             |
+      |             |
+       \___________/
 
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
+    '+"
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
 
-  revision 2024-02-14 {
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
+
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
+
+  revision 2024-04-15 {
     description
       "Restructured as part of the Telemetry Philatelist framework";
     reference
       "RFC XXXX: ...";
   }
-  revision 2023-10-12 {
+
+  container tlm-aggregator {
     description
-      "Initial revision of POWEFF Aggregator";
-    reference
-      "RFC XXXX: ...";
-  }
-
-/*
-
-  An AGGREGATOR ensures data from one or more SOURCE(s) are
-  combined into a FLOW using a (sequence of) OPERATIONs (OPs)
-  to generate a new data set in the DESTINATION (which could
-  be a new collection in the same data storage system as the
-  SOURCE).
-
-                +-------------+
-                | AGGREGATOR  |
-                +-------------+
-                       |
-           +-----------+-----------+
-           v                       v
-      ___________             ___________
-     /           \           /           \
-    (  SOURCE 1   )         ( DESTINATION )
-    |\___________/| FLOW 1  |\___________/|
-    |             | ======&gt; |             |
-    |             |         |             |
-    |             | FLOW 2  |             |
-     \___________/  ===##=&gt;  \___________/
-                       ||
-      ___________      ||
-     /           \     ||
-    (  SOURCE 2   )   //
-    |\___________/| ==
-    |             |
-    |             |
-    |             |
-     \___________/
-
-
-*/
-
-  grouping aggregator-g {
-    description "FIXME";
-    container tlm-flows {
-      description "FIXME";
-      list tlm-flow {
-        description "FIXME";
+      "Root container for the Philatelist Aggregator function.
+      ";
+    container aggregations {
+      description
+        "List of aggregation operations that are applied to a set of
+        input telemetry streams in a TSDB Partition to form an output
+        stream in a different TSDB Partition.
+        ";
+      list aggregation {
         key id;
-        leaf id { description "FIXME"; type string; }
-        choice chain-position {
-          description "FIXME";
-          container input {
-            description "FIXME";
-            leaf source {
-              description "FIXME";
-              type leafref {
-                path ../../../../../sources/source/id;
-              }
-            }
+        description
+          "Each aggregation takes one or more input streams from a
+          TSDB Partition, an operation to apply to them, and points
+          to an output stream an another TSDB Partition.
+          ";
+        leaf id {
+          type string;
+          description
+            "The internal id of this aggregation operation.
+            ";
+        }
+        list input {
+          key source;
+          description
+            "The list of sources/input streams for the aggregation.
+            ";
+          leaf source {
+            type ietf-tlm-philatelist-index:partition-ref-t;
+            description
+              "The TSDB Partition (bucket, interval, segment, etc.)
+              that the input telemetry data is read from.
+              ";
           }
-          container output {
-            description "FIXME";
-            leaf destination { description "FIXME"; type leafref { path ../../../../../destinations/destination/id; }}
+        }
+        leaf operation {
+          type leafref {
+            path ../../../operations/operation/id;
           }
-          container middle {
-            description "FIXME";
-            leaf-list inputs { description "FIXME"; type leafref { path ../../../../flows/flow/id; }}
-            leaf pre-process-inputs { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
-            leaf aggregate { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
-            leaf post-process-output { description "FIXME"; type leafref { path ../../../../operations/operation/id; }}
+          description
+            "The operation to apply to the input stream(s) in order to
+            compute the output stream.
+            ";
+        }
+        container output {
+          description
+            "The TSDB Partition to send the computed output to.
+            ";
+          leaf destination {
+            type ietf-tlm-philatelist-index:partition-ref-t;
+            description
+              "The TSDB Partition (bucket, interval, segment, etc.)
+              that the aggregated telemetry data is sent to.
+              ";
           }
         }
       }
     }
     container operations {
-      description "FIXME";
+      description
+        "The operations that may be applied during the aggregation.
+        ";
       list operation {
-        description "FIXME";
         key id;
-        leaf id { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+        description
+          "Details about which operation to apply and how.
+          ";
+        leaf id {
+          type ietf-tlm-philatelist-types:something;
+          description
+            "The internal id of the operation to apply.
+            ";
+        }
         choice op-type {
-          description "FIXME";
-          container linear-sum { description "FIXME"; }
+          description
+            "A choice of basic operation types. This set of choices may
+            be extended by other modules agumenting the choice.
+            ";
+          container linear-sum {
+            description
+            "This operation produces the sum of the input streams.
+
+            Since the data points in the input stream are not likely to
+            be perfectly aligned in time, this linear-sum operation
+            produces a linear interpolation between each point in the
+            time series.
+
+            This works well when all inputs are continuously receiving
+            additional data points, and when their frequency is roughly
+            the same. A different summing operation should be chosen if
+            this is not the case, e.g. most-recent-sum.
+            ";
+          }
           container linear-average { description "FIXME"; }
           container linear-max { description "FIXME"; }
           container linear-min { description "FIXME"; }
           container rolling-average {
             description "FIXME";
-            leaf timespan { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+            leaf timespan { type ietf-tlm-philatelist-types:something; description "FIXME"; }
           }
           container filter-age {
             description "FIXME";
-            leaf min-age { description "FIXME"; type ietf-tlm-philatelist-types:something; }
-            leaf max-age { description "FIXME";type ietf-tlm-philatelist-types:something; }
+            leaf min-age { type ietf-tlm-philatelist-types:something; description "FIXME"; }
+            leaf max-age { type ietf-tlm-philatelist-types:something; description "FIXME"; }
           }
           container function {
             description "FIXME";
-            leaf name { description "FIXME"; type ietf-tlm-philatelist-types:something; }
+            leaf name { type ietf-tlm-philatelist-types:something; description "FIXME"; }
           }
-        }
-      }
-      container sources {
-        description "FIXME";
-        list source {
-          description "FIXME";
-          key id;
-          leaf id {
-            description "FIXME";
-            type ietf-tlm-philatelist-types:something;
-          }
-          uses ietf-tlm-philatelist-collector:data-endpoint-g;
         }
       }
     }
   }
-
-  augment "/ietf-tlm-philatelist-collector:tlm-philatelist"+
-          "/ietf-tlm-philatelist-collector:organizations"+
-          "/ietf-tlm-philatelist-collector:organization" {
-    description "FIXME";
-
-  }
 }
 
-&lt;CODE ENDS&gt;</pre><a href="#section-5.4-1" class="pilcrow">¶</a>
+&lt;CODE ENDS&gt;</pre><a href="#section-5.6-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="assets-interface-module-for-philatelist">
-<section id="section-5.5">
+<section id="section-5.7">
         <h3 id="name-assets-interface-module-for">
-<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-assets-interface-module-for" class="section-name selfRef">Assets interface module for Philatelist</a>
+<a href="#section-5.7" class="section-number selfRef">5.7. </a><a href="#name-assets-interface-module-for" class="section-name selfRef">Assets interface module for Philatelist</a>
         </h3>
-<div class="breakable lang-yang sourcecode" id="section-5.5-1">
+<div class="breakable lang-yang sourcecode" id="section-5.7-1">
 <pre>&lt;CODE BEGINS&gt;
 module ietf-tlm-philatelist-assets {
   yang-version 1.1;
@@ -2255,8 +3322,8 @@ module ietf-tlm-philatelist-assets {
   import ietf-lmo-assets {
     prefix ietf-lmo-assets;
   }
-  import ietf-tlm-philatelist-collector {
-    prefix ietf-tlm-philatelist-collector;
+  import ietf-tlm-philatelist-index {
+    prefix ietf-tlm-philatelist-index;
   }
 
   organization
@@ -2272,24 +3339,32 @@ module ietf-tlm-philatelist-assets {
               &lt;mailto:mpalmero@cisco.com&gt;";
   description
     "This YANG module defines the Telemetry Philatelist linkage to
-     DMLMO Assets.
+    DMLMO Assets.
+    These definitions are intended for Philatelist Network Controllers.
 
-     Copyright (c) 2021 IETF Trust and the persons identified as
-     authors of the code. All rights reserved.
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
 
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set
+    forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
 
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 (RFC 2119)
+    (RFC 8174) when, and only when, they appear in all
+    capitals, as shown here.
+    ";
 
-  revision 2024-02-14 {
+  revision 2024-04-15 {
     description
       "Initial revision.";
     reference
@@ -2297,37 +3372,44 @@ module ietf-tlm-philatelist-assets {
   }
 
   grouping asset-pointer-g {
-      description "FIXME";
+      description
+        "Pointer to an LMO asset.
+        ";
     leaf pertains-to-asset-class {
-      description "FIXME";
       type leafref {
         path /ietf-lmo:lmos/ietf-lmo:lmo/ietf-lmo:lmo-class;
       }
       must "derived-from-or-self(current(), 'ietf-lmo-assets:asset')";
       must "../pertains-to-asset-id";
+      description
+        "The LMO Asset class of the asset.
+        ";
     }
     leaf pertains-to-asset-id {
-      description "FIXME";
       type leafref {
         path "/ietf-lmo:lmos/ietf-lmo:lmo"+
           "[ietf-lmo:lmo-class=current()/../pertains-to-asset-class]"+
           "/ietf-lmo:inst/ietf-lmo:id";
       }
+      description
+        "The LMO Asset id (within the class) of the asset.
+        ";
     }
   }
 
-  // Augment the telemetry destination with an asset-pointer-g
-  augment "/ietf-tlm-philatelist-collector:tlm-philatelist"+
-          "/ietf-tlm-philatelist-collector:organizations"+
-          "/ietf-tlm-philatelist-collector:organization"+
-          "/ietf-tlm-philatelist-collector:destinations"+
-          "/ietf-tlm-philatelist-collector:destination" {
-    description "FIXME";
+  augment "/ietf-tlm-philatelist-index:tlm-index"+
+          "/ietf-tlm-philatelist-index:partitions"+
+          "/ietf-tlm-philatelist-index:partition" {
+    description
+      "By augmenting an asset pointer into the TSDB Partition Index,
+      controller may clarify which LMO Asset the data in the Partition
+      pertains to.
+      ";
     uses asset-pointer-g;
   }
 }
 
-&lt;CODE ENDS&gt;</pre><a href="#section-5.5-1" class="pilcrow">¶</a>
+&lt;CODE ENDS&gt;</pre><a href="#section-5.7-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2354,35 +3436,56 @@ module ietf-tlm-philatelist-assets {
       <h2 id="name-changes-to-be-deleted-by-rf">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-changes-to-be-deleted-by-rf" class="section-name selfRef">Changes (to be deleted by RFC Editor)</a>
       </h2>
-<div id="from-version-00-to-01">
+<div id="from-version-01-to-02">
 <section id="section-8.1">
-        <h3 id="name-from-version-00-to-01">
-<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-from-version-00-to-01" class="section-name selfRef">From version -00 to -01</a>
+        <h3 id="name-from-version-01-to-02">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-from-version-01-to-02" class="section-name selfRef">From version -01 to -02</a>
         </h3>
 <ul class="normal">
 <li class="normal" id="section-8.1-1.1">
-            <p id="section-8.1-1.1.1">Split YANG modules, some contents going into poweff-specific modules<a href="#section-8.1-1.1.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-1.1.1">Introduced Dashboard and Index concepts<a href="#section-8.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-1.2">
-            <p id="section-8.1-1.2.1">Renamed remaining YANG modules from -poweff- to -tlm-philatelist-<a href="#section-8.1-1.2.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-1.2.1">Restructured YANG into three controller modules: collector, index, aggregator<a href="#section-8.1-1.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-1.3">
-            <p id="section-8.1-1.3.1">Updated text to reflect new module organization<a href="#section-8.1-1.3.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-1.3.1">Restructured YANG into one device module: provider<a href="#section-8.1-1.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-1.4">
-            <p id="section-8.1-1.4.1">Added optional linkage to DMLMO assets<a href="#section-8.1-1.4.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-1.4.1">Restructured YANG common parts into one abstract module: dashboard<a href="#section-8.1-1.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="from-version-00-to-01">
+<section id="section-8.2">
+        <h3 id="name-from-version-00-to-01">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-from-version-00-to-01" class="section-name selfRef">From version -00 to -01</a>
+        </h3>
+<ul class="normal">
+<li class="normal" id="section-8.2-1.1">
+            <p id="section-8.2-1.1.1">Split YANG modules, some contents going into poweff-specific modules<a href="#section-8.2-1.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-1.2">
+            <p id="section-8.2-1.2.1">Renamed remaining YANG modules from -poweff- to -tlm-philatelist-<a href="#section-8.2-1.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-1.3">
+            <p id="section-8.2-1.3.1">Updated text to reflect new module organization<a href="#section-8.2-1.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-1.4">
+            <p id="section-8.2-1.4.1">Added optional linkage to DMLMO assets<a href="#section-8.2-1.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="version-00">
-<section id="section-8.2">
+<section id="section-8.3">
         <h3 id="name-version-00">
-<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-version-00" class="section-name selfRef">Version -00</a>
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-version-00" class="section-name selfRef">Version -00</a>
         </h3>
 <ul class="normal">
-<li class="normal" id="section-8.2-1.1">
-            <p id="section-8.2-1.1.1">Initial version.<a href="#section-8.2-1.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-8.3-1.1">
+            <p id="section-8.3-1.1.1">Initial version.<a href="#section-8.3-1.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -2416,8 +3519,12 @@ module ietf-tlm-philatelist-assets {
 <span class="refAuthor">Bjorklund, M., Ed.</span>, <span class="refTitle">"The YANG 1.1 Data Modeling Language"</span>, <span class="seriesInfo">RFC 7950</span>, <span class="seriesInfo">DOI 10.17487/RFC7950</span>, <time datetime="2016-08" class="refDate">August 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7950">https://www.rfc-editor.org/rfc/rfc7950</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9195">[RFC9195]</dt>
+      <dd>
+<span class="refAuthor">Lengyel, B.</span> and <span class="refAuthor">B. Claise</span>, <span class="refTitle">"A File Format for YANG Instance Data"</span>, <span class="seriesInfo">RFC 9195</span>, <span class="seriesInfo">DOI 10.17487/RFC9195</span>, <time datetime="2022-02" class="refDate">February 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9195">https://www.rfc-editor.org/rfc/rfc9195</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -2433,8 +3540,12 @@ module ietf-tlm-philatelist-assets {
 <span class="refAuthor">Claise, B.</span>, <span class="refAuthor">Nayyar, M.</span>, and <span class="refAuthor">A. R. Sesani</span>, <span class="refTitle">"Per-Node Capabilities for Optimum Operational Data Collection"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-claise-netconf-metadata-for-collection-03</span>, <time datetime="2022-01-25" class="refDate">25 January 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-claise-netconf-metadata-for-collection-03">https://datatracker.ietf.org/doc/html/draft-claise-netconf-metadata-for-collection-03</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-opsawg-collected-data-manifest-01">[I-D.draft-ietf-opsawg-collected-data-manifest-01]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Claise, B.</span>, <span class="refAuthor">Quilbeuf, J.</span>, <span class="refAuthor">Lopez, D.</span>, <span class="refAuthor">Martinez-Casanueva, I. D.</span>, and <span class="refAuthor">T. Graf</span>, <span class="refTitle">"A Data Manifest for Contextualized Telemetry Data"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-opsawg-collected-data-manifest-01</span>, <time datetime="2023-07-10" class="refDate">10 July 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-opsawg-collected-data-manifest-01">https://datatracker.ietf.org/doc/html/draft-ietf-opsawg-collected-data-manifest-01</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-netana-nmop-yang-kafka-integration-01">[I-D.draft-netana-nmop-yang-kafka-integration-01]</dt>
+      <dd>
+<span class="refAuthor">Graf, T.</span> and <span class="refAuthor">A. Elhassany</span>, <span class="refTitle">"An Architecture for YANG-Push to Apache Kafka Integration"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-netana-nmop-yang-kafka-integration-01</span>, <time datetime="2024-03-16" class="refDate">16 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-netana-nmop-yang-kafka-integration-01">https://datatracker.ietf.org/doc/html/draft-netana-nmop-yang-kafka-integration-01</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
