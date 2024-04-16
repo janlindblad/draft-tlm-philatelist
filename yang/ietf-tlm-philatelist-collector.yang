@@ -77,7 +77,7 @@ module ietf-tlm-philatelist-collector {
     capitals, as shown here.
     ";
   
-  revision 2024-02-14 {
+  revision 2024-04-15 {
     description
       "Restructured as part of the Telemetry Philatelist framework";
     reference

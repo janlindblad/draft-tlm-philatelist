@@ -6,7 +6,7 @@ category: std
 docname: draft-lindblad-tlm-philatelist-latest
 submissiontype: IETF
 number:
-date: 2024-03-14
+date: 2024-04-15
 consensus: true
 v: 3
 area: OPS
@@ -41,12 +41,13 @@ normative:
 informative:
   I-D.draft-ietf-opsawg-collected-data-manifest-01:
   I-D.draft-claise-netconf-metadata-for-collection-03:
+  I-D.draft-netana-nmop-yang-kafka-integration-01:
 
 --- abstract
 
 Timestamped telemetry data is collected en masse today.  Mature tools are typically used, but the data is often collected in an ad hoc manner.  While the dashboard graphs look great, the resulting data is often of questionable quality, not well defined, and hard to compare with seemingly similar data from other organizations.
 
-This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more dependable and comparable results.  This framework is implemented in Network Controllers, but certainly also concerns how data is collected from all kinds of Network Elements.
+This document proposes a standard, extensible, cross domain framework for collecting and aggregating timestamped telemetry data in a way that combines YANG, metadata and Time Series Databases to produce more transparent, dependable and comparable results.  This framework is implemented in the Network Controller layer, but is rooted in data that is collected from all kinds of Network Elements and related systems.
 
 --- middle
 
@@ -54,9 +55,9 @@ This document proposes a standard, extensible, cross domain framework for collec
 
 ## The Problem
 
-Many organizations today are collecting large amounts of telemetry data from their networks and data centers for a variety of purposes.  Much (most?) of this data is funneled into a Time Series Database (TSDB) for display in a dashboard or further (AI-backed) processing and decision making.
+Many organizations today are collecting large amounts of telemetry data from their networks and data centers for a variety of purposes.  Much (most?) of this data is funneled into a Time Series Database (TSDB) for display in a graphical dashboard or further (AI-backed) processing and decision making.
 
-While this data collection is often handled using standard tools, there generally seems to be little commonality when it comes to what is meaured, how the data is aggregated, or definitions of the measured quantities (if any).
+While this data collection is often handled using existing and stable tools, there generally seems to be little commonality when it comes to what is meaured, how the data is aggregated, or definitions of the measured quantities (if any).
 
 Data science issues like adding overlapping quantities, adding quantities of different units of measurement, or quantities with different scopes, are likely common.  Such errors are hard to detect given the ad hoc nature of the collection.  This often leads to uncertainty regarding the quality of the conclusions drawn from the collected data.
 
@@ -64,9 +65,9 @@ Data science issues like adding overlapping quantities, adding quantities of dif
 
 The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.
 
-To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.
+To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to devices supporting traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.
 
-Initially developed in context of the Power and Energy Efficiency work (POWEFF), we realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.
+Initially developed in context of the Power and Energy Efficiency work (POWEFF), the authors realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.
 
 There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.
 
@@ -109,28 +110,29 @@ Sensor Path
 
 ## Functional Role Diagram
 
-The following role diagram explains the basic concepts of the architecture. Many of the functional roles would exist in many instances in a real deployment.
+The following role diagram explains the basic concepts of the architecture. Many of the functional units would exist in many instances in a real deployment. For example, in a real deployment there would be lots of Network Elements with the Provider role.
 
-On top we have a Network Orchestrator that ensures the Network Controller functions get a suitable configuration. The Collector, Index and Aggregator functions run on Network Controllers. Collectors and Aggregators are responsible for ensuring there is a TSDB Partition (also known as bucket, interval, segment, etc. in various TSDB implementations) to receive the potentially large volumes of telemetry data that they produce themselves, or in the case of the collector, may configure a Provider Network Element to send to the TSDB.
+On top we have a Network Orchestrator that ensures the Network Controller functions get a suitable configuration. The Collector, Index and Aggregator functions run as part of one or more Network Controllers. Collectors and Aggregators are responsible for ensuring there is a TSDB Partition (also known as bucket, interval, segment, etc. in various TSDB implementations) to receive the potentially large volumes of telemetry data that they produce themselves, or in the case of the Collector, may configure a Provider Network Element to send the collected data to the TSDB, or to the Collector itself, which then passes it on to the TSDB.
+
 ~~~
-                    +--------------+ 
+                    +--------------+
                     |   Network    |
                     | Orchestrator |
-                    +------+-------+ 
+                    +------+-------+
                            |
        +-------------------+-------------------+
        v                   v                   v
-+--------------+    +--------------+    +--------------+ 
++--------------+    +--------------+    +--------------+
 |  *Collector* |    |   *Index*    |    | *Aggregator* |
 |   Network    |--->|   Network    |<---|   Network    |
 |  Controller  |    |  Controller  |    |  Controller  |
-+--------------+    +--------------+    +--------------+ 
++--------------+    +--------------+    +--------------+
        |   /\  \\                :                  /\
        |   ||    \\              :                  ||
        v   ||      \\          ____________         ||
 +--------------+     \\       /            \       //
 |  *Provider*  |       ====> (     TSDB     ) <====
-|   Network    | ==========> |\____________/| 
+|   Network    | ==========> |\____________/|
 |   Element    | ==========> |              |
 +--------------+             | *Partition*  |
                              |              |
@@ -141,45 +143,25 @@ On top we have a Network Orchestrator that ensures the Network Controller functi
 
 In the figure, single line arrows indicate control/configuration flow.
 Double line arrows indicate telemetry data flow. The dotted line
-between the Index and the TSDB indicates that the index tracks the TSDB
-partition contents. 
+between the Index and the TSDB indicates that the index reflects the TSDB
+partition contents.
 
-## Interface Diagram
+## Dashboards
 
-In addition to the functional roles, there are some interfaces that are shared between different roles. They have been factored out into separate modules so that they can be imported and used by mutiple roles.
+In addition to the functional roles, there is a concept of Dashboards, which is used both within Providers and Collectors. A Dashboard is a particular collection of sensors and controls that have been predefined for particular use cases.  Network Elements may implement and publish one or more of these predefined Dashboards, and Controllers may know how to interpret one or more of them. Dashboards contain one or more dashboard items, each one a sensor or control.
 
-~~~
-        Dashboard                    Partition
-            |                            |
-           / \                          / \
-   Provider   Collector           
-                ------- Collector
-               /
-Dashboard  ---<
-               \
-                --------
-~~~
-{: title="Philatelist Functional Role Diagram."}
+For example, a particular Network Element might publish two dashboards. One Dashboard might be called "Current Power Draw" and contain only a single dashboard item which allows the Controller to read out the Network Element's total power draw at this instance. The second Dashboard might be called "Subsystem Power" and contain a tree of dashboard items, which allows the Controller to read out the current power draw of the Network Element's various subsystems.  The contents of each Dashboard is defined as a YANG structure in some standards document, or might be a vendor specific YANG definition.
 
-
-            DASHBOARD            STORAGE
-           /         \          /        \
-   PROVIDER           COLLECTOR           AGGREGATOR
-Network Element   Network Controller  Network Controller
-
-
-
+A key point of this architecture is that Dashboard descriptions (in YANG) can be provided also for Network Elements that offer no YANG-based management interfaces at all, or for Network Elements hosting a YANG-based interface, but that were released prior to this document being written.
 
 ## Collection Data Flow Tree Diagram
 
-The deployment of a Philatelist framework consists of a collection of plug-in compomnents with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.
+The deployment of a Philatelist framework consists of a collection of Controller plug-in compomnents with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.
 
 ~~~
-
                       +-----------------+
                       | USER INTERFACE  |
-                      |    Dashboard    |
-                      |                 |
+                      |   Graph View    |
                       +--------------11-+
                                |
                       +-----------------+
@@ -229,13 +211,13 @@ The deployment of a Philatelist framework consists of a collection of plug-in co
 ~~~
 {: title="Example Philatelist component deployment."}
 
-Each component in the above diagram, represents a logical function.  Many boxes could be running within a single server, or they could be fully distrubuted, or anything in between.
+Each component in the above diagram, represents a logical function.  Many of the functions represented by these boxes could be running within a single server, or they could be fully distrubuted, or, perhaps more likely, something in between.
 
-Provider components (61, 82, 91) are running on a telemetry source system that supports a YANG-based telemetry data server.  The telemetry data flows from the telemetry source system to a Time Series Database (TSDB).
+Provider components (61, 82, 91) are running on a Network Element system that supports a YANG-based telemetry data server.  The telemetry data flows from the telemetry source system to a Time Series Database (TSDB).
 
-Collector components (51, 72, 81) ensure the Providers are programmed properly to deliver the telemetry data to the TSDB designated by the collector.  In some cases this flow may be direct from the source to the TSDB, in other cases, it may be going through the collector.  In some cases the collector may be polling the source, in others it may have set up an automatic, periodic subscription.
+Collector components (51, 72, 81) ensure the Providers are programmed properly to deliver the telemetry data to the TSDB Partition designated by the Collector.  In some cases this flow may be direct (e.g. via a message bus) from the Provider to the TSDB, in other cases, it may be going through the Collector.  In some cases the collector may be polling the Provider, in others it may have set up an automatic, periodic subscription.
 
-Many telemetry source systems will not have any on-board YANG-based telemetry server.  Such servers will instead be managed by a collector specialized to handle a particular kind of source server (53, 54).  These specialized collectors are still responsible to set up a telemetry data stream from them to the collector's TSDB.  In this case, the collector will also supply a YANG description (52, 55) of the incoming data stream.
+Many telemetry Provider systems will not have any on-board YANG-based telemetry server.  Such servers will instead be managed by a Collector capable of handling a particular kind of Provider (53, 54).  Such a Collector is still responsible to set up a telemetry data stream to the Collector's TSDB.  In this case, the Collector will also supply a YANG description (52, 55) of the incoming data stream.
 
 Processor components (21, 41, 71) are transforming the data stream in some way, e.g. converting from one unit of measurement to another, or adjusting the data values recorded to also include some aspect that this particular sensor is not taking into account.
 
@@ -245,9 +227,9 @@ On top of the stack, we may often find a (graphical) user interface (11), for hu
 
 ## The Provider Component
 
-A Provider is a Network ELement that is the source of telemetry data that also offers a YANG-based management interface.  Each provider typically has a large number of "sensors" that can be polled or in some cases subscribed to.
+A Provider is a Network Element that is the source of telemetry data that may or may not offer a YANG-based management interface.  Each Provider typically has a large number of "sensors" that can be polled or in some cases subscribed to. It may also offer some controls (configurables or actionables).
 
-One problem with the sensors is that they are spread around inside the source system, and may not be trivial to locate.  Also, the metadata assciated with the sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.
+One problem with the sensors is that the sensors relevant for a given use case are often spread around inside the Provider system, and many may not know about all of them.  Also, the metadata assciated with each sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.
 
 ~~~
     /hardware/component[name="psu3"]/.../sensor-data/value
@@ -259,89 +241,176 @@ One problem with the sensors is that they are spread around inside the source sy
 ~~~
 {: title="Example of scattered potential sensors in a device."}
 
-To solve these problems, the Provider YANG module contains a sensor-catalog list.  Essentially a list of all interesting sensors available on the system, with their sensor paths and machine parsable units, definition and any other metadata.
+To solve these problems, the Provider YANG module contains a list of Dashboards.  Each dashboard contains the sensors and controls useful for some particular use case. The contents of the Dashboards is often defined by a standard, but could also be defined in proprietary YANG modules. Each dashboard item is listed with their sensor paths and machine parsable units, definition and any other metadata.
 
-An admin user or application can then copy the sensor definition from the sensor catalog and insert into the configuration in the colletor.
+An admin user or application can then copy the sensor definition from the Dashboard and insert into the Collector's configuration with items to collect and send to the TSDB.
 
 ~~~ yang-tree
-  +--ro sensor-catalog
-      +--ro sensors
-        +--ro sensor* [path]
-            +--ro path?                     string
-            +--ro sensor-type?              identityref
-            +--ro sensor-location?          something
-            +--ro sensor-state?             something
-            +--ro sensor-current-reading?   something
-            +--ro sensor-precision?         something
+module: ietf-tlm-philatelist-provider
+  +--rw tlm-provider
+     +--rw dashboards
+     |  +--rw dashboard* [id]
+     |     +--rw id       identityref
+     |     +--rw items* [tsdb-path]
+     |        +--rw tsdb-path    -> ../../../../dash-items/dash-item/tsdb-path
+     +--rw dash-items
+     |  +--rw dash-item* [tsdb-path]
+     |     +--rw tsdb-path        string
+     |     +--rw item-type        identityref
+     |     +--rw accuracy
+     |     |  +--rw max-error-relative?   ietf-tlm-philatelist-types:something
+     |     |  +--rw max-error-offset?     ietf-tlm-philatelist-types:something
+     |     +--rw label* [name]
+     |     |  +--rw name                    string
+     |     |  +--rw (value-source)?
+     |     |     +--:(static-values)
+     |     |     |  +--rw static-values*    string
+     |     |     +--:(runtime-values)
+     |     |        +--rw runtime-values*   -> ../../../dash-item/tsdb-path
+     |     +--rw access-path?     string
+     |     +--rw access-params?   -> ../../../accesses/access/id
 ~~~
-{: title="YANG tree diagram of the Provider sensor-catalog."}
+{: title="YANG tree diagram of the Provider Dashboard list."}
 
 Note: The "something" YANG-type is used in many places in this document.  That is just a temporarty placeholder we use until we have figured out what the appropriate type should be.
 
-The sensor types are defined as YANG identities, making them maximally extensible.  Examples of sensor types might be energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.
+The each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dasboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identitity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.
+
+Each dashboard item has an access path and access parameters. These are a mapping into the access mechanism the Collector must use to poll or subscribe to the sensor value.
+
+~~~ yang-tree
+module: ietf-tlm-philatelist-provider
+  +--rw tlm-provider
+     +--rw accesses
+     |  +--rw access* [id]
+     |     +--rw id                                 string
+     |     +--rw method?                            identityref
+     |     +--rw get-local-file-once
+     |     |  +--rw filename?   string
+     |     +--rw get-static-url-once
+     |     |  +--rw url?   ietf-tlm-philatelist-types:something
+     |     +--rw gnmi-polling
+     |     |  +--rw encoding?   ietf-tlm-philatelist-types:something
+     |     |  +--rw protocol?   ietf-tlm-philatelist-types:something
+     |     +--rw restconf-get-polling
+     |     |  +--rw xxx?   string
+     |     +--rw netconf-get-polling
+     |     |  +--rw xxx?   string
+     |     +--rw restconf-yang-push-subscription
+     |     |  +--rw xxx?   string
+     |     +--rw netconf-yang-push-subscription
+     |     |  +--rw xxx?   string
+     |     +--rw redfish-polling
+     |     |  +--rw xxx?   string
+     |     +--rw frequency?                         ietf-tlm-philatelist-types:sample-frequency
+~~~
+{: title="YANG tree diagram of the Provider Accesses list."}
+
+The list of access methods contains a number of YANG-based and non-YANG based access methods, but this set of access methods can also be extended by YANG-augmentation. The get-local-file-once access method allows reading fixed values from a data sheet encoded in YANG-instance data file format {{RFC9195}}, and  the get-static-url-once access method does the same from a given URL. That URL may be served from the Network Element, or from the Collector itself or anywhere else on the network or even internet.
+
+The access-path leaf discussed above (/tlm-provider/dash-items/dash-item/access-path) contains the path to the item that should be read or subscribed to. If the dast-item in question is for a YANG-based interface, then that path would be an XPath expression, with prefixes. Those prefixes need to be mapped to XML namespaces (NETCONF) or YANG module names (RESTCONF). That mapping is provided by the prefix-mappings list.
+
+~~~ yang-tree
+module: ietf-tlm-philatelist-provider
+  +--rw tlm-provider
+     +--rw prefix-mappings
+        +--rw prefix-mapping* [prefix]
+           +--rw prefix         string
+           +--rw namespace?     string
+           +--rw module-name?   string
+~~~
+{: title="YANG tree diagram of the Provider Prefix Mapping list."}
 
 ## The Collector Component
 
-Collector components are parts of a Network Controller that collect data points from sources, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the source to the destination TSDB and that the data has a YANG description and is tagged with necessary metadata.  How the collector agrees with a source to deliver data in a timely manner is beyond the scope of this document.
+The Collector component is part of a Network Controller that collect telemetry data from Providers, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the Provider to the destination TSDB, and that the data has a YANG description and is tagged with necessary metadata.  How the Collector agrees with a Provider to deliver data in a timely manner is beyond the scope of this document.
 
 ~~~
-
          +-------------+
          |  COLLECTOR  |
          +-------------+                     ___________
                 |                           /           \
-      +------------------+                 ( DESTINATION )
+      +------------------+                 (    TSDB     )
       v                  v                 |\___________/|
 +------------+    +------------+  STREAM 1 |             |
-|   SOURCE   |    |   SOURCE   |  =======> |             |
-| - sensor 1 |    | - sensor 1 |           |             |
+|  PROVIDER  |    |  PROVIDER  |  =======> |             |
+| - sensor 1 |    | - sensor 1 |           |  Partition  |
 | - sensor 2 |    | - sensor 4 |  STREAM 2 |             |
 | - sensor 3 |    | - sensor 7 |  =======> |             |
 +------------+    +------------+           |             |
           \\                      STREAM 3 |             |
             =============================>  \___________/
-
 ~~~
-{: title="Example of Collector setting up three streams of telemetry data from two sources to one desitination."}
+{: title="Example of Collector setting up three streams of telemetry data from two Providers to one TSDB Partition."}
 
-Each source holds a number of sensors that may be queried or subscribed to.  The collector arranges the sensors into sensour groups that presumably are logically related, and that are collected using the same method.  A number of collection methods (some YANG-based, some not) are modeled directly in the ietf-poweff-collector.yang module, but the set is designed to be easily extensible.
+The top of the Collector model contains a list of organizations, as a single Collector component might be doing collection work for different organizations (customers, departments, scopes) that must not be intermixed. Each organization has a list of device-groups pointing out specific Network Elements. Each group has a list of dashboards that will be queried. Since each Provider has a list of supported dashboards, the Collector simply copies the dashboards it is interested in to its own collection list.
 
 ~~~ yang-tree
-  +-- sensor-groups
-  |  +-- sensor-group* [id]
-  |     +-- id?                                something
-  |     +-- method?                            identityref
-  |     +-- get-static-url-once
-  |     |  +-- url?                            something
-  |     |  +-- format?                         something
-  |     +-- gnmi-polling
-  |     |  +-- encoding?                       something
-  |     |  +-- protocol?                       something
-  |     +-- restconf-get-polling
-  |     |  +-- xxx?                            something
-  |     +-- netconf-get-polling
-  |     |  +-- xxx?                            something
-  |     +-- restconf-yang-push-subscription
-  |     |  +-- xxx?                            something
-  |     +-- netconf-yang-push-subscription
-  |     |  +-- xxx?                            something
-  |     +-- redfish-polling
-  |     |  +-- xxx?                            something
-  |     +-- frequency?                         sample-frequency
-  |     +-- path* [path]
-  |        +-- path?                           string
-  |        +-- sensor-type?                    identityref
-  +-- tlm-streams
-    +-- tlm-stream* [id]
-        +-- id?                                something
-        +-- source*                            string
-        +-- sensor-group* [name]
-        |  +-- name?   -> ../../../sensor-groups/sensor-group/id
-        +-- destination?    -> ../../../destinations/destination/id
+module: ietf-tlm-philatelist-collector
+  +--rw tlm-collector
+     +--rw organizations
+        +--rw organization* [name]
+           +--rw name             string
+           +--rw device-groups
+           |  +--rw device-group* [name]
+           |     +--rw name               string
+           |     +--rw devices*           string
+           |     +--rw dashboards
+           |     |  +--rw dashboard* [id]
+           |     |     +--rw id       identityref
+           |     |     +--rw items* [tsdb-path]
+           |     |        +--rw tsdb-path    -> ../../../../dash-items/dash-item/tsdb-path
 ~~~
-{: title="YANG tree diagram of the Collector sensor-groups and streams."}
+{: title="YANG tree diagram of the top part of the Collector model."}
+
+The Collector model also contains the same dash-item list as shown above in the Provider model. This allows the Collector configuration to hold a local copy of the dashboards and dash-items it finds relevant, to guide its own collection work.
+
+Finally, the Collector keeps a list of streams to work with, pointing out the sources (device-group and dash-name) and destination (a TSDB Partition).
+
+~~~ yang-tree
+module: ietf-tlm-philatelist-collector
+  +--rw tlm-collector
+     +--rw organizations
+        +--rw organization* [name]
+           +--rw tlm-streams
+              +--rw tlm-stream* [id]
+                 +--rw id             ietf-tlm-philatelist-types:something
+                 +--rw sources* [device-group dash-name]
+                 |  +--rw device-group    -> ../../../../device-groups/device-group/name
+                 |  +--rw dash-name       -> ../../../../device-groups/device-group/dashboards/dashboard/id
+                 +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
+~~~
+{: title="YANG tree diagram of the Collector tlm-streams."}
 
 The sensor groups are then arranged into streams from a collection of sources (that support the same set of sensor groups) to a destination.  This structure has been chosen with the assumption that there will be many source devices with the same set of sensor groups, and we want to minimize repetition.
+
+## The Index Component
+
+When Collectors collect, and when Aggregators process and aggregate telemetry data, they need to send this data to a TSDB Partition as destination. To keep track of which data is sent where, and what the connection details are for that partition, the Network Controller implements the Index YANG module. Both the Collector and Aggregator modules reference this module.
+
+~~~ yang-tree
+module: ietf-tlm-philatelist-index
+  +--rw tlm-index
+     +--rw partitions
+        +--rw partition* [id]
+           +--rw id               ietf-tlm-philatelist-types:something
+           +--rw url?             ietf-tlm-philatelist-types:something
+           +--rw organization?    ietf-tlm-philatelist-types:something
+           +--rw partition?       ietf-tlm-philatelist-types:something
+           +--rw impl-specific
+              +--rw binding* [key]
+                 +--rw key              string
+                 +--rw (value-type)?
+                    +--:(value)
+                    |  +--rw value?     string
+                    +--:(values)
+                    |  +--rw values*    string
+                    +--:(env-var)
+                       +--rw env-var?   string
+~~~
+{: title="YANG tree diagram of the Index TSDB Partitions."}
+
+The implementation specific part of the model is for integration with specific TSDB implenentations. Each such integration may need a specific sef of key-value bindings, that can be provided in this list.
 
 ## The Processor and Aggregator Components
 
@@ -349,114 +418,101 @@ Processor components are parts of a Network Controller that take an incoming dat
 
 Aggregator components take multiple incoming data flows and combine them, typically by adding them together, taking possible differences in cadence in the input data flows into account.
 
-Processor and Aggregator components provide a YANG model of the output data, just like the Collector components, so that all data flowing in the system has a YANG description and is associated with metadata.
+Processor and Aggregator components provide a YANG model of their output data, just like the Collector components, so that all data flowing in the system has a YANG description and is associated with metadata.
 
 Note: In the current version of the YANG modules, a Processor is simply an Aggregator with a single input and output.  Unless we see a need to keep these two component types separate, we might remove the Processor component and keep it baked in with the Aggregator.
 
 ~~~
-
-                +-------------+
-                | AGGREGATOR  |
-                +-------------+
-                       |
-           +-----------+-----------+
-           v                       v
-      ___________             ___________
-     /           \           /           \
-    (  SOURCE 1   )         ( DESTINATION )
-    |\___________/| FLOW 1  |\___________/|
-    |             | ======> |             |
-    |             |         |             |
-    |             | FLOW 2  |             |
-     \___________/  ===##=>  \___________/
-                       ||
-      ___________      ||
-     /           \     ||
-    (  SOURCE 2   )   //
-    |\___________/| ==
-    |             |
-    |             |
-    |             |
-     \___________/
-
+                  +-------------+
+                  | AGGREGATOR  |
+                  +-------------+
+                         |
+            +------------+------------+
+            v                         v
+        ___________               ___________
+       /  SOURCE   \             /DESTINATION\
+      ( PARTITION 1 )           (  PARTITION  )
+      |\___________/| STREAM 1  |\___________/|
+      |             | ========> |             |
+      |             |           |             |
+      |             | STREAM 2  |             |
+       \___________/  ===##===>  \___________/
+                         ||
+        ___________      ||
+       /  SOURCE   \     ||
+      ( PARTITION 2 )   //
+      |\___________/| ==
+      |             |
+      |             |
+      |             |
+       \___________/
 ~~~
-{: title="Example of an Aggregator setting up two flows of telemetry data from two sources to one desitination."}
+{: title="Example of an Aggregator setting up two streams of telemetry data from two sources to one desitination."}
 
-In this diagram, the sources and destination look like separate TSDBs, which they might be.  They may also be different buckets within the same TSDB.
+In this diagram, the sources and destination look like separate TSDBs, which they might be.  They may also be different partitions within the same TSDB.
 
-Each flow is associated with one or more inputs, one output and a series of processing operations.  Each input flow and output flow may have an pre-processing or post-processing operation applied to it separately.  Then all the input flows are combined using one or more aggregation operations.  Some basic operations have been defined in the Aggregator YANG module, but the set of operations has been designed to be maximally extensible.
+Each stream is associated with one or more inputs, one output and a processing operation.  All the input streams are combined using one or more aggregation operations.  Some basic operations have been defined in the Aggregator YANG module, but the set of operations has been designed to be maximally extensible.
 
 ~~~ yang-tree
-  +-- tlm-flows
-  |  +-- tlm-flow* [id]
-  |     +-- id?                                string
-  |     +-- (chain-position)?
-  |        +--:(input)
-  |        |  +-- input
-  |        |     +-- source?
-  |        |           -> ../../../../../sources/source/id
-  |        +--:(output)
-  |        |  +-- output
-  |        |     +-- destination?
-  |        |           -> ../../../../../destinations/destination/id
-  |        +--:(middle)
-  |           +-- middle
-  |              +-- inputs*
-  |              |     -> ../../../../flows/flow/id
-  |              +-- pre-process-inputs?
-  |              |     -> ../../../../operations/operation/id
-  |              +-- aggregate?
-  |              |     -> ../../../../operations/operation/id
-  |              +-- post-process-output?
-  |                    -> ../../../../operations/operation/id
-  +-- operations
-    +-- operation* [id]
-        +-- id?                                something
-        +-- (op-type)?
-          +--:(linear-sum)
-          |  +-- linear-sum
-          +--:(linear-average)
-          |  +-- linear-average
-          +--:(linear-max)
-          |  +-- linear-max
-          +--:(linear-min)
-          |  +-- linear-min
-          +--:(rolling-average)
-          |  +-- rolling-average
-          |     +-- timespan?                  something
-          +--:(filter-age)
-          |  +-- filter-age
-          |     +-- min-age?                   something
-          |     +-- max-age?                   something
-          +--:(function)
-              +-- function
-                +-- name?                      something
+module: ietf-tlm-philatelist-aggregator
+  +--rw tlm-aggregator
+     +--rw aggregations
+     |  +--rw aggregation* [id]
+     |     +--rw id           string
+     |     +--rw input* [source]
+     |     |  +--rw source    ietf-tlm-philatelist-index:partition-ref-t
+     |     +--rw operation?   -> ../../../operations/operation/id
+     |     +--rw output
+     |        +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
 ~~~
-{: title="YANG tree diagram of the Aggregator flows and operations."}
+{: title="YANG tree diagram of the top Aggregator model."}
 
-The operations listed above are basic aggregation operations.  Linear-sum is just adding all the input sources together, with linear interpolation when their data points don't align perfectly in time.  Rolling average is averaging the input flows over a given length of time.  The filter-age drops all data points that are outside the min to max age.  The function allows plugging in any other function the Aggregator may have defined, but more importantly, the operations choice is easily extended using YANG augment to include any other IETF or vendor specified extensions.
+The operations listed below are basic aggregation operations.  Linear-sum is just adding all the input sources together, with linear interpolation when their data points don't align perfectly in time.  Rolling average is averaging the input flows over a given length of time.  The filter-age drops all data points that are outside the min to max age.  The function allows plugging in any other function the Aggregator may have defined, but more importantly, the operations choice is easily extended using YANG augment to include any other IETF or vendor specified augmentations.
+
+~~~ yang-tree
+module: ietf-tlm-philatelist-aggregator
+  +--rw tlm-aggregator
+     +--rw operations
+        +--rw operation* [id]
+           +--rw id                       ietf-tlm-philatelist-types:something
+           +--rw (op-type)?
+              +--:(linear-sum)
+              |  +--rw linear-sum
+              +--:(linear-average)
+              |  +--rw linear-average
+              +--:(linear-max)
+              |  +--rw linear-max
+              +--:(linear-min)
+              |  +--rw linear-min
+              +--:(rolling-average)
+              |  +--rw rolling-average
+              |     +--rw timespan?   ietf-tlm-philatelist-types:something
+              +--:(filter-age)
+              |  +--rw filter-age
+              |     +--rw min-age?   ietf-tlm-philatelist-types:something
+              |     +--rw max-age?   ietf-tlm-philatelist-types:something
+              +--:(function)
+                 +--rw function
+                    +--rw name?   ietf-tlm-philatelist-types:something
+~~~
+{: title="YANG tree diagram of the Aggregator operations list."}
 
 ## The Link to Assets
 
-In {{I-D.draft-palmero-opsawg-ps-almo-00}}, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the DMLMO structure and adds the possibility for an asset to point to a provider or aggregated data stream. FIXME
+In {{I-D.draft-palmero-opsawg-ps-almo-00}}, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.
 
 # YANG-based Telemetry Outlook
 
-Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g. {{I-D.draft-ietf-opsawg-collected-data-manifest-01}} and {{
-I-D.draft-claise-netconf-metadata-for-collection-03}} come to mind.
-
-Even though that work has a solid foundation and shares many or most of the goals with this work, we (the POWEFF team) have not found it easy to apply the above work directly in the practical work we do.  So what we have tried to do is a very pragmatic approach to telemetry data collection the way we see it happening on the ground combined with the benefits of Model Driven Telemetry (MDT), in practice meaning YANG-based with additional YANG-modeled metadata.
+Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g.
+{{I-D.draft-ietf-opsawg-collected-data-manifest-01}},
+{{I-D.draft-claise-netconf-metadata-for-collection-03}} and
+{{I-D.draft-netana-nmop-yang-kafka-integration-01}} come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.
 
 Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.
 
 In particular, this draft depends on the mapping of YANG-based structures to the typical TSDB tag-based formats described in {{I-D.draft-kll-yang-label-tsdb-00}}.
 
-For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the data flow interfaces with rigor regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.
-
-## File format
-
-FIXME        [RFC9195](https://datatracker.ietf.org/doc/rfc9195/)
-
+For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the telemetry data stream interfaces with rigor and transparency regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.
 
 # YANG Modules
 
@@ -466,7 +522,15 @@ FIXME        [RFC9195](https://datatracker.ietf.org/doc/rfc9195/)
 {::include yang/ietf-tlm-philatelist-types.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-tlm-philatelist-types@2024-02-14.yang”}
+sourcecode-name="ietf-tlm-philatelist-types@2024-04-15.yang”}
+
+## Dashboard abstract interface module for Philatelist
+
+~~~~ yang
+{::include yang/ietf-tlm-philatelist-dashboard.yang}
+~~~~
+{: sourcecode-markers="true"
+sourcecode-name="ietf-tlm-philatelist-dashboard@2024-04-15.yang”}
 
 ## Provider interface module for Philatelist
 
@@ -474,7 +538,15 @@ sourcecode-name="ietf-tlm-philatelist-types@2024-02-14.yang”}
 {::include yang/ietf-tlm-philatelist-provider.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-tlm-philatelist-provider@2024-02-14.yang”}
+sourcecode-name="ietf-tlm-philatelist-provider@2024-04-15.yang”}
+
+## Index interface module for Philatelist
+
+~~~~ yang
+{::include yang/ietf-tlm-philatelist-index.yang}
+~~~~
+{: sourcecode-markers="true"
+sourcecode-name="ietf-tlm-philatelist-index@2024-04-15.yang”}
 
 ## Collector interface module for Philatelist
 
@@ -482,7 +554,7 @@ sourcecode-name="ietf-tlm-philatelist-provider@2024-02-14.yang”}
 {::include yang/ietf-tlm-philatelist-collector.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-tlm-philatelist-collector@2024-02-14.yang”}
+sourcecode-name="ietf-tlm-philatelist-collector@2024-04-15.yang”}
 
 ## Aggregator interface module for Philatelist
 
@@ -490,7 +562,7 @@ sourcecode-name="ietf-tlm-philatelist-collector@2024-02-14.yang”}
 {::include yang/ietf-tlm-philatelist-aggregator.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-tlm-philatelist-aggregator@2024-02-14.yang”}
+sourcecode-name="ietf-tlm-philatelist-aggregator@2024-04-15.yang”}
 
 ## Assets interface module for Philatelist
 
@@ -498,7 +570,7 @@ sourcecode-name="ietf-tlm-philatelist-aggregator@2024-02-14.yang”}
 {::include yang/ietf-tlm-philatelist-assets.yang}
 ~~~~
 {: sourcecode-markers="true"
-sourcecode-name="ietf-tlm-philatelist-assets@2024-02-14.yang”}
+sourcecode-name="ietf-tlm-philatelist-assets@2024-04-15.yang”}
 
 # Security Considerations
 
@@ -511,6 +583,12 @@ This document has no IANA actions.
 
 
 # Changes (to be deleted by RFC Editor)
+
+## From version -01 to -02
+- Introduced Dashboard and Index concepts
+- Restructured YANG into three controller modules: collector, index, aggregator
+- Restructured YANG into one device module: provider
+- Restructured YANG common parts into one abstract module: dashboard
 
 ## From version -00 to -01
 - Split YANG modules, some contents going into poweff-specific modules
