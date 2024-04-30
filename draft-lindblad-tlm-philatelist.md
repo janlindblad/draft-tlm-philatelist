@@ -69,7 +69,7 @@ To do this, YANG is used both to describe the quantities being measured, as well
 
 Initially developed in context of the Power and Energy Efficiency work (POWEFF), the authors realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.
 
-There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.
+There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2e-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.
 
 ## The Philatelist Name
 
@@ -156,7 +156,7 @@ A key point of this architecture is that Dashboard descriptions (in YANG) can be
 
 ## Collection Data Flow Tree Diagram
 
-The deployment of a Philatelist framework consists of a collection of Controller plug-in compomnents with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.
+The deployment of a Philatelist framework consists of a collection of Controller plug-in components with well defined interfaces.  Here is an example of a deployment.  Each box is numbered in the lower right for easy reference.
 
 ~~~
                       +-----------------+
@@ -211,7 +211,7 @@ The deployment of a Philatelist framework consists of a collection of Controller
 ~~~
 {: title="Example Philatelist component deployment."}
 
-Each component in the above diagram, represents a logical function.  Many of the functions represented by these boxes could be running within a single server, or they could be fully distrubuted, or, perhaps more likely, something in between.
+Each component in the above diagram, represents a logical function.  Many of the functions represented by these boxes could be running within a single server, or they could be fully distributed, or, perhaps more likely, something in between.
 
 Provider components (61, 82, 91) are running on a Network Element system that supports a YANG-based telemetry data server.  The telemetry data flows from the telemetry source system to a Time Series Database (TSDB).
 
@@ -272,9 +272,9 @@ module: ietf-tlm-philatelist-provider
 ~~~
 {: title="YANG tree diagram of the Provider Dashboard list."}
 
-Note: The "something" YANG-type is used in many places in this document.  That is just a temporarty placeholder we use until we have figured out what the appropriate type should be.
+Note: The "something" YANG-type is used in many places in this document.  That is just a temporary placeholder we use until we have figured out what the appropriate type should be.
 
-The each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dasboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identitity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.
+Each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dasboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identitity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.
 
 Each dashboard item has an access path and access parameters. These are a mapping into the access mechanism the Collector must use to poll or subscribe to the sensor value.
 
@@ -308,7 +308,7 @@ module: ietf-tlm-philatelist-provider
 
 The list of access methods contains a number of YANG-based and non-YANG based access methods, but this set of access methods can also be extended by YANG-augmentation. The get-local-file-once access method allows reading fixed values from a data sheet encoded in YANG-instance data file format {{RFC9195}}, and  the get-static-url-once access method does the same from a given URL. That URL may be served from the Network Element, or from the Collector itself or anywhere else on the network or even internet.
 
-The access-path leaf discussed above (/tlm-provider/dash-items/dash-item/access-path) contains the path to the item that should be read or subscribed to. If the dast-item in question is for a YANG-based interface, then that path would be an XPath expression, with prefixes. Those prefixes need to be mapped to XML namespaces (NETCONF) or YANG module names (RESTCONF). That mapping is provided by the prefix-mappings list.
+The access-path leaf discussed above (/tlm-provider/dash-items/dash-item/access-path) contains the path to the item that should be read or subscribed to. If the dash-item in question is for a YANG-based interface, then that path would be an XPath expression, with prefixes. Those prefixes need to be mapped to XML namespaces (NETCONF) or YANG module names (RESTCONF). That mapping is provided by the prefix-mappings list.
 
 ~~~ yang-tree
 module: ietf-tlm-philatelist-provider
@@ -323,7 +323,7 @@ module: ietf-tlm-philatelist-provider
 
 ## The Collector Component
 
-The Collector component is part of a Network Controller that collect telemetry data from Providers, typically by periodic polling or subscriptions, and ensure the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the Provider to the destination TSDB, and that the data has a YANG description and is tagged with necessary metadata.  How the Collector agrees with a Provider to deliver data in a timely manner is beyond the scope of this document.
+The Collector component is part of a Network Controller that collects telemetry data from Providers, typically by periodic polling or subscriptions, and ensures the collected data is stored in a Time Series Database (TSDB).  The actual data stream may or may not be passing through the collector component; the collector is responsible for ensuring data flows from the Provider to the destination TSDB, and that the data has a YANG description and is tagged with necessary metadata.  How the Collector agrees with a Provider to deliver data in a timely manner is beyond the scope of this document.
 
 ~~~
          +-------------+
@@ -410,11 +410,11 @@ module: ietf-tlm-philatelist-index
 ~~~
 {: title="YANG tree diagram of the Index TSDB Partitions."}
 
-The implementation specific part of the model is for integration with specific TSDB implenentations. Each such integration may need a specific sef of key-value bindings, that can be provided in this list.
+The implementation specific part of the model is for integration with specific TSDB implementations. Each such integration may need a specific sef of key-value bindings, that can be provided in this list.
 
 ## The Processor and Aggregator Components
 
-Processor components are parts of a Network Controller that take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in in the input data, or fill in approximate values where there are holes in the input data.
+Processor components are parts of a Network Controller that take an incoming data flow and transforms it somehow, and possibly augments it with a flow of derived information.  The purpose of the transformation could be to convert between different units of measurement, correct for known errors in the input data, or fill in approximate values where there are holes in the input data.
 
 Aggregator components take multiple incoming data flows and combine them, typically by adding them together, taking possible differences in cadence in the input data flows into account.
 
@@ -447,7 +447,7 @@ Note: In the current version of the YANG modules, a Processor is simply an Aggre
       |             |
        \___________/
 ~~~
-{: title="Example of an Aggregator setting up two streams of telemetry data from two sources to one desitination."}
+{: title="Example of an Aggregator setting up two streams of telemetry data from two sources to one destination."}
 
 In this diagram, the sources and destination look like separate TSDBs, which they might be.  They may also be different partitions within the same TSDB.
 

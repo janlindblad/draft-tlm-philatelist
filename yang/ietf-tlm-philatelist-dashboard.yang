@@ -481,7 +481,7 @@ module ietf-tlm-philatelist-dashboard {
                 $(label_name)
 
             i.e. a dollar-sign, a left-parenthesis, 
-            the name of the label - case sensitite and without 
+            the name of the label - case sensitive and without 
             whitespace - and finally a right-parenthesis.
 
             Example 1: The access path for a NETCONF get-based node
