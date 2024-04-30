@@ -155,7 +155,7 @@ Table of Contents
    framework for collection of a variety of metrics.
 
    There is not much point in knowing the "cost side" of a running
-   system (as in energy consumption or CO2-emissions) if that cannot be
+   system (as in energy consumption or CO2e-emissions) if that cannot be
    weighed against the "value side" delivered by the system (as in
    transported bytes, VPN connections, music streaming hours, or number
    of cat videos, etc.), which means traditional performance metrics
@@ -278,7 +278,7 @@ Table of Contents
 3.3.  Collection Data Flow Tree Diagram
 
    The deployment of a Philatelist framework consists of a collection of
-   Controller plug-in compomnents with well defined interfaces.  Here is
+   Controller plug-in components with well defined interfaces.  Here is
    an example of a deployment.  Each box is numbered in the lower right
    for easy reference.
 
@@ -335,7 +335,7 @@ Table of Contents
 
    Each component in the above diagram, represents a logical function.
    Many of the functions represented by these boxes could be running
-   within a single server, or they could be fully distrubuted, or,
+   within a single server, or they could be fully distributed, or,
    perhaps more likely, something in between.
 
    Provider components (61, 82, 91) are running on a Network Element
@@ -435,10 +435,10 @@ Table of Contents
         Figure 5: YANG tree diagram of the Provider Dashboard list.
 
    Note: The "something" YANG-type is used in many places in this
-   document.  That is just a temporarty placeholder we use until we have
+   document.  That is just a temporary placeholder we use until we have
    figured out what the appropriate type should be.
 
-   The each Dashboard in the dashboard list has a name that is an
+   Each Dashboard in the dashboard list has a name that is an
    identityref.  That makes it possible to define particular dashboards
    with well known names and contents in YANG, so that Providers and
    Collectors know what to expect.  Each dashboard refers to a set of
@@ -490,7 +490,7 @@ Table of Contents
 
    The access-path leaf discussed above (/tlm-provider/dash-items/dash-
    item/access-path) contains the path to the item that should be read
-   or subscribed to.  If the dast-item in question is for a YANG-based
+   or subscribed to.  If the dash-item in question is for a YANG-based
    interface, then that path would be an XPath expression, with
    prefixes.  Those prefixes need to be mapped to XML namespaces
    (NETCONF) or YANG module names (RESTCONF).  That mapping is provided
@@ -508,9 +508,9 @@ Table of Contents
 
 3.5.  The Collector Component
 
-   The Collector component is part of a Network Controller that collect
+   The Collector component is part of a Network Controller that collects
    telemetry data from Providers, typically by periodic polling or
-   subscriptions, and ensure the collected data is stored in a Time
+   subscriptions, and ensures the collected data is stored in a Time
    Series Database (TSDB).  The actual data stream may or may not be
    passing through the collector component; the collector is responsible
    for ensuring data flows from the Provider to the destination TSDB,
@@ -622,7 +622,7 @@ Table of Contents
          Figure 11: YANG tree diagram of the Index TSDB Partitions.
 
    The implementation specific part of the model is for integration with
-   specific TSDB implenentations.  Each such integration may need a
+   specific TSDB implementations.  Each such integration may need a
    specific sef of key-value bindings, that can be provided in this
    list.
 
@@ -632,8 +632,8 @@ Table of Contents
    incoming data flow and transforms it somehow, and possibly augments
    it with a flow of derived information.  The purpose of the
    transformation could be to convert between different units of
-   measurement, correct for known errors in in the input data, or fill
-   in approximate values where there are holes in the input data.
+   measurement, correct for known errors in the input data, or fill in
+   approximate values where there are holes in the input data.
 
    Aggregator components take multiple incoming data flows and combine
    them, typically by adding them together, taking possible differences
@@ -674,7 +674,7 @@ Table of Contents
           \___________/
 
        Figure 12: Example of an Aggregator setting up two streams of
-            telemetry data from two sources to one desitination.
+            telemetry data from two sources to one destination.
 
    In this diagram, the sources and destination look like separate
    TSDBs, which they might be.  They may also be different partitions
@@ -1443,7 +1443,7 @@ Table of Contents
                    $(label_name)
 
                i.e. a dollar-sign, a left-parenthesis,
-               the name of the label - case sensitite and without
+               the name of the label - case sensitive and without
                whitespace - and finally a right-parenthesis.
 
                Example 1: The access path for a NETCONF get-based node
