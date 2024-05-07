@@ -6,7 +6,7 @@ category: std
 docname: draft-lindblad-tlm-philatelist-latest
 submissiontype: IETF
 number:
-date: 2024-04-15
+date: 2024-05-07
 consensus: true
 v: 3
 area: OPS
@@ -36,12 +36,12 @@ normative:
   RFC7950:
   RFC9195:
   I-D.draft-kll-yang-label-tsdb-00:
-  I-D.draft-palmero-opsawg-ps-almo-00:
+  I-D.draft-palmero-ivy-ps-almo-01:
 
 informative:
-  I-D.draft-ietf-opsawg-collected-data-manifest-01:
+  I-D.draft-ietf-opsawg-collected-data-manifest-03:
   I-D.draft-claise-netconf-metadata-for-collection-03:
-  I-D.draft-netana-nmop-yang-kafka-integration-01:
+  I-D.draft-netana-nmop-yang-message-broker-integration-00:
 
 --- abstract
 
@@ -250,25 +250,28 @@ module: ietf-tlm-philatelist-provider
   +--rw tlm-provider
      +--rw dashboards
      |  +--rw dashboard* [id]
-     |     +--rw id       identityref
+     |     +--rw id                       identityref
      |     +--rw items* [tsdb-path]
-     |        +--rw tsdb-path    -> ../../../../dash-items/dash-item/tsdb-path
+     |        +--rw tsdb-path             -> ../../../../dash-items/
+     |                                       dash-item/tsdb-path
      +--rw dash-items
      |  +--rw dash-item* [tsdb-path]
-     |     +--rw tsdb-path        string
-     |     +--rw item-type        identityref
+     |     +--rw tsdb-path                string
+     |     +--rw item-type                identityref
      |     +--rw accuracy
-     |     |  +--rw max-error-relative?   ietf-tlm-philatelist-types:something
-     |     |  +--rw max-error-offset?     ietf-tlm-philatelist-types:something
+     |     |  +--rw max-error-relative?   something
+     |     |  +--rw max-error-offset?     something
      |     +--rw label* [name]
-     |     |  +--rw name                    string
+     |     |  +--rw name                  string
      |     |  +--rw (value-source)?
      |     |     +--:(static-values)
-     |     |     |  +--rw static-values*    string
+     |     |     |  +--rw static-values*  string
      |     |     +--:(runtime-values)
-     |     |        +--rw runtime-values*   -> ../../../dash-item/tsdb-path
-     |     +--rw access-path?     string
-     |     +--rw access-params?   -> ../../../accesses/access/id
+     |     |        +--rw runtime-values* -> ../../../dash-item/
+     |     |                                 tsdb-path
+     |     +--rw access-path?             string
+     |     +--rw access-params?           -> ../../../accesses/
+                                             access/id
 ~~~
 {: title="YANG tree diagram of the Provider Dashboard list."}
 
@@ -286,23 +289,23 @@ module: ietf-tlm-philatelist-provider
      |     +--rw id                                 string
      |     +--rw method?                            identityref
      |     +--rw get-local-file-once
-     |     |  +--rw filename?   string
+     |     |  +--rw filename?                       string
      |     +--rw get-static-url-once
-     |     |  +--rw url?   ietf-tlm-philatelist-types:something
+     |     |  +--rw url?                            something
      |     +--rw gnmi-polling
-     |     |  +--rw encoding?   ietf-tlm-philatelist-types:something
-     |     |  +--rw protocol?   ietf-tlm-philatelist-types:something
+     |     |  +--rw encoding?                       something
+     |     |  +--rw protocol?                       something
      |     +--rw restconf-get-polling
-     |     |  +--rw xxx?   string
+     |     |  +--rw xxx?                            string
      |     +--rw netconf-get-polling
-     |     |  +--rw xxx?   string
+     |     |  +--rw xxx?                            string
      |     +--rw restconf-yang-push-subscription
-     |     |  +--rw xxx?   string
+     |     |  +--rw xxx?                            string
      |     +--rw netconf-yang-push-subscription
-     |     |  +--rw xxx?   string
+     |     |  +--rw xxx?                            string
      |     +--rw redfish-polling
-     |     |  +--rw xxx?   string
-     |     +--rw frequency?                         ietf-tlm-philatelist-types:sample-frequency
+     |     |  +--rw xxx?                            string
+     |     +--rw frequency?                         sample-frequency
 ~~~
 {: title="YANG tree diagram of the Provider Accesses list."}
 
@@ -350,16 +353,19 @@ module: ietf-tlm-philatelist-collector
   +--rw tlm-collector
      +--rw organizations
         +--rw organization* [name]
-           +--rw name             string
+           +--rw name                     string
            +--rw device-groups
            |  +--rw device-group* [name]
            |     +--rw name               string
            |     +--rw devices*           string
            |     +--rw dashboards
            |     |  +--rw dashboard* [id]
-           |     |     +--rw id       identityref
+           |     |     +--rw id           identityref
            |     |     +--rw items* [tsdb-path]
-           |     |        +--rw tsdb-path    -> ../../../../dash-items/dash-item/tsdb-path
+           |     |        +--rw tsdb-path  -> ../../../../
+                                              dash-items/
+                                              dash-item/
+                                              tsdb-path
 ~~~
 {: title="YANG tree diagram of the top part of the Collector model."}
 
@@ -374,11 +380,16 @@ module: ietf-tlm-philatelist-collector
         +--rw organization* [name]
            +--rw tlm-streams
               +--rw tlm-stream* [id]
-                 +--rw id             ietf-tlm-philatelist-types:something
+                 +--rw id                 something
                  +--rw sources* [device-group dash-name]
-                 |  +--rw device-group    -> ../../../../device-groups/device-group/name
-                 |  +--rw dash-name       -> ../../../../device-groups/device-group/dashboards/dashboard/id
-                 +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
+                 |  +--rw device-group    -> ../../../../
+                 |  |                        device-groups/
+                 |  |                        device-group/name
+                 |  +--rw dash-name       -> ../../../../
+                 |                           device-groups/
+                 |                           device-group/
+                 |                           dashboards/dashboard/id
+                 +--rw destination?       partition-ref-t
 ~~~
 {: title="YANG tree diagram of the Collector tlm-streams."}
 
@@ -393,10 +404,10 @@ module: ietf-tlm-philatelist-index
   +--rw tlm-index
      +--rw partitions
         +--rw partition* [id]
-           +--rw id               ietf-tlm-philatelist-types:something
-           +--rw url?             ietf-tlm-philatelist-types:something
-           +--rw organization?    ietf-tlm-philatelist-types:something
-           +--rw partition?       ietf-tlm-philatelist-types:something
+           +--rw id                     something
+           +--rw url?                   something
+           +--rw organization?          something
+           +--rw partition?             something
            +--rw impl-specific
               +--rw binding* [key]
                  +--rw key              string
@@ -460,10 +471,10 @@ module: ietf-tlm-philatelist-aggregator
      |  +--rw aggregation* [id]
      |     +--rw id           string
      |     +--rw input* [source]
-     |     |  +--rw source    ietf-tlm-philatelist-index:partition-ref-t
+     |     |  +--rw source    partition-ref-t
      |     +--rw operation?   -> ../../../operations/operation/id
      |     +--rw output
-     |        +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
+     |        +--rw destination?   partition-ref-t
 ~~~
 {: title="YANG tree diagram of the top Aggregator model."}
 
@@ -474,7 +485,7 @@ module: ietf-tlm-philatelist-aggregator
   +--rw tlm-aggregator
      +--rw operations
         +--rw operation* [id]
-           +--rw id                       ietf-tlm-philatelist-types:something
+           +--rw id                       something
            +--rw (op-type)?
               +--:(linear-sum)
               |  +--rw linear-sum
@@ -486,27 +497,27 @@ module: ietf-tlm-philatelist-aggregator
               |  +--rw linear-min
               +--:(rolling-average)
               |  +--rw rolling-average
-              |     +--rw timespan?   ietf-tlm-philatelist-types:something
+              |     +--rw timespan?       something
               +--:(filter-age)
               |  +--rw filter-age
-              |     +--rw min-age?   ietf-tlm-philatelist-types:something
-              |     +--rw max-age?   ietf-tlm-philatelist-types:something
+              |     +--rw min-age?        something
+              |     +--rw max-age?        something
               +--:(function)
                  +--rw function
-                    +--rw name?   ietf-tlm-philatelist-types:something
+                    +--rw name?           something
 ~~~
 {: title="YANG tree diagram of the Aggregator operations list."}
 
 ## The Link to Assets
 
-In {{I-D.draft-palmero-opsawg-ps-almo-00}}, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.
+In {{I-D.draft-palmero-ivy-ps-almo-01}}, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.
 
 # YANG-based Telemetry Outlook
 
 Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g.
-{{I-D.draft-ietf-opsawg-collected-data-manifest-01}},
+{{I-D.draft-ietf-opsawg-collected-data-manifest-03}},
 {{I-D.draft-claise-netconf-metadata-for-collection-03}} and
-{{I-D.draft-netana-nmop-yang-kafka-integration-01}} come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.
+{{I-D.draft-netana-nmop-yang-message-broker-integration-00}} come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.
 
 Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.
 
