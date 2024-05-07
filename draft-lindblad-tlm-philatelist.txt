@@ -4,8 +4,8 @@
 
 NETMOD                                                       J. Lindblad
 Internet-Draft                                                     Cisco
-Intended status: Standards Track                           15 April 2024
-Expires: 17 October 2024
+Intended status: Standards Track                              7 May 2024
+Expires: 8 November 2024
 
 
  Philatelist, YANG-based Network Controller collection and aggregation
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 October 2024.
+   This Internet-Draft will expire on 8 November 2024.
 
 Copyright Notice
 
@@ -412,25 +412,28 @@ Table of Contents
      +--rw tlm-provider
         +--rw dashboards
         |  +--rw dashboard* [id]
-        |     +--rw id       identityref
+        |     +--rw id                       identityref
         |     +--rw items* [tsdb-path]
-        |        +--rw tsdb-path    -> ../../../../dash-items/dash-item/tsdb-path
+        |        +--rw tsdb-path             -> ../../../../dash-items/
+        |                                       dash-item/tsdb-path
         +--rw dash-items
         |  +--rw dash-item* [tsdb-path]
-        |     +--rw tsdb-path        string
-        |     +--rw item-type        identityref
+        |     +--rw tsdb-path                string
+        |     +--rw item-type                identityref
         |     +--rw accuracy
-        |     |  +--rw max-error-relative?   ietf-tlm-philatelist-types:something
-        |     |  +--rw max-error-offset?     ietf-tlm-philatelist-types:something
+        |     |  +--rw max-error-relative?   something
+        |     |  +--rw max-error-offset?     something
         |     +--rw label* [name]
-        |     |  +--rw name                    string
+        |     |  +--rw name                  string
         |     |  +--rw (value-source)?
         |     |     +--:(static-values)
-        |     |     |  +--rw static-values*    string
+        |     |     |  +--rw static-values*  string
         |     |     +--:(runtime-values)
-        |     |        +--rw runtime-values*   -> ../../../dash-item/tsdb-path
-        |     +--rw access-path?     string
-        |     +--rw access-params?   -> ../../../accesses/access/id
+        |     |        +--rw runtime-values* -> ../../../dash-item/
+        |     |                                 tsdb-path
+        |     +--rw access-path?             string
+        |     +--rw access-params?           -> ../../../accesses/
+                                                access/id
 
         Figure 5: YANG tree diagram of the Provider Dashboard list.
 
@@ -459,23 +462,23 @@ Table of Contents
         |     +--rw id                                 string
         |     +--rw method?                            identityref
         |     +--rw get-local-file-once
-        |     |  +--rw filename?   string
+        |     |  +--rw filename?                       string
         |     +--rw get-static-url-once
-        |     |  +--rw url?   ietf-tlm-philatelist-types:something
+        |     |  +--rw url?                            something
         |     +--rw gnmi-polling
-        |     |  +--rw encoding?   ietf-tlm-philatelist-types:something
-        |     |  +--rw protocol?   ietf-tlm-philatelist-types:something
+        |     |  +--rw encoding?                       something
+        |     |  +--rw protocol?                       something
         |     +--rw restconf-get-polling
-        |     |  +--rw xxx?   string
+        |     |  +--rw xxx?                            string
         |     +--rw netconf-get-polling
-        |     |  +--rw xxx?   string
+        |     |  +--rw xxx?                            string
         |     +--rw restconf-yang-push-subscription
-        |     |  +--rw xxx?   string
+        |     |  +--rw xxx?                            string
         |     +--rw netconf-yang-push-subscription
-        |     |  +--rw xxx?   string
+        |     |  +--rw xxx?                            string
         |     +--rw redfish-polling
-        |     |  +--rw xxx?   string
-        |     +--rw frequency?                         ietf-tlm-philatelist-types:sample-frequency
+        |     |  +--rw xxx?                            string
+        |     +--rw frequency?                         sample-frequency
 
          Figure 6: YANG tree diagram of the Provider Accesses list.
 
@@ -549,16 +552,19 @@ Table of Contents
      +--rw tlm-collector
         +--rw organizations
            +--rw organization* [name]
-              +--rw name             string
+              +--rw name                     string
               +--rw device-groups
               |  +--rw device-group* [name]
               |     +--rw name               string
               |     +--rw devices*           string
               |     +--rw dashboards
               |     |  +--rw dashboard* [id]
-              |     |     +--rw id       identityref
+              |     |     +--rw id           identityref
               |     |     +--rw items* [tsdb-path]
-              |     |        +--rw tsdb-path    -> ../../../../dash-items/dash-item/tsdb-path
+              |     |        +--rw tsdb-path  -> ../../../../
+                                                 dash-items/
+                                                 dash-item/
+                                                 tsdb-path
 
     Figure 9: YANG tree diagram of the top part of the Collector model.
 
@@ -577,11 +583,16 @@ Table of Contents
            +--rw organization* [name]
               +--rw tlm-streams
                  +--rw tlm-stream* [id]
-                    +--rw id             ietf-tlm-philatelist-types:something
+                    +--rw id                 something
                     +--rw sources* [device-group dash-name]
-                    |  +--rw device-group    -> ../../../../device-groups/device-group/name
-                    |  +--rw dash-name       -> ../../../../device-groups/device-group/dashboards/dashboard/id
-                    +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
+                    |  +--rw device-group    -> ../../../../
+                    |  |                        device-groups/
+                    |  |                        device-group/name
+                    |  +--rw dash-name       -> ../../../../
+                    |                           device-groups/
+                    |                           device-group/
+                    |                           dashboards/dashboard/id
+                    +--rw destination?       partition-ref-t
 
          Figure 10: YANG tree diagram of the Collector tlm-streams.
 
@@ -604,10 +615,10 @@ Table of Contents
      +--rw tlm-index
         +--rw partitions
            +--rw partition* [id]
-              +--rw id               ietf-tlm-philatelist-types:something
-              +--rw url?             ietf-tlm-philatelist-types:something
-              +--rw organization?    ietf-tlm-philatelist-types:something
-              +--rw partition?       ietf-tlm-philatelist-types:something
+              +--rw id                     something
+              +--rw url?                   something
+              +--rw organization?          something
+              +--rw partition?             something
               +--rw impl-specific
                  +--rw binding* [key]
                     +--rw key              string
@@ -692,10 +703,10 @@ Table of Contents
         |  +--rw aggregation* [id]
         |     +--rw id           string
         |     +--rw input* [source]
-        |     |  +--rw source    ietf-tlm-philatelist-index:partition-ref-t
+        |     |  +--rw source    partition-ref-t
         |     +--rw operation?   -> ../../../operations/operation/id
         |     +--rw output
-        |        +--rw destination?   ietf-tlm-philatelist-index:partition-ref-t
+        |        +--rw destination?   partition-ref-t
 
          Figure 13: YANG tree diagram of the top Aggregator model.
 
@@ -713,7 +724,7 @@ Table of Contents
      +--rw tlm-aggregator
         +--rw operations
            +--rw operation* [id]
-              +--rw id                       ietf-tlm-philatelist-types:something
+              +--rw id                       something
               +--rw (op-type)?
                  +--:(linear-sum)
                  |  +--rw linear-sum
@@ -725,20 +736,20 @@ Table of Contents
                  |  +--rw linear-min
                  +--:(rolling-average)
                  |  +--rw rolling-average
-                 |     +--rw timespan?   ietf-tlm-philatelist-types:something
+                 |     +--rw timespan?       something
                  +--:(filter-age)
                  |  +--rw filter-age
-                 |     +--rw min-age?   ietf-tlm-philatelist-types:something
-                 |     +--rw max-age?   ietf-tlm-philatelist-types:something
+                 |     +--rw min-age?        something
+                 |     +--rw max-age?        something
                  +--:(function)
                     +--rw function
-                       +--rw name?   ietf-tlm-philatelist-types:something
+                       +--rw name?           something
 
       Figure 14: YANG tree diagram of the Aggregator operations list.
 
 3.8.  The Link to Assets
 
-   In [I-D.draft-palmero-opsawg-ps-almo-00], the DMLMO team has built an
+   In [I-D.draft-palmero-ivy-ps-almo-01], the DMLMO team has built an
    inventory strucure that describes systems, subsystems and their soft-
    and hardware components.  They are called assets in the DMLMO YANG
    models.  Some of the collected telemetry data streams may pertain to
@@ -752,11 +763,11 @@ Table of Contents
 
    Much work has already gone into the area of telemetry, YANG, and even
    their intersection.  E.g.
-   [I-D.draft-ietf-opsawg-collected-data-manifest-01],
+   [I-D.draft-ietf-opsawg-collected-data-manifest-03],
    [I-D.draft-claise-netconf-metadata-for-collection-03] and
-   [I-D.draft-netana-nmop-yang-kafka-integration-01] come to mind.  We
-   (the POWEFF authoring team) would like to work with the authoring
-   teams of these drafts to align our joint work.
+   [I-D.draft-netana-nmop-yang-message-broker-integration-00] come to
+   mind.  We (the POWEFF authoring team) would like to work with the
+   authoring teams of these drafts to align our joint work.
 
    Many essential data sources in real world deployments do not support
    any YANG-based interfaces, and that situation is expected to remain
@@ -2389,13 +2400,13 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-kll-yang-
               label-tsdb-00>.
 
-   [I-D.draft-palmero-opsawg-ps-almo-00]
+   [I-D.draft-palmero-ivy-ps-almo-01]
               Palmero, M., Brockners, F., Kumar, S., Cardona, C., and D.
-              Lopez, "Asset Lifecycle Management and Operations, Problem
-              Statement", Work in Progress, Internet-Draft, draft-
-              palmero-opsawg-ps-almo-00, 29 June 2023,
-              <https://datatracker.ietf.org/doc/html/draft-palmero-
-              opsawg-ps-almo-00>.
+              Lopez, "Asset Lifecycle Management and Operations: A
+              Problem Statement", Work in Progress, Internet-Draft,
+              draft-palmero-ivy-ps-almo-01, 24 April 2024,
+              <https://datatracker.ietf.org/doc/html/draft-palmero-ivy-
+              ps-almo-01>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -2424,20 +2435,21 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-claise-
               netconf-metadata-for-collection-03>.
 
-   [I-D.draft-ietf-opsawg-collected-data-manifest-01]
+   [I-D.draft-ietf-opsawg-collected-data-manifest-03]
               Claise, B., Quilbeuf, J., Lopez, D., Martinez-Casanueva,
               I. D., and T. Graf, "A Data Manifest for Contextualized
               Telemetry Data", Work in Progress, Internet-Draft, draft-
-              ietf-opsawg-collected-data-manifest-01, 10 July 2023,
+              ietf-opsawg-collected-data-manifest-03, 4 March 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-opsawg-
-              collected-data-manifest-01>.
+              collected-data-manifest-03>.
 
-   [I-D.draft-netana-nmop-yang-kafka-integration-01]
+   [I-D.draft-netana-nmop-yang-message-broker-integration-00]
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
-              to Apache Kafka Integration", Work in Progress, Internet-
-              Draft, draft-netana-nmop-yang-kafka-integration-01, 16
-              March 2024, <https://datatracker.ietf.org/doc/html/draft-
-              netana-nmop-yang-kafka-integration-01>.
+              to Message Broker Integration", Work in Progress,
+              Internet-Draft, draft-netana-nmop-yang-message-broker-
+              integration-00, 22 April 2024,
+              <https://datatracker.ietf.org/doc/html/draft-netana-nmop-
+              yang-message-broker-integration-00>.
 
 Acknowledgments
 
