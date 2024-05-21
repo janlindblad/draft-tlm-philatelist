@@ -139,7 +139,7 @@ module ietf-tlm-philatelist-dashboard {
       }
       default ietf-tlm-philatelist-types:get-local-file-once;
       description 
-        "Discriminator pointing out which access mechanusm is offered.
+        "Discriminator pointing out which access mechanism is offered.
         This value controls which detailed configuration nodes will be
         available.
         ";
