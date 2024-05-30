@@ -79,7 +79,7 @@ Table of Contents
      1.2.  The Solution
      1.3.  The Philatelist Name
    2.  Conventions and Definitions
-   3.  Architecure Overview
+   3.  Architecture Overview
      3.1.  Functional Role Diagram
      3.2.  Dashboards
      3.3.  Collection Data Flow Tree Diagram
@@ -138,7 +138,7 @@ Table of Contents
    provide a robust ground layer for telemetry collection.  The
    architecture defines a few interfaces, but allows great freedom in
    the implementations with its plug-in architecture.  This allows
-   flexibility enough that any kind of quantitiy can be measured, any
+   flexibility enough that any kind of quantity can be measured, any
    kind of collection protocol and mechanism employed, and the telemetry
    data flows aggregated using any kind of operation.
 
@@ -167,15 +167,15 @@ Table of Contents
    and interpretation of timestamped telemetry data.  The definition of
    "philatelist" seems close enough.
 
-   1. philatelist
+1. philatelist
 
-   noun. ['fɪˈlætəlɪst'] a collector and student of postage stamps.
+noun. ['fɪˈlætəlɪst'] [fih-LAT-uh-list] a collector and student of postage stamps.
 
-   Synonyms
-   - collector
-   - aggregator
+Synonyms
+- collector
+- aggregator
 
-       Figure 1: Source: https://www.synonym.com/synonyms/philatelist
+    Figure 1: Source: https://www.synonym.com/synonyms/philatelist
 
 2.  Conventions and Definitions
 
@@ -198,7 +198,7 @@ Table of Contents
    Sensor Path  A textual representation of the sensor's address within
       the system.
 
-3.  Architecure Overview
+3.  Architecture Overview
 
 3.1.  Functional Role Diagram
 
@@ -383,7 +383,7 @@ Table of Contents
 
    One problem with the sensors is that the sensors relevant for a given
    use case are often spread around inside the Provider system, and many
-   may not know about all of them.  Also, the metadata assciated with
+   may not know about all of them.  Also, the metadata associated with
    each sensor is often only missing or only available in human readable
    form (free form strings), rather than in a strict machine parsable
    format.
@@ -445,10 +445,10 @@ Table of Contents
    identityref.  That makes it possible to define particular dashboards
    with well known names and contents in YANG, so that Providers and
    Collectors know what to expect.  Each dashboard refers to a set of
-   dasboard items (some of which may be the same in multiple
+   dashboard items (some of which may be the same in multiple
    Dashboards).  Each dashboard item has a type that is defined as a
-   YANG identitity, making them maximally extensible.  Examples of
-   sensor types might be a sensor for energy measured in kWh, or energy
+   YANG identity, making them maximally extensible.  Examples of sensor
+   types might be a sensor for energy measured in kWh, or energy
    measured in J, or temperature measured in F, or in C, or in K.
 
    Each dashboard item has an access path and access parameters.  These
@@ -750,14 +750,14 @@ Table of Contents
 3.8.  The Link to Assets
 
    In [I-D.draft-palmero-ivy-ps-almo-01], the DMLMO team has built an
-   inventory strucure that describes systems, subsystems and their soft-
-   and hardware components.  They are called assets in the DMLMO YANG
-   models.  Some of the collected telemetry data streams may pertain to
-   quite precisely to these assets, and it may be interesting to see the
-   linkage.  For this reason, there is an optional module, ietf-tlm-
-   philatelist-assets, that augments the Philatelist Index structure and
-   adds the possibility to point to a DMLMO asset that the TSDB
-   Partition pertains to.
+   inventory structure that describes systems, subsystems and their
+   soft- and hardware components.  They are called assets in the DMLMO
+   YANG models.  Some of the collected telemetry data streams may
+   pertain to quite precisely to these assets, and it may be interesting
+   to see the linkage.  For this reason, there is an optional module,
+   ietf-tlm-philatelist-assets, that augments the Philatelist Index
+   structure and adds the possibility to point to a DMLMO asset that the
+   TSDB Partition pertains to.
 
 4.  YANG-based Telemetry Outlook
 
@@ -1112,7 +1112,7 @@ Table of Contents
          }
          default ietf-tlm-philatelist-types:get-local-file-once;
          description
-           "Discriminator pointing out which access mechanusm is offered.
+           "Discriminator pointing out which access mechanism is offered.
            This value controls which detailed configuration nodes will be
            available.
            ";
@@ -1750,8 +1750,8 @@ Table of Contents
          list binding {
            key key;
            description
-             "List of key-valye bindings. The meaning of these key-value
-             paris is implementation dependent.
+             "List of key-value bindings. The meaning of these key-value
+             pairs is implementation dependent.
              ";
            leaf key {
              type string;

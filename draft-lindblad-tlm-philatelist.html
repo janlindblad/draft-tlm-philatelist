@@ -1146,7 +1146,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecure-overview" class="internal xref">Architecure Overview</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecture-overview" class="internal xref">Architecture Overview</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
                 <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-functional-role-diagram" class="internal xref">Functional Role Diagram</a></p>
@@ -1264,7 +1264,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         <h3 id="name-the-solution">
 <a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-the-solution" class="section-name selfRef">The Solution</a>
         </h3>
-<p id="section-1.2-1">The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-1">The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantity can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <p id="section-1.2-2">To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to devices supporting traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
 <p id="section-1.2-3">Initially developed in context of the Power and Energy Efficiency work (POWEFF), the authors realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
 <p id="section-1.2-4">There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2e-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
@@ -1281,7 +1281,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <pre>
 1. philatelist
 
-noun. ['fɪˈlætəlɪst'] a collector and student of postage stamps.
+noun. ['fɪˈlætəlɪst'] [fih-LAT-uh-list] a collector and student of postage stamps.
 
 Synonyms
 - collector
@@ -1327,10 +1327,10 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 </dl>
 </section>
 </div>
-<div id="architecure-overview">
+<div id="architecture-overview">
 <section id="section-3">
-      <h2 id="name-architecure-overview">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecure-overview" class="section-name selfRef">Architecure Overview</a>
+      <h2 id="name-architecture-overview">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecture-overview" class="section-name selfRef">Architecture Overview</a>
       </h2>
 <div id="functional-role-diagram">
 <section id="section-3.1">
@@ -1464,7 +1464,7 @@ partition contents.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-the-provider-component" class="section-name selfRef">The Provider Component</a>
         </h3>
 <p id="section-3.4-1">A Provider is a Network Element that is the source of telemetry data that may or may not offer a YANG-based management interface.  Each Provider typically has a large number of "sensors" that can be polled or in some cases subscribed to. It may also offer some controls (configurables or actionables).<a href="#section-3.4-1" class="pilcrow">¶</a></p>
-<p id="section-3.4-2">One problem with the sensors is that the sensors relevant for a given use case are often spread around inside the Provider system, and many may not know about all of them.  Also, the metadata assciated with each sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+<p id="section-3.4-2">One problem with the sensors is that the sensors relevant for a given use case are often spread around inside the Provider system, and many may not know about all of them.  Also, the metadata associated with each sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
 <span id="name-example-of-scattered-potent"></span><figure id="figure-4">
           <div class="alignLeft art-text artwork" id="section-3.4-3.1">
 <pre>
@@ -1516,7 +1516,7 @@ module: ietf-tlm-philatelist-provider
 <a href="#name-yang-tree-diagram-of-the-pr" class="selfRef">YANG tree diagram of the Provider Dashboard list.</a>
           </figcaption></figure>
 <p id="section-3.4-7">Note: The "something" YANG-type is used in many places in this document.  That is just a temporary placeholder we use until we have figured out what the appropriate type should be.<a href="#section-3.4-7" class="pilcrow">¶</a></p>
-<p id="section-3.4-8">Each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dasboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identitity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.<a href="#section-3.4-8" class="pilcrow">¶</a></p>
+<p id="section-3.4-8">Each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dashboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.<a href="#section-3.4-8" class="pilcrow">¶</a></p>
 <p id="section-3.4-9">Each dashboard item has an access path and access parameters. These are a mapping into the access mechanism the Collector must use to poll or subscribe to the sensor value.<a href="#section-3.4-9" class="pilcrow">¶</a></p>
 <span id="name-yang-tree-diagram-of-the-pro"></span><figure id="figure-6">
           <div class="lang-yang-tree sourcecode" id="section-3.4-10.1">
@@ -1787,7 +1787,7 @@ module: ietf-tlm-philatelist-aggregator
         <h3 id="name-the-link-to-assets">
 <a href="#section-3.8" class="section-number selfRef">3.8. </a><a href="#name-the-link-to-assets" class="section-name selfRef">The Link to Assets</a>
         </h3>
-<p id="section-3.8-1">In <span>[<a href="#I-D.draft-palmero-ivy-ps-almo-01" class="cite xref">I-D.draft-palmero-ivy-ps-almo-01</a>]</span>, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.<a href="#section-3.8-1" class="pilcrow">¶</a></p>
+<p id="section-3.8-1">In <span>[<a href="#I-D.draft-palmero-ivy-ps-almo-01" class="cite xref">I-D.draft-palmero-ivy-ps-almo-01</a>]</span>, the DMLMO team has built an inventory structure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.<a href="#section-3.8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2145,7 +2145,7 @@ module ietf-tlm-philatelist-dashboard {
       }
       default ietf-tlm-philatelist-types:get-local-file-once;
       description
-        "Discriminator pointing out which access mechanusm is offered.
+        "Discriminator pointing out which access mechanism is offered.
         This value controls which detailed configuration nodes will be
         available.
         ";
@@ -2797,8 +2797,8 @@ module ietf-tlm-philatelist-index {
       list binding {
         key key;
         description
-          "List of key-valye bindings. The meaning of these key-value
-          paris is implementation dependent.
+          "List of key-value bindings. The meaning of these key-value
+          pairs is implementation dependent.
           ";
         leaf key {
           type string;
