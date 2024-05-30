@@ -121,8 +121,8 @@ module ietf-tlm-philatelist-index {
       list binding {
         key key;
         description
-          "List of key-valye bindings. The meaning of these key-value
-          paris is implementation dependent.
+          "List of key-value bindings. The meaning of these key-value
+          pairs is implementation dependent.
           ";
         leaf key { 
           type string; 

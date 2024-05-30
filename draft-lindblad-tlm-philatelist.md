@@ -63,7 +63,7 @@ Data science issues like adding overlapping quantities, adding quantities of dif
 
 ## The Solution
 
-The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantitiy can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.
+The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantity can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.
 
 To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to devices supporting traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.
 
@@ -79,7 +79,7 @@ This specification is about a framework for collection, aggregation and interpre
 
 1. philatelist
 
-noun. ['fɪˈlætəlɪst'] a collector and student of postage stamps.
+noun. ['fɪˈlætəlɪst'] [fih-LAT-uh-list] a collector and student of postage stamps.
 
 Synonyms
 - collector
@@ -106,7 +106,7 @@ Sensor
 Sensor Path
 : A textual representation of the sensor's address within the system.
 
-# Architecure Overview
+# Architecture Overview
 
 ## Functional Role Diagram
 
@@ -229,7 +229,7 @@ On top of the stack, we may often find a (graphical) user interface (11), for hu
 
 A Provider is a Network Element that is the source of telemetry data that may or may not offer a YANG-based management interface.  Each Provider typically has a large number of "sensors" that can be polled or in some cases subscribed to. It may also offer some controls (configurables or actionables).
 
-One problem with the sensors is that the sensors relevant for a given use case are often spread around inside the Provider system, and many may not know about all of them.  Also, the metadata assciated with each sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.
+One problem with the sensors is that the sensors relevant for a given use case are often spread around inside the Provider system, and many may not know about all of them.  Also, the metadata associated with each sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.
 
 ~~~
     /hardware/component[name="psu3"]/.../sensor-data/value
@@ -277,7 +277,7 @@ module: ietf-tlm-philatelist-provider
 
 Note: The "something" YANG-type is used in many places in this document.  That is just a temporary placeholder we use until we have figured out what the appropriate type should be.
 
-Each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dasboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identitity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.
+Each Dashboard in the dashboard list has a name that is an identityref. That makes it possible to define particular dashboards with well known names and contents in YANG, so that Providers and Collectors know what to expect. Each dashboard refers to a set of dashboard items (some of which may be the same in multiple Dashboards). Each dashboard item has a type that is defined as a YANG identity, making them maximally extensible.  Examples of sensor types might be a sensor for energy measured in kWh, or energy measured in J, or temperature measured in F, or in C, or in K.
 
 Each dashboard item has an access path and access parameters. These are a mapping into the access mechanism the Collector must use to poll or subscribe to the sensor value.
 
@@ -510,7 +510,7 @@ module: ietf-tlm-philatelist-aggregator
 
 ## The Link to Assets
 
-In {{I-D.draft-palmero-ivy-ps-almo-01}}, the DMLMO team has built an inventory strucure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.
+In {{I-D.draft-palmero-ivy-ps-almo-01}}, the DMLMO team has built an inventory structure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.
 
 # YANG-based Telemetry Outlook
 
