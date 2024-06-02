@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-30T01:06:58.012381+00:00",
+  "timestamp": "2024-06-02T01:11:23.074477+00:00",
   "repo": "janlindblad/netmod-tlm-philatelist",
   "labels": [
     {
@@ -137,25 +137,35 @@
       "id": "PR_kwDOKioyEc5wHHgS",
       "title": "Fix some typos",
       "url": "https://github.com/janlindblad/netmod-tlm-philatelist/pull/6",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "james-m-henderson",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This just fixes a few typos I found while reviewing.\r\n\r\nI also added a plain English phoneticization for philiatelist, as not everybody will know IPA.",
       "createdAt": "2024-05-21T17:54:08Z",
-      "updatedAt": "2024-05-21T17:54:08Z",
+      "updatedAt": "2024-05-30T15:37:44Z",
       "baseRepository": "janlindblad/netmod-tlm-philatelist",
       "baseRefName": "main",
       "baseRefOid": "b49257367907a02372ba02f0bac880b0022ec701",
       "headRepository": "james-m-henderson/netmod-tlm-philatelist",
       "headRefName": "fix/typos",
       "headRefOid": "5a50ec5b949bf73c94f417d85ba473c471167de8",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "closedAt": "2024-05-30T15:36:52Z",
+      "mergedAt": "2024-05-30T15:36:52Z",
+      "mergedBy": "janlindblad",
+      "mergeCommit": {
+        "oid": "3026d52ba79d662cd46be3581332ca241b0a1840"
+      },
+      "comments": [
+        {
+          "author": "janlindblad",
+          "authorAssociation": "OWNER",
+          "body": "Typos corrected by @james-m-henderson . Thank you!",
+          "createdAt": "2024-05-30T15:37:44Z",
+          "updatedAt": "2024-05-30T15:37:44Z"
+        }
+      ],
       "reviews": []
     }
   ]
