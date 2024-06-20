@@ -4,8 +4,8 @@
 
 NETMOD                                                       J. Lindblad
 Internet-Draft                                                     Cisco
-Intended status: Standards Track                              7 May 2024
-Expires: 8 November 2024
+Intended status: Standards Track                            20 June 2024
+Expires: 22 December 2024
 
 
  Philatelist, YANG-based Network Controller collection and aggregation
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 November 2024.
+   This Internet-Draft will expire on 22 December 2024.
 
 Copyright Notice
 
@@ -77,7 +77,8 @@ Table of Contents
    1.  Introduction
      1.1.  The Problem
      1.2.  The Solution
-     1.3.  The Philatelist Name
+     1.3.  YANG-based Telemetry Outlook
+     1.4.  The Philatelist Name
    2.  Conventions and Definitions
    3.  Architecture Overview
      3.1.  Functional Role Diagram
@@ -88,24 +89,23 @@ Table of Contents
      3.6.  The Index Component
      3.7.  The Processor and Aggregator Components
      3.8.  The Link to Assets
-   4.  YANG-based Telemetry Outlook
-   5.  YANG Modules
-     5.1.  Base types module for Philatelist
-     5.2.  Dashboard abstract interface module for Philatelist
-     5.3.  Provider interface module for Philatelist
-     5.4.  Index interface module for Philatelist
-     5.5.  Collector interface module for Philatelist
-     5.6.  Aggregator interface module for Philatelist
-     5.7.  Assets interface module for Philatelist
-   6.  Security Considerations
-   7.  IANA Considerations
-   8.  Changes (to be deleted by RFC Editor)
-     8.1.  From version -01 to -02
-     8.2.  From version -00 to -01
-     8.3.  Version -00
-   9.  References
-     9.1.  Normative References
-     9.2.  Informative References
+   4.  YANG Modules
+     4.1.  Base types module for Philatelist
+     4.2.  Dashboard abstract interface module for Philatelist
+     4.3.  Provider interface module for Philatelist
+     4.4.  Index interface module for Philatelist
+     4.5.  Collector interface module for Philatelist
+     4.6.  Aggregator interface module for Philatelist
+     4.7.  Assets interface module for Philatelist
+   5.  Security Considerations
+   6.  IANA Considerations
+   7.  Changes (to be deleted by RFC Editor)
+     7.1.  From version -01 to -02
+     7.2.  From version -00 to -01
+     7.3.  Version -00
+   8.  References
+     8.1.  Normative References
+     8.2.  Informative References
    Acknowledgments
    Author's Address
 
@@ -135,19 +135,20 @@ Table of Contents
 
    The Philatelist framework proposes to standardize the collection,
    definitions of the quantities measured and meta data handling to
-   provide a robust ground layer for telemetry collection.  The
-   architecture defines a few interfaces, but allows great freedom in
-   the implementations with its plug-in architecture.  This allows
-   flexibility enough that any kind of quantity can be measured, any
-   kind of collection protocol and mechanism employed, and the telemetry
-   data flows aggregated using any kind of operation.
+   provide a robust ground layer for telemetry collection on the
+   Controller side.  The architecture defines a few interfaces, but
+   allows great freedom in the implementations with its plug-in
+   architecture.  This allows flexibility enough that any kind of
+   quantity can be measured, any kind of collection protocol and
+   mechanism employed, and the telemetry data flows aggregated using any
+   kind of operation.
 
    To do this, YANG is used both to describe the quantities being
    measured, as well as act as the framework for the metadata
    management.  Note that the use of YANG here does not limit the
-   architecture to devices supporting traditional YANG-based transport
-   protocols.  YANG is used to describe the data, regardless of which
-   format it arrives in.
+   architecture to devices or sources supporting traditional YANG-based
+   transport protocols.  YANG is used to describe the data, regardless
+   of which format, protocol or source it arrives from.
 
    Initially developed in context of the Power and Energy Efficiency
    work (POWEFF), the authors realized both the potential and the need
@@ -161,21 +162,66 @@ Table of Contents
    of cat videos, etc.), which means traditional performance metrics
    will play an equally important role in the collection.
 
-1.3.  The Philatelist Name
+1.3.  YANG-based Telemetry Outlook
+
+   Much work has already gone into the area of telemetry, YANG, and
+   their intersection.  E.g.
+   [I-D.draft-ietf-opsawg-collected-data-manifest-03],
+   [I-D.draft-claise-netconf-metadata-for-collection-03] and
+   [I-D.draft-netana-nmop-yang-message-broker-integration-00] come to
+   mind.  We (the POWEFF authoring team) would like to work with the
+   authoring teams of these drafts to align our joint work.  We believe
+   this work generally fits well with the principles outlined in the
+   Network Telemetry Framework [RFC9232].
+
+   Many essential data sources in real world deployments do not support
+   any YANG-based interfaces, and that situation is expected to remain
+   for the forseable future, which is why we find it important to be
+   able to ingest data from free form (often REST-based) interfaces, and
+   then add the necessary rigor on the Collector level.  Then output the
+   datastreams in formats that existing, mature tools can consume
+   directly.
+
+   A couple of collection source examples, just to stimulate the
+   imagination:
+
+   *  SYSLOG [RFC5424]
+
+   *  EMAN MIBs over SNMP [RFC7603]
+
+   *  DMTF's Redfish REST API [Redfish] (no endorsement)
+
+   *  Proprietary REST APIs, e.g.  [Sensor_Service_Methods] (no
+      endorsement)
+
+   *  YANG-Push [RFC8641]
+
+   In particular, this draft depends on the mapping of YANG-based
+   structures to the typical TSDB tag-based formats described in
+   [I-D.draft-kll-yang-label-tsdb-00].
+
+   For the evolution of the YANG-based telemetry area, we believe this
+   approach, combining pragmatism in the telemetry data stream
+   interfaces with rigor and transparency regarding the data content, is
+   key.  We would like to make this work fit in with the works of others
+   in the field.
+
+1.4.  The Philatelist Name
 
    This specification is about a framework for collection, aggregation
    and interpretation of timestamped telemetry data.  The definition of
    "philatelist" seems close enough.
 
-1. philatelist
+   1. philatelist
 
-noun. ['fɪˈlætəlɪst'] [fih-LAT-uh-list] a collector and student of postage stamps.
+   noun. ['fɪˈlætəlɪst'] [fih-LAT-uh-list]
+         A collector and student of postage stamps.
 
-Synonyms
-- collector
-- aggregator
+   Synonyms
+   - collector
+   - aggregator
 
-    Figure 1: Source: https://www.synonym.com/synonyms/philatelist
+       Figure 1: Source: https://www.synonym.com/synonyms/philatelist
 
 2.  Conventions and Definitions
 
@@ -375,11 +421,14 @@ Synonyms
 
 3.4.  The Provider Component
 
-   A Provider is a Network Element that is the source of telemetry data
-   that may or may not offer a YANG-based management interface.  Each
-   Provider typically has a large number of "sensors" that can be polled
-   or in some cases subscribed to.  It may also offer some controls
-   (configurables or actionables).
+   A Provider is a Network Element, or any other kind of relevant
+   sensor, that is the source of telemetry data that may or may not
+   offer a YANG-based management interface.  It may, for example,
+   provide an SNMP, Redfish or proprietary REST API.
+
+   Each Provider typically has a large number of "sensors" that can be
+   polled or in some cases subscribed to.  It may also offer some
+   controls (configurables or actionables).
 
    One problem with the sensors is that the sensors relevant for a given
    use case are often spread around inside the Provider system, and many
@@ -759,42 +808,15 @@ Synonyms
    structure and adds the possibility to point to a DMLMO asset that the
    TSDB Partition pertains to.
 
-4.  YANG-based Telemetry Outlook
+4.  YANG Modules
 
-   Much work has already gone into the area of telemetry, YANG, and even
-   their intersection.  E.g.
-   [I-D.draft-ietf-opsawg-collected-data-manifest-03],
-   [I-D.draft-claise-netconf-metadata-for-collection-03] and
-   [I-D.draft-netana-nmop-yang-message-broker-integration-00] come to
-   mind.  We (the POWEFF authoring team) would like to work with the
-   authoring teams of these drafts to align our joint work.
-
-   Many essential data sources in real world deployments do not support
-   any YANG-based interfaces, and that situation is expected to remain
-   for the forseable future, which is why we find it important to be
-   able to ingest data from free form (often REST-based) interfaces, and
-   then add the necessary rigor on the Collector level.  Then output the
-   datastreams in formats that existing, mature tools can consume
-   directly.
-
-   In particular, this draft depends on the mapping of YANG-based
-   structures to the typical TSDB tag-based formats described in
-   [I-D.draft-kll-yang-label-tsdb-00].
-
-   For the evolution of the YANG-based telemetry area, we believe this
-   approach, combining pragmatism in the telemetry data stream
-   interfaces with rigor and transparency regarding the data content, is
-   key.  We would like to make this work fit in with the works of others
-   in the field.
-
-5.  YANG Modules
-
-5.1.  Base types module for Philatelist
+4.1.  Base types module for Philatelist
 
    <CODE BEGINS>
    module ietf-tlm-philatelist-types {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-types";
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-types";
      prefix ietf-tlm-philatelist-types;
 
      organization
@@ -905,10 +927,10 @@ Synonyms
      identity dash-type {
        description
          "The base identity for all dashboard types.
-         Dashboards are predefined collections of sensors and/or controls
-         that a Network Element publishes towards a Network Controller,
-         which uses the dashboard to find use case relevant telemetry
-         collection and control points.
+         Dashboards are predefined collections of sensors and/or
+         controls that a Network Element publishes towards a Network
+         Controller, which uses the dashboard to find use case relevant
+         telemetry collection and control points.
          ";
      }
 
@@ -947,33 +969,36 @@ Synonyms
        base connection-method;
        description
          "Connection method identity for the case where a file contains
-         the dashboard information in lieu of the Network Element itself.
+         the dashboard information in lieu of the Network Element
+         itself.
          ";
      }
      identity get-static-url-once {
        base connection-method;
        description
          "Connection method identity for the case where a URL contains
-         the dashboard information in lieu of the Network Element itself.
-         The URL may or may not be hosted on the Network Element.
+         the dashboard information in lieu of the Network Element
+         itself. The URL may or may not be hosted on the Network
+         Element.
          ";
      }
      identity cm-polled {
        base connection-method;
        description
-         "Connection method identity for all mechanisms that are based on
-         the client regularly polling the server.
+         "Connection method identity for all mechanisms that are based
+         on the client regularly polling the server.
          ";
      }
    }
    <CODE ENDS>
 
-5.2.  Dashboard abstract interface module for Philatelist
+4.2.  Dashboard abstract interface module for Philatelist
 
    <CODE BEGINS>
    module ietf-tlm-philatelist-dashboard {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-dashboard";
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-dashboard";
      prefix ietf-tlm-philatelist-dashboard;
 
      import ietf-tlm-philatelist-types {
@@ -994,10 +1019,11 @@ Synonyms
      description
        "This YANG module defines the Telemetry Philatelist Dashboard.
 
-       These definitions are used both by Philatelist Network Controllers,
-       and Philatelist Network Elements. Network Elements that are unaware
-       of the Philatelist framework may also be covered when a
-       'proxy mechanism' for the Philatelist information is added.
+       These definitions are used both by Philatelist Network
+       Controllers, and Philatelist Network Elements. Network Elements
+       that are unaware of the Philatelist framework may also be
+       covered when a 'proxy mechanism' for the Philatelist information
+       is added.
 
        Copyright (c) 2024 IETF Trust and the persons identified as
        authors of the code.  All rights reserved.
@@ -1112,20 +1138,20 @@ Synonyms
          }
          default ietf-tlm-philatelist-types:get-local-file-once;
          description
-           "Discriminator pointing out which access mechanism is offered.
-           This value controls which detailed configuration nodes will be
-           available.
+           "Discriminator pointing out which access mechanism is
+           offered. This value controls which detailed configuration
+           nodes will be available.
            ";
        }
        container get-local-file-once {
          when "derived-from-or-self(../method,
                'ietf-tlm-philatelist-types:get-local-file-once')";
          description
-           "The server itself does not offer any access mechanism for this
-           dashboard item. Instead, philatelist controllers will need to
-           read static values from a local on the controller. How the file
-           appears in a relevant location on the controller is outside the
-           scope of this specification.
+           "The server itself does not offer any access mechanism for
+           this dashboard item. Instead, philatelist controllers will
+           need to read static values from a local on the controller.
+           How the file appears in a relevant location on the
+           controller is outside the scope of this specification.
            The file format used MUST adhere to RFC9195
            (https://datatracker.ietf.org/doc/rfc9195/)
            ";
@@ -1143,18 +1169,19 @@ Synonyms
          when "derived-from-or-self(../method,
                'ietf-tlm-philatelist-types:get-static-url-once')";
          description
-           "The server points to a URL the controller can use to download
-           a file with static values for this dashboard item. The URL may
-           or may not be pointing to the server itself, and could
-           potentially even point to a URL on the controller itself.
-           How the static file contents pointed to by the URL appears on
-           the webserver is outside the scope of this specification.
+           "The server points to a URL the controller can use to
+           download a file with static values for this dashboard item.
+           The URL may or may not be pointing to the server itself, and
+           could potentially even point to a URL on the controller
+           itself. How the static file contents pointed to by the URL
+           appears on the webserver is outside the scope of this
+           specification.
            ";
          leaf url {
            type ietf-tlm-philatelist-types:something;
            description
-             "The URL that the controller should read in order to get the
-             static data about the dashboard item.
+             "The URL that the controller should read in order to
+             get the static data about the dashboard item.
              The file format used MUST adhere to RFC9195
              (https://datatracker.ietf.org/doc/rfc9195/)
              ";
@@ -1163,22 +1190,22 @@ Synonyms
        container gnmi-polling {
          when "derived-from-or-self(../method, 'gnmi-polling')";
          description
-           "The server points to a gNMI interface the controller can poll
-           at regular intervals to read the current sensor value for this
-           dashboard item.
+           "The server points to a gNMI interface the controller can
+           poll at regular intervals to read the current sensor value
+           for this dashboard item.
            ";
          leaf encoding {
            type ietf-tlm-philatelist-types:something;
            description
-             "The encoding of the data provided by this mechanism, such as
-             self-describing-gpb
+             "The encoding of the data provided by this mechanism,
+             such as self-describing-gpb
              ";
          }
          leaf protocol {
            type ietf-tlm-philatelist-types:something;
            description
-             "The exact protocol parameters for this gNMI endpoint, such as
-             grpc no-tls
+             "The exact protocol parameters for this gNMI endpoint,
+             such as grpc no-tls
              ";
          }
        }
@@ -1224,10 +1251,10 @@ Synonyms
      grouping provider-g {
        description
          "Top-level provider grouping.  Devices will implement
-         this as a config false container, or as a piece of instance data
-         that a controller can read. Controllers implement this data
-         structure as config true, configurable and readable by the
-         operators.
+         this as a config false container, or as a piece of instance
+         data that a controller can read. Controllers implement this
+         data structure as config true, configurable and readable by
+         the operators.
          ";
        container dashboards {
          description
@@ -1269,11 +1296,11 @@ Synonyms
                  The format of the path is TSDB style, i.e. used MUST
                  conform to the I-D.draft-kll-yang-label-tsdb, e.g.
                  interfaces_interface_statistics_in_unicast_pkts
-                 Each dashboard item may point to multiple sensors, as in
-                 the example above, where each interface would have
-                 a counter of incoming unicase packets.
-                 Each dashboard item may occur in more than one dashboard,
-                 and is therefore further desribed in
+                 Each dashboard item may point to multiple sensors,
+                 as in the example above, where each interface would
+                 have a counter of incoming unicase packets.
+                 Each dashboard item may occur in more than one
+                 dashboard, and is therefore further desribed in
                  ../../../../dash-items/dash-item
                  ";
              }
@@ -1288,9 +1315,9 @@ Synonyms
          list dash-item {
            key tsdb-path;
            description
-             "Dashboard item, a sensor or control item that is part of a
-             dashboard, i.e. a collection of sensors and controls relevant
-             for a particular use case.
+             "Dashboard item, a sensor or control item that is part
+             of a dashboard, i.e. a collection of sensors and controls
+             relevant for a particular use case.
              Each dashboard item may occur in more than one dashboard.
              ";
            leaf tsdb-path {
@@ -1312,22 +1339,24 @@ Synonyms
              mandatory true;
              description
                "The item type describes the type of dashboard item this
-               is, including if it is a sensor or contol, sitting on the
-               inside or outside of the parent component, the measurement
-               quantity (e.g. temperature) and unit (e.g. Celsius).
+               is, including if it is a sensor or contol, sitting on
+               the inside or outside of the parent component, the
+               measurement quantity (e.g. temperature) and unit
+               (e.g. Celsius).
+
                See the ietf-tlm-philatelist-types:dash-item-type for a
-               more detailed explanation, or if you intend to define a new
-               type of dashboard item.
+               more detailed explanation, or if you intend to define a
+               new type of dashboard item.
                ";
            }
            container accuracy {
              when "derived-from(../item-type,
                    'ietf-tlm-philatelist-types:sensor-type')";
              description
-               "The accuracy of the dasboard item (sensor). The accuracy
-               described using two parameters. One is the max deviation
-               relative to the sensor reading, the other one is a constant
-               deviation offset.
+               "The accuracy of the dasboard item (sensor). The
+               accuracy described using two parameters. One is the max
+               deviation relative to the sensor reading, the other one
+               is a constant deviation offset.
 
                Example 1: if a sensor might produce values between
                0 and 1000, and the sensor currently reports 555, but
@@ -1368,9 +1397,9 @@ Synonyms
              key name;
              description
                "List of TSDB path labels. A single TSDB path often refer
-               to a whole collection of readable sensors. Each such sensor
-               is distinguished by the values associated with labels in
-               the path. Those labels are listed here.
+               to a whole collection of readable sensors. Each such
+               sensor is distinguished by the values associated with
+               labels in the path. Those labels are listed here.
 
                Example: interfaces_interface_statistics_in_unicast_pkts
                might have one label interfaces_interface_name. Concrete
@@ -1383,8 +1412,9 @@ Synonyms
                  interfaces_interface_name = eth0
 
                As can be seen in the example, a controller might inject
-               labels that are not part of the tsdb-path (host), but helps
-               the controller keep track of the incoming data streams.
+               labels that are not part of the tsdb-path (host), but
+               helps the controller keep track of the incoming data
+               streams.
                ";
              reference
                I-D.draft-kll-yang-label-tsdb;
@@ -1402,9 +1432,9 @@ Synonyms
                  + the server may provide values in runtime, in which
                    case the runtime-values points to the dashboard item
                    to read to get the actual values.
-                 + the controller or operator may pick one or more values
-                    by configuration, in which case they are listed under
-                   static-values .
+                 + the controller or operator may pick one or more
+                    values by configuration, in which case they are
+                    listed under static-values .
                  + the controller may pick one or more values using some
                    internal mechanism of its own, in which case they
                    will not be visible here.
@@ -1413,8 +1443,8 @@ Synonyms
                  type string;
                  description
                    "One or more values configured by the controller or
-                   operator designating which instances of this TSDB path
-                   to collect data about.
+                   operator designating which instances of this TSDB
+                   path to collect data about.
 
                    Example: if the label name for this label entry is
                    interfaces_interface_name, this could be a configured
@@ -1426,78 +1456,124 @@ Synonyms
                    path ../../../dash-item/tsdb-path;
                  }
                  description
-                   "One or more dashboard items to read label values from.
+                   "One or more dashboard items to read label values
+                   from.
 
                    Example: if the label name for this label entry is
                    interfaces_interface_name, this could point to a
                    dashboard item that collects the names of all
-                   interfaces, or all interfaces relevant for a particular
-                   purpose or customer.
+                   interfaces, or all interfaces relevant for a
+                   particular purpose or customer.
                    ";
                }
              }
            }
-           leaf access-path {
-             type string;
+           choice access-path {
              description
-               "This is the path used by the client (Network Controller)
-               when asking the server (Network Element) for data.
-               The format of the access-path depends on the specific
-               access mechanism. If the access mechanism is YANG-based,
-               this access path will be an XPath string. If the access
-               mechanism is SNMP, it would be an OID. A redfish access
-               mechanism would use a endpoint-local URL.
+             "This is the path used by the client (Network Controller)
+             when asking the server (Network Element) for data.
+             The format of the access-path depends on the specific
+             access mechanism. If the access mechanism is YANG-based,
+             this access path would be an XPath string. If the access
+             mechanism is SNMP, it would be an OID. A redfish access
+             mechanism would use a endpoint-local URL.
+             The actual path may be constructed in one of several ways.
+             ";
+             leaf plain-string {
+               type string;
+               description
+                 "The given string is used as is, without substitution
+                 of any labels or special characters.
+                 ";
+             }
+             leaf string-with-labels {
+               type string;
+               description
+                 "The given string contains references of the form
 
-               In all cases, references to the label values, as defined in
-               ../label/name, may occur. Such references are written as
+                 $(label_name)
 
-                   $(label_name)
+                 i.e. a dollar-sign, a left-parenthesis,
+                 the name of the label - case sensitive and without
+                 whitespace - and finally a right-parenthesis.
 
-               i.e. a dollar-sign, a left-parenthesis,
-               the name of the label - case sensitive and without
-               whitespace - and finally a right-parenthesis.
+                 This expression refers to the labels-value pairs from
 
-               Example 1: The access path for a NETCONF get-based node
-               interfaces_interface_statistics_in_unicast_pkts
-               might have access path
+                 ../label/name  and  ../label/value-source
 
-               /if:interfaces/interface[name='$(interfaces_interface_nam
-               e)']/statistics/in-unicast-pkts
+                 The reference expression is substituted with the
+                 label value before use.
 
-               Any prefixes used (as if: above) are mapped to the
-               corresponding namespace (NETCONF) or module name (RESTCONF)
-               using the ../../../prefix-mappings list.
+                 Example: The access path for an SNMP GET-based node
+                 interfaces_interface_statistics_in_unicast_pkts
+                 might have access path
 
-               Example 2: The access path for an SNMP get-based node
-               interfaces_interface_statistics_in_unicast_pkts
-               might have access path
+                 1.3.6.1.2.1.2.2.1.11.$(interfaces_interface_num)
 
-               1.3.6.1.2.1.2.2.1.11.$(interfaces_interface_num)
+                 which gives the final OID string
 
-               Example 3: The access path for a Redfish-based node
-               Systems_EthernetInterfaces_EthernetInterfaceMetrics_Droppe
-               dPackets
-               might have access path
+                 1.3.6.1.2.1.2.2.1.11.4711
 
-               /redfish/v1/Systems/VM1/EthernetInterfaces/$(interfaces_in
-               terface_num)/EthernetInterfaceMetrics/DroppedPackets
-               ";
+                 if the ../label[name='interfaces_interface_num'] value
+                 is 4711.
+                 ";
+             }
+             leaf url-with-labels {
+               type string;
+               description
+                 "The given string contains references of the forms
+
+                 {label_name}
+                 {label_name:3}
+                 {?label_name}
+
+                 etc. as defined in RFC6570.
+
+                 This expression refers to the labels-value pairs from
+
+                 ../label/name  and  ../label/value-source
+
+                 The reference expression is substituted with the
+                 label value before use according to the RFC6570 rules.
+
+                 Example 1: The access path for a NETCONF get-based node
+                 interfaces_interface_statistics_in_unicast_pkts
+                 might have access path
+
+                 /if:interfaces/interface[name='{interfaces_interface_na
+                 me}']/statistics/in-unicast-pkts
+
+                 Any prefixes used (as if: above) are mapped to the
+                 corresponding namespace (NETCONF) or module name
+                 (RESTCONF) using the ../../../prefix-mappings list.
+
+                 Example 2: The access path for a Redfish-based node
+
+                 Systems_EthernetInterfaces_EthernetInterfaceMetrics_Dro
+                 ppedPackets
+
+                 might have access path
+
+                 /redfish/v1/Systems/VM1/EthernetInterfaces/{interfaces_
+                 interface_num}/EthernetInterfaceMetrics/DroppedPackets
+                 ";
+             }
            }
            leaf access-params {
              type leafref {
                path ../../../accesses/access/id;
              }
              description
-               "Points to the specific access method to be used with this
-               dashboard item.
+               "Points to the specific access method to be used with
+               this dashboard item.
                ";
            }
          }
        }
        container accesses {
          description
-           "Holds a list of all the access methods that have been defined
-           for dashboard items on the Network Element.
+           "Holds a list of all the access methods that have been
+           defined for dashboard items on the Network Element.
            ";
          list access {
            key id;
@@ -1553,12 +1629,13 @@ Synonyms
    }
    <CODE ENDS>
 
-5.3.  Provider interface module for Philatelist
+4.3.  Provider interface module for Philatelist
 
    <CODE BEGINS>
    module ietf-tlm-philatelist-provider {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
      prefix ietf-tlm-philatelist-provider;
 
      import ietf-tlm-philatelist-dashboard {
@@ -1580,9 +1657,10 @@ Synonyms
        "This YANG module defines the Telemetry Philatelist Provider
        interface.
 
-       This module is used by Network Elements that have built-in support
-       for the Philatelist provider interface, or by a proxy mechanism
-       representing some/all of them, when not supported directly.
+       This module is used by Network Elements that have built-in
+       support for the Philatelist provider interface, or by a proxy
+       mechanism representing some/all of them, when not supported
+       directly.
 
        Copyright (c) 2024 IETF Trust and the persons identified as
        authors of the code.  All rights reserved.
@@ -1624,12 +1702,13 @@ Synonyms
    }
    <CODE ENDS>
 
-5.4.  Index interface module for Philatelist
+4.4.  Index interface module for Philatelist
 
    <CODE BEGINS>
    module ietf-tlm-philatelist-index {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-index";
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-index";
      prefix ietf-tlm-philatelist-index;
 
      import ietf-tlm-philatelist-types {
@@ -1649,7 +1728,7 @@ Synonyms
                  <mailto:mpalmero@cisco.com>";
      description
        'This YANG module defines the Telemetry Philatelist Index.
-       These definitions are intended for Philatelist Network Controllers.
+       These definitions are for Philatelist Network Controllers.
 
        A Network Controller with the Collector role programs one or more
        SOURCES (typically Network Elements) to generate a STREAM of
@@ -1770,27 +1849,28 @@ Synonyms
              leaf value {
                type string;
                description
-                 "The value part of the key-value pair as a simple string
-                 value.
+                 "The value part of the key-value pair as a simple
+                 string value.
                  ";
              }
              leaf-list values {
                type string;
                ordered-by user;
                description
-                 "The value part of the key-value pair as a collection of
-                 string values.
+                 "The value part of the key-value pair as a collection
+                 of string values.
                  ";
              }
              leaf env-var {
                type string;
                description
-                 "The value part of the key-value pair. The actual value
-                 is provided by an operating system environment variable.
-                 The name of that environment variable is given by this
-                 leaf. Case sensitive.
-                 The set of environment variable names that are defined is
-                 implementation dependent.
+                 "The value part of the key-value pair. The actual
+                 value is provided by an operating system environment
+                 variable. The name of that environment variable is
+                 given by this leaf. Case sensitive.
+
+                 The set of environment variable names that are defined
+                 is implementation dependent.
                  ";
              }
            }
@@ -1826,12 +1906,13 @@ Synonyms
    }
    <CODE ENDS>
 
-5.5.  Collector interface module for Philatelist
+4.5.  Collector interface module for Philatelist
 
    <CODE BEGINS>
    module ietf-tlm-philatelist-collector {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-collector";
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-collector";
      prefix ietf-tlm-philatelist-collector;
 
      import ietf-tlm-philatelist-types {
@@ -1857,7 +1938,7 @@ Synonyms
                  <mailto:mpalmero@cisco.com>";
      description
        'This YANG module defines the Telemetry Philatelist Collector.
-       These definitions are intended for Philatelist Network Controllers.
+       These definitions are for Philatelist Network Controllers.
 
        A Network Controller with the Collector role programs one or more
        SOURCES (typically Network Elements) to generate a STREAM of
@@ -1944,8 +2025,8 @@ Synonyms
              list device-group {
                key name;
                description
-                 "A device-group contains a group of similar devices that will
-                 have collection performed in the same way.
+                 "A device-group contains a group of similar devices
+                 that will have collection performed in the same way.
                  ";
                leaf name {
                  type string;
@@ -1957,7 +2038,8 @@ Synonyms
                  type string;
                  description
                    "Points to the devices members of this device-group.
-                   The exact meaning of these names is implementation specific.
+                   The exact meaning of these names is implementation
+                   specific.
                    ";
                }
                uses ietf-tlm-philatelist-dashboard:provider-g;
@@ -1966,7 +2048,8 @@ Synonyms
 
            container tlm-streams {
              description
-               "List of telemetry streams pertainin to this organization.
+               "List of telemetry streams pertainin to this
+               organization.
                ";
              list tlm-stream {
                key id;
@@ -1983,9 +2066,9 @@ Synonyms
                list sources {
                  key "device-group dash-name";
                  description
-                   "List of sources to collect from. Each source points to
-                   a device-group and a dashboard name to collect from
-                   each device in the device-group.
+                   "List of sources to collect from. Each source points
+                   to a device-group and a dashboard name to collect
+                   from each device in the device-group.
                    ";
                  leaf device-group {
                    type leafref {
@@ -1997,7 +2080,8 @@ Synonyms
                  }
                  leaf dash-name {
                    type leafref {
-                     path ../../../../device-groups/device-group/dashboards/dashboard/id;
+                     path "../../../../device-groups/device-group/"+
+                       "dashboards/dashboard/id";
                    }
                    description
                      "The name of the dashboard
@@ -2017,7 +2101,8 @@ Synonyms
        }
      }
 
-     augment /tlm-collector/organizations/organization/device-groups/device-group/dash-items/dash-item/label/value-source {
+     augment "/tlm-collector/organizations/organization/device-groups/"+
+       "device-group/dash-items/dash-item/label/value-source" {
        description
          "Some additional value-sources that the collector enables
          (that are not available to providers).
@@ -2044,12 +2129,13 @@ Synonyms
    }
    <CODE ENDS>
 
-5.6.  Aggregator interface module for Philatelist
+4.6.  Aggregator interface module for Philatelist
 
    <CODE BEGINS>
    module ietf-tlm-philatelist-aggregator {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-aggregator";
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-aggregator";
      prefix ietf-tlm-philatelist-aggregator;
 
      import ietf-tlm-philatelist-types {
@@ -2072,7 +2158,7 @@ Synonyms
                  <mailto:mpalmero@cisco.com>";
      description
        'This YANG module defines the Telemetry Philatelist Aggregator.
-       These definitions are intended for Philatelist Network Controllers.
+       These definitions are for Philatelist Network Controllers.
 
        An AGGREGATOR ensures data from one or more SOURCE(s) are
        combined into a FLOW using a (sequence of) OPERATIONs (OPs)
@@ -2175,8 +2261,8 @@ Synonyms
                path ../../../operations/operation/id;
              }
              description
-               "The operation to apply to the input stream(s) in order to
-               compute the output stream.
+               "The operation to apply to the input stream(s) in order
+               to compute the output stream.
                ";
            }
            container output {
@@ -2210,22 +2296,23 @@ Synonyms
            }
            choice op-type {
              description
-               "A choice of basic operation types. This set of choices may
-               be extended by other modules agumenting the choice.
+               "A choice of basic operation types. This set of choices
+               may be extended by other modules agumenting the choice.
                ";
              container linear-sum {
                description
                "This operation produces the sum of the input streams.
 
-               Since the data points in the input stream are not likely to
-               be perfectly aligned in time, this linear-sum operation
-               produces a linear interpolation between each point in the
-               time series.
+               Since the data points in the input stream are not
+               likely to be perfectly aligned in time, this linear-sum
+               operation produces a linear interpolation between each
+               point in the time series.
 
-               This works well when all inputs are continuously receiving
-               additional data points, and when their frequency is roughly
-               the same. A different summing operation should be chosen if
-               this is not the case, e.g. most-recent-sum.
+               This works well when all inputs are continuously
+               receiving additional data points, and when their
+               frequency is roughly the same. A different summing
+               operation should be chosen if this is not the case,
+               e.g. most-recent-sum.
                ";
              }
              container linear-average { description "FIXME"; }
@@ -2233,16 +2320,28 @@ Synonyms
              container linear-min { description "FIXME"; }
              container rolling-average {
                description "FIXME";
-               leaf timespan { type ietf-tlm-philatelist-types:something; description "FIXME"; }
+               leaf timespan {
+                 type ietf-tlm-philatelist-types:something;
+                 description "FIXME";
+               }
              }
              container filter-age {
                description "FIXME";
-               leaf min-age { type ietf-tlm-philatelist-types:something; description "FIXME"; }
-               leaf max-age { type ietf-tlm-philatelist-types:something; description "FIXME"; }
+               leaf min-age {
+                 type ietf-tlm-philatelist-types:something;
+                 description "FIXME";
+               }
+               leaf max-age {
+                 type ietf-tlm-philatelist-types:something;
+                 description "FIXME";
+               }
              }
              container function {
                description "FIXME";
-               leaf name { type ietf-tlm-philatelist-types:something; description "FIXME"; }
+               leaf name {
+                 type ietf-tlm-philatelist-types:something;
+                 description "FIXME";
+               }
              }
            }
          }
@@ -2251,12 +2350,13 @@ Synonyms
    }
    <CODE ENDS>
 
-5.7.  Assets interface module for Philatelist
+4.7.  Assets interface module for Philatelist
 
    <CODE BEGINS>
    module ietf-tlm-philatelist-assets {
      yang-version 1.1;
-     namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-assets";
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-assets";
      prefix ietf-tlm-philatelist-assets;
 
      import ietf-lmo {
@@ -2283,7 +2383,7 @@ Synonyms
      description
        "This YANG module defines the Telemetry Philatelist linkage to
        DMLMO Assets.
-       These definitions are intended for Philatelist Network Controllers.
+       These definitions are for Philatelist Network Controllers.
 
        Copyright (c) 2024 IETF Trust and the persons identified as
        authors of the code.  All rights reserved.
@@ -2322,7 +2422,8 @@ Synonyms
          type leafref {
            path /ietf-lmo:lmos/ietf-lmo:lmo/ietf-lmo:lmo-class;
          }
-         must "derived-from-or-self(current(), 'ietf-lmo-assets:asset')";
+         must
+           "derived-from-or-self(current(), 'ietf-lmo-assets:asset')";
          must "../pertains-to-asset-id";
          description
            "The LMO Asset class of the asset.
@@ -2331,8 +2432,8 @@ Synonyms
        leaf pertains-to-asset-id {
          type leafref {
            path "/ietf-lmo:lmos/ietf-lmo:lmo"+
-             "[ietf-lmo:lmo-class=current()/../pertains-to-asset-class]"+
-             "/ietf-lmo:inst/ietf-lmo:id";
+             "[ietf-lmo:lmo-class=current()/../pertains-to-asset-class]"
+             +"/ietf-lmo:inst/ietf-lmo:id";
          }
          description
            "The LMO Asset id (within the class) of the asset.
@@ -2345,25 +2446,37 @@ Synonyms
              "/ietf-tlm-philatelist-index:partition" {
        description
          "By augmenting an asset pointer into the TSDB Partition Index,
-         controller may clarify which LMO Asset the data in the Partition
-         pertains to.
+         controller may clarify which LMO Asset the data in the
+         Partition pertains to.
          ";
        uses asset-pointer-g;
      }
    }
    <CODE ENDS>
 
-6.  Security Considerations
+5.  Security Considerations
 
    TODO Security
 
-7.  IANA Considerations
+6.  IANA Considerations
 
    This document has no IANA actions.
 
-8.  Changes (to be deleted by RFC Editor)
+7.  Changes (to be deleted by RFC Editor)
 
-8.1.  From version -01 to -02
+7.1.  From version -01 to -02
+
+   *  Adopted [RFC6570] style URI Templates in ietf-tlm-philatelist-
+      dashboard
+
+   *  Moved up the outlook section, and clarified the relation to
+      existing device side telemetry solutions.
+
+   *  Added several informative references to prior work
+
+   *  Reformatted YANG modules for shorter lines to fit IETF layout
+
+7.2.  From version -00 to -01
 
    *  Introduced Dashboard and Index concepts
 
@@ -2374,8 +2487,6 @@ Synonyms
 
    *  Restructured YANG common parts into one abstract module: dashboard
 
-8.2.  From version -00 to -01
-
    *  Split YANG modules, some contents going into poweff-specific
       modules
 
@@ -2385,13 +2496,13 @@ Synonyms
 
    *  Added optional linkage to DMLMO assets
 
-8.3.  Version -00
+7.3.  Version -00
 
    *  Initial version.
 
-9.  References
+8.  References
 
-9.1.  Normative References
+8.1.  Normative References
 
    [I-D.draft-kll-yang-label-tsdb-00]
               Larsson, K., "Mapping YANG Data to Label-Set Time Series",
@@ -2413,6 +2524,11 @@ Synonyms
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC6570]  Gregorio, J., Fielding, R., Hadley, M., Nottingham, M.,
+              and D. Orchard, "URI Template", RFC 6570,
+              DOI 10.17487/RFC6570, March 2012,
+              <https://www.rfc-editor.org/rfc/rfc6570>.
+
    [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
               RFC 7950, DOI 10.17487/RFC7950, August 2016,
               <https://www.rfc-editor.org/rfc/rfc7950>.
@@ -2425,7 +2541,7 @@ Synonyms
               Instance Data", RFC 9195, DOI 10.17487/RFC9195, February
               2022, <https://www.rfc-editor.org/rfc/rfc9195>.
 
-9.2.  Informative References
+8.2.  Informative References
 
    [I-D.draft-claise-netconf-metadata-for-collection-03]
               Claise, B., Nayyar, M., and A. R. Sesani, "Per-Node
@@ -2451,13 +2567,41 @@ Synonyms
               <https://datatracker.ietf.org/doc/html/draft-netana-nmop-
               yang-message-broker-integration-00>.
 
+   [Redfish]  "DMTF Redfish", 20 May 2024,
+              <https://www.dmtf.org/standards/redfish>.
+
+   [RFC5424]  Gerhards, R., "The Syslog Protocol", RFC 5424,
+              DOI 10.17487/RFC5424, March 2009,
+              <https://www.rfc-editor.org/rfc/rfc5424>.
+
+   [RFC7603]  Schoening, B., Chandramouli, M., and B. Nordman, "Energy
+              Management (EMAN) Applicability Statement", RFC 7603,
+              DOI 10.17487/RFC7603, August 2015,
+              <https://www.rfc-editor.org/rfc/rfc7603>.
+
+   [RFC8641]  Clemm, A. and E. Voit, "Subscription to YANG Notifications
+              for Datastore Updates", RFC 8641, DOI 10.17487/RFC8641,
+              September 2019, <https://www.rfc-editor.org/rfc/rfc8641>.
+
+   [RFC9232]  Song, H., Qin, F., Martinez-Julia, P., Ciavaglia, L., and
+              A. Wang, "Network Telemetry Framework", RFC 9232,
+              DOI 10.17487/RFC9232, May 2022,
+              <https://www.rfc-editor.org/rfc/rfc9232>.
+
+   [Sensor_Service_Methods]
+              "Schneider Electric Sensor Service Methods", 20 June 2024,
+              <https://community.se.com/t5/DCE-web-services-API/Sensor-
+              Service-Methods/ta-p/446584>.
+
 Acknowledgments
 
    Kristian Larsson has provided invaluable insights, experience and
    validation of the design.  Many thanks to the entire POWEFF team for
-   their committment, flexibility and hard work behind this.  Hat off to
-   Benoît Claise, who inspires by the extensive work produced in IETF
-   over the years, and in this area in particular.
+   their committment, flexibility and hard work behind this.  Thanks to
+   James Henderson for the review, a number of small fixes and several
+   good susggestions.  Hat off to Benoît Claise, who inspires by the
+   extensive work produced in IETF over the years, and in this area in
+   particular.
 
 Author's Address
 
