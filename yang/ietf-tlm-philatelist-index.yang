@@ -1,6 +1,7 @@
 module ietf-tlm-philatelist-index {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-index";
+  namespace 
+    "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-index";
   prefix ietf-tlm-philatelist-index;
 
   import ietf-tlm-philatelist-types {
@@ -20,7 +21,7 @@ module ietf-tlm-philatelist-index {
               <mailto:mpalmero@cisco.com>";
   description
     'This YANG module defines the Telemetry Philatelist Index.
-    These definitions are intended for Philatelist Network Controllers.
+    These definitions are for Philatelist Network Controllers.
 
     A Network Controller with the Collector role programs one or more
     SOURCES (typically Network Elements) to generate a STREAM of 
@@ -141,27 +142,28 @@ module ietf-tlm-philatelist-index {
           leaf value { 
             type string; 
             description 
-              "The value part of the key-value pair as a simple string
-              value.
+              "The value part of the key-value pair as a simple
+              string value.
               "; 
           }
           leaf-list values { 
             type string; 
             ordered-by user; 
             description 
-              "The value part of the key-value pair as a collection of
-              string values.
+              "The value part of the key-value pair as a collection
+              of string values.
               "; 
           }
           leaf env-var { 
             type string; 
             description 
-              "The value part of the key-value pair. The actual value
-              is provided by an operating system environment variable.
-              The name of that environment variable is given by this
-              leaf. Case sensitive.
-              The set of environment variable names that are defined is
-              implementation dependent.
+              "The value part of the key-value pair. The actual
+              value is provided by an operating system environment
+              variable. The name of that environment variable is
+              given by this leaf. Case sensitive.
+
+              The set of environment variable names that are defined
+              is implementation dependent.
               "; 
           }
         }
@@ -171,7 +173,7 @@ module ietf-tlm-philatelist-index {
 
   container tlm-index {
     description 
-      "List of TSDB Partitions referenced by this Network Controller. 
+      "List of TSDB Partitions referenced by this Network Controller.
       ";
     container partitions {
       description 

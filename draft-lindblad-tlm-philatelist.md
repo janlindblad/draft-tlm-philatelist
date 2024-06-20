@@ -6,7 +6,7 @@ category: std
 docname: draft-lindblad-tlm-philatelist-latest
 submissiontype: IETF
 number:
-date: 2024-05-07
+date: 2024-06-20
 consensus: true
 v: 3
 area: OPS
@@ -19,7 +19,6 @@ keyword:
  - time series database
  - TSDB
 venue:
-  group: NETMOD
 #  type: Working Group
 #  mail: WG@example.com
 #  arch: https://example.com/WG
@@ -42,6 +41,18 @@ informative:
   I-D.draft-ietf-opsawg-collected-data-manifest-03:
   I-D.draft-claise-netconf-metadata-for-collection-03:
   I-D.draft-netana-nmop-yang-message-broker-integration-00:
+  RFC5424:
+  RFC7603:
+  RFC8641:
+  RFC9232:
+  Redfish:
+    title: DMTF Redfish
+    target: https://www.dmtf.org/standards/redfish
+    date: 2024-05-20
+  Sensor_Service_Methods:
+    title: Schneider Electric Sensor Service Methods
+    target: https://community.se.com/t5/DCE-web-services-API/Sensor-Service-Methods/ta-p/446584
+    date: 2024-06-20
 
 --- abstract
 
@@ -63,13 +74,38 @@ Data science issues like adding overlapping quantities, adding quantities of dif
 
 ## The Solution
 
-The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantity can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.
+The Philatelist framework proposes to standardize the collection, definitions of the quantities measured and meta data handling to provide a robust ground layer for telemetry collection on the Controller side.  The architecture defines a few interfaces, but allows great freedom in the implementations with its plug-in architecture.  This allows flexibility enough that any kind of quantity can be measured, any kind of collection protocol and mechanism employed, and the telemetry data flows aggregated using any kind of operation.
 
-To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to devices supporting traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format it arrives in.
+To do this, YANG is used both to describe the quantities being measured, as well as act as the framework for the metadata management.  Note that the use of YANG here does not limit the architecture to devices or sources supporting traditional YANG-based transport protocols.  YANG is used to describe the data, regardless of which format, protocol or source it arrives from.
 
 Initially developed in context of the Power and Energy Efficiency work (POWEFF), the authors realized both the potential and the need for this collection and aggregation architecture to become a general framework for collection of a variety of metrics.
 
 There is not much point in knowing the "cost side" of a running system (as in energy consumption or CO2e-emissions) if that cannot be weighed against the "value side" delivered by the system (as in transported bytes, VPN connections, music streaming hours, or number of cat videos, etc.), which means traditional performance metrics will play an equally important role in the collection.
+
+## YANG-based Telemetry Outlook
+
+Much work has already gone into the area of telemetry, YANG, and their intersection.  E.g.
+{{I-D.draft-ietf-opsawg-collected-data-manifest-03}},
+{{I-D.draft-claise-netconf-metadata-for-collection-03}} and
+{{I-D.draft-netana-nmop-yang-message-broker-integration-00}} come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.  We believe this work generally fits well with the principles outlined in the Network Telemetry Framework {{RFC9232}}.
+
+Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.
+
+A couple of collection source examples, just to stimulate the imagination:
+
+* SYSLOG {{RFC5424}}
+
+* EMAN MIBs over SNMP {{RFC7603}}
+
+* DMTF's Redfish REST API {{Redfish}} (no endorsement)
+
+* Proprietary REST APIs, e.g. {{Sensor_Service_Methods}} (no endorsement)
+
+* YANG-Push {{RFC8641}}
+
+In particular, this draft depends on the mapping of YANG-based structures to the typical TSDB tag-based formats described in {{I-D.draft-kll-yang-label-tsdb-00}}.
+
+For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the telemetry data stream interfaces with rigor and transparency regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.
 
 ## The Philatelist Name
 
@@ -79,7 +115,8 @@ This specification is about a framework for collection, aggregation and interpre
 
 1. philatelist
 
-noun. ['fɪˈlætəlɪst'] [fih-LAT-uh-list] a collector and student of postage stamps.
+noun. ['fɪˈlætəlɪst'] [fih-LAT-uh-list]
+      A collector and student of postage stamps.
 
 Synonyms
 - collector
@@ -227,7 +264,9 @@ On top of the stack, we may often find a (graphical) user interface (11), for hu
 
 ## The Provider Component
 
-A Provider is a Network Element that is the source of telemetry data that may or may not offer a YANG-based management interface.  Each Provider typically has a large number of "sensors" that can be polled or in some cases subscribed to. It may also offer some controls (configurables or actionables).
+A Provider is a Network Element, or any other kind of relevant sensor, that is the source of telemetry data that may or may not offer a YANG-based management interface.  It may, for example, provide an SNMP, Redfish or proprietary REST API.
+
+Each Provider typically has a large number of "sensors" that can be polled or in some cases subscribed to. It may also offer some controls (configurables or actionables).
 
 One problem with the sensors is that the sensors relevant for a given use case are often spread around inside the Provider system, and many may not know about all of them.  Also, the metadata associated with each sensor is often only missing or only available in human readable form (free form strings), rather than in a strict machine parsable format.
 
@@ -512,19 +551,6 @@ module: ietf-tlm-philatelist-aggregator
 
 In {{I-D.draft-palmero-ivy-ps-almo-01}}, the DMLMO team has built an inventory structure that describes systems, subsystems and their soft- and hardware components.  They are called assets in the DMLMO YANG models.  Some of the collected telemetry data streams may pertain to quite precisely to these assets, and it may be interesting to see the linkage.  For this reason, there is an optional module, ietf-tlm-philatelist-assets, that augments the Philatelist Index structure and adds the possibility to point to a DMLMO asset that the TSDB Partition pertains to.
 
-# YANG-based Telemetry Outlook
-
-Much work has already gone into the area of telemetry, YANG, and even their intersection.  E.g.
-{{I-D.draft-ietf-opsawg-collected-data-manifest-03}},
-{{I-D.draft-claise-netconf-metadata-for-collection-03}} and
-{{I-D.draft-netana-nmop-yang-message-broker-integration-00}} come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.
-
-Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.
-
-In particular, this draft depends on the mapping of YANG-based structures to the typical TSDB tag-based formats described in {{I-D.draft-kll-yang-label-tsdb-00}}.
-
-For the evolution of the YANG-based telemetry area, we believe this approach, combining pragmatism in the telemetry data stream interfaces with rigor and transparency regarding the data content, is key.  We would like to make this work fit in with the works of others in the field.
-
 # YANG Modules
 
 ## Base types module for Philatelist
@@ -595,6 +621,12 @@ This document has no IANA actions.
 
 # Changes (to be deleted by RFC Editor)
 
+## From version -02 to -03
+- Adopted {{RFC6570}} style URI Templates
+- Moved up the outlook section, and clarified the relation to existing device side telemetry solutions.
+- Added several informative references to prior work
+- Reformatted YANG modules for shorter lines to fit IETF layout
+
 ## From version -01 to -02
 - Introduced Dashboard and Index concepts
 - Restructured YANG into three controller modules: collector, index, aggregator
@@ -615,4 +647,4 @@ This document has no IANA actions.
 # Acknowledgments
 {:numbered="false"}
 
-Kristian Larsson has provided invaluable insights, experience and validation of the design.  Many thanks to the entire POWEFF team for their committment, flexibility and hard work behind this.  Hat off to Benoît Claise, who inspires by the extensive work produced in IETF over the years, and in this area in particular.
+Kristian Larsson has provided invaluable insights, experience and validation of the design.  Many thanks to the entire POWEFF team for their committment, flexibility and hard work behind this.  Thanks to James Henderson for the review, a number of small fixes and several good susggestions.  Hat off to Benoît Claise, who inspires by the extensive work produced in IETF over the years, and in this area in particular.

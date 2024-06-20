@@ -1,6 +1,7 @@
 module ietf-tlm-philatelist-assets {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-assets";
+  namespace 
+    "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-assets";
   prefix ietf-tlm-philatelist-assets;
 
   import ietf-lmo {
@@ -27,7 +28,7 @@ module ietf-tlm-philatelist-assets {
   description
     "This YANG module defines the Telemetry Philatelist linkage to
     DMLMO Assets.
-    These definitions are intended for Philatelist Network Controllers.
+    These definitions are for Philatelist Network Controllers.
 
     Copyright (c) 2024 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
@@ -66,7 +67,8 @@ module ietf-tlm-philatelist-assets {
       type leafref {
         path /ietf-lmo:lmos/ietf-lmo:lmo/ietf-lmo:lmo-class;
       }
-      must "derived-from-or-self(current(), 'ietf-lmo-assets:asset')";
+      must 
+        "derived-from-or-self(current(), 'ietf-lmo-assets:asset')";
       must "../pertains-to-asset-id";
       description 
         "The LMO Asset class of the asset.
@@ -75,8 +77,8 @@ module ietf-tlm-philatelist-assets {
     leaf pertains-to-asset-id {
       type leafref {
         path "/ietf-lmo:lmos/ietf-lmo:lmo"+
-          "[ietf-lmo:lmo-class=current()/../pertains-to-asset-class]"+
-          "/ietf-lmo:inst/ietf-lmo:id";
+          "[ietf-lmo:lmo-class=current()/../pertains-to-asset-class]"
+          +"/ietf-lmo:inst/ietf-lmo:id";
       }
       description 
         "The LMO Asset id (within the class) of the asset.
@@ -89,8 +91,8 @@ module ietf-tlm-philatelist-assets {
           "/ietf-tlm-philatelist-index:partition" {
     description 
       "By augmenting an asset pointer into the TSDB Partition Index,
-      controller may clarify which LMO Asset the data in the Partition
-      pertains to.
+      controller may clarify which LMO Asset the data in the
+      Partition pertains to.
       ";
     uses asset-pointer-g;
   }

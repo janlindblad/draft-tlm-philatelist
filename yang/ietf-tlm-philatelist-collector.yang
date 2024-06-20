@@ -1,6 +1,7 @@
 module ietf-tlm-philatelist-collector {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-collector";
+  namespace 
+    "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-collector";
   prefix ietf-tlm-philatelist-collector;
 
   import ietf-tlm-philatelist-types {
@@ -26,7 +27,7 @@ module ietf-tlm-philatelist-collector {
               <mailto:mpalmero@cisco.com>";
   description
     'This YANG module defines the Telemetry Philatelist Collector.
-    These definitions are intended for Philatelist Network Controllers.
+    These definitions are for Philatelist Network Controllers.
 
     A Network Controller with the Collector role programs one or more
     SOURCES (typically Network Elements) to generate a STREAM of 
@@ -113,8 +114,8 @@ module ietf-tlm-philatelist-collector {
           list device-group {
             key name;
             description 
-              "A device-group contains a group of similar devices that will
-              have collection performed in the same way.
+              "A device-group contains a group of similar devices
+              that will have collection performed in the same way.
               ";
             leaf name {
               type string;
@@ -126,7 +127,8 @@ module ietf-tlm-philatelist-collector {
               type string;
               description 
                 "Points to the devices members of this device-group.
-                The exact meaning of these names is implementation specific.
+                The exact meaning of these names is implementation
+                specific.
                 ";
             }
             uses ietf-tlm-philatelist-dashboard:provider-g;
@@ -135,7 +137,8 @@ module ietf-tlm-philatelist-collector {
 
         container tlm-streams {
           description 
-            "List of telemetry streams pertainin to this organization.
+            "List of telemetry streams pertainin to this
+            organization.
             ";
           list tlm-stream {
             key id;
@@ -152,13 +155,13 @@ module ietf-tlm-philatelist-collector {
             list sources { 
               key "device-group dash-name";
               description 
-                "List of sources to collect from. Each source points to
-                a device-group and a dashboard name to collect from 
-                each device in the device-group.
+                "List of sources to collect from. Each source points
+                to a device-group and a dashboard name to collect
+                from each device in the device-group.
                 ";
               leaf device-group { 
                 type leafref { 
-                  path ../../../../device-groups/device-group/name; 
+                  path ../../../../device-groups/device-group/name;
                 }
                 description 
                   "The device-group to collect from.
@@ -166,7 +169,8 @@ module ietf-tlm-philatelist-collector {
               }
               leaf dash-name { 
                 type leafref { 
-                  path ../../../../device-groups/device-group/dashboards/dashboard/id; 
+                  path "../../../../device-groups/device-group/"+
+                    "dashboards/dashboard/id";
                 }
                 description 
                   "The name of the dashboard 
@@ -186,7 +190,8 @@ module ietf-tlm-philatelist-collector {
     }
   }
 
-  augment /tlm-collector/organizations/organization/device-groups/device-group/dash-items/dash-item/label/value-source {
+  augment "/tlm-collector/organizations/organization/device-groups/"+
+    "device-group/dash-items/dash-item/label/value-source" {
     description 
       "Some additional value-sources that the collector enables
       (that are not available to providers).

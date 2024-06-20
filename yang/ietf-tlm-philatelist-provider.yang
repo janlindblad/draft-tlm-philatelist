@@ -1,6 +1,7 @@
 module ietf-tlm-philatelist-provider {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
+  namespace 
+    "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-provider";
   prefix ietf-tlm-philatelist-provider;
 
   import ietf-tlm-philatelist-dashboard {
@@ -22,9 +23,10 @@ module ietf-tlm-philatelist-provider {
     "This YANG module defines the Telemetry Philatelist Provider
     interface.
 
-    This module is used by Network Elements that have built-in support
-    for the Philatelist provider interface, or by a proxy mechanism
-    representing some/all of them, when not supported directly.
+    This module is used by Network Elements that have built-in
+    support for the Philatelist provider interface, or by a proxy
+    mechanism representing some/all of them, when not supported
+    directly.
 
     Copyright (c) 2024 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.

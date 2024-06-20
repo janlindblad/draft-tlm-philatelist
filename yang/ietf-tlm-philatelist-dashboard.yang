@@ -1,6 +1,7 @@
 module ietf-tlm-philatelist-dashboard {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-dashboard";
+  namespace 
+    "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-dashboard";
   prefix ietf-tlm-philatelist-dashboard;
 
   import ietf-tlm-philatelist-types {
@@ -21,10 +22,11 @@ module ietf-tlm-philatelist-dashboard {
   description
     "This YANG module defines the Telemetry Philatelist Dashboard.
 
-    These definitions are used both by Philatelist Network Controllers,
-    and Philatelist Network Elements. Network Elements that are unaware
-    of the Philatelist framework may also be covered when a 
-    'proxy mechanism' for the Philatelist information is added.
+    These definitions are used both by Philatelist Network 
+    Controllers, and Philatelist Network Elements. Network Elements
+    that are unaware of the Philatelist framework may also be 
+    covered when a 'proxy mechanism' for the Philatelist information
+    is added.
 
     Copyright (c) 2024 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
@@ -139,20 +141,20 @@ module ietf-tlm-philatelist-dashboard {
       }
       default ietf-tlm-philatelist-types:get-local-file-once;
       description 
-        "Discriminator pointing out which access mechanism is offered.
-        This value controls which detailed configuration nodes will be
-        available.
+        "Discriminator pointing out which access mechanism is
+        offered. This value controls which detailed configuration
+        nodes will be available.
         ";
     }
     container get-local-file-once {
       when "derived-from-or-self(../method, 
             'ietf-tlm-philatelist-types:get-local-file-once')";
       description 
-        "The server itself does not offer any access mechanism for this
-        dashboard item. Instead, philatelist controllers will need to
-        read static values from a local on the controller. How the file
-        appears in a relevant location on the controller is outside the
-        scope of this specification.
+        "The server itself does not offer any access mechanism for
+        this dashboard item. Instead, philatelist controllers will
+        need to read static values from a local on the controller. 
+        How the file appears in a relevant location on the 
+        controller is outside the scope of this specification.
         The file format used MUST adhere to RFC9195
         (https://datatracker.ietf.org/doc/rfc9195/)
         ";
@@ -170,18 +172,19 @@ module ietf-tlm-philatelist-dashboard {
       when "derived-from-or-self(../method, 
             'ietf-tlm-philatelist-types:get-static-url-once')";
       description 
-        "The server points to a URL the controller can use to download
-        a file with static values for this dashboard item. The URL may
-        or may not be pointing to the server itself, and could 
-        potentially even point to a URL on the controller itself.
-        How the static file contents pointed to by the URL appears on
-        the webserver is outside the scope of this specification.
+        "The server points to a URL the controller can use to
+        download a file with static values for this dashboard item.
+        The URL may or may not be pointing to the server itself, and
+        could potentially even point to a URL on the controller 
+        itself. How the static file contents pointed to by the URL
+        appears on the webserver is outside the scope of this
+        specification.
         ";
       leaf url { 
         type ietf-tlm-philatelist-types:something; 
         description 
-          "The URL that the controller should read in order to get the
-          static data about the dashboard item.
+          "The URL that the controller should read in order to 
+          get the static data about the dashboard item.
           The file format used MUST adhere to RFC9195
           (https://datatracker.ietf.org/doc/rfc9195/)
           "; 
@@ -190,22 +193,22 @@ module ietf-tlm-philatelist-dashboard {
     container gnmi-polling {
       when "derived-from-or-self(../method, 'gnmi-polling')";
       description 
-        "The server points to a gNMI interface the controller can poll
-        at regular intervals to read the current sensor value for this
-        dashboard item.
+        "The server points to a gNMI interface the controller can
+        poll at regular intervals to read the current sensor value
+        for this dashboard item.
         ";
       leaf encoding { 
         type ietf-tlm-philatelist-types:something; 
         description 
-          "The encoding of the data provided by this mechanism, such as
-          self-describing-gpb
+          "The encoding of the data provided by this mechanism, 
+          such as self-describing-gpb
           "; 
       } 
       leaf protocol { 
         type ietf-tlm-philatelist-types:something; 
         description 
-          "The exact protocol parameters for this gNMI endpoint, such as
-          grpc no-tls
+          "The exact protocol parameters for this gNMI endpoint, 
+          such as grpc no-tls
           "; 
       } 
     }
@@ -251,10 +254,10 @@ module ietf-tlm-philatelist-dashboard {
   grouping provider-g {
     description 
       "Top-level provider grouping.  Devices will implement
-      this as a config false container, or as a piece of instance data
-      that a controller can read. Controllers implement this data
-      structure as config true, configurable and readable by the 
-      operators.
+      this as a config false container, or as a piece of instance
+      data that a controller can read. Controllers implement this
+      data structure as config true, configurable and readable by
+      the operators.
       ";
     container dashboards {
       description 
@@ -296,11 +299,11 @@ module ietf-tlm-philatelist-dashboard {
               The format of the path is TSDB style, i.e. used MUST
               conform to the I-D.draft-kll-yang-label-tsdb, e.g.
               interfaces_interface_statistics_in_unicast_pkts
-              Each dashboard item may point to multiple sensors, as in
-              the example above, where each interface would have
-              a counter of incoming unicase packets.
-              Each dashboard item may occur in more than one dashboard,
-              and is therefore further desribed in 
+              Each dashboard item may point to multiple sensors, 
+              as in the example above, where each interface would
+              have a counter of incoming unicase packets.
+              Each dashboard item may occur in more than one 
+              dashboard, and is therefore further desribed in 
               ../../../../dash-items/dash-item
               ";
           }
@@ -315,9 +318,9 @@ module ietf-tlm-philatelist-dashboard {
       list dash-item {
         key tsdb-path;
         description 
-          "Dashboard item, a sensor or control item that is part of a
-          dashboard, i.e. a collection of sensors and controls relevant
-          for a particular use case.
+          "Dashboard item, a sensor or control item that is part 
+          of a dashboard, i.e. a collection of sensors and controls
+          relevant for a particular use case.
           Each dashboard item may occur in more than one dashboard.
           ";
         leaf tsdb-path {
@@ -339,22 +342,24 @@ module ietf-tlm-philatelist-dashboard {
           mandatory true;
           description 
             "The item type describes the type of dashboard item this
-            is, including if it is a sensor or contol, sitting on the
-            inside or outside of the parent component, the measurement
-            quantity (e.g. temperature) and unit (e.g. Celsius).
+            is, including if it is a sensor or contol, sitting on
+            the inside or outside of the parent component, the
+            measurement quantity (e.g. temperature) and unit 
+            (e.g. Celsius).
+
             See the ietf-tlm-philatelist-types:dash-item-type for a
-            more detailed explanation, or if you intend to define a new
-            type of dashboard item.
+            more detailed explanation, or if you intend to define a
+            new type of dashboard item.
             ";
         }
         container accuracy {
           when "derived-from(../item-type, 
                 'ietf-tlm-philatelist-types:sensor-type')";
           description 
-            "The accuracy of the dasboard item (sensor). The accuracy
-            described using two parameters. One is the max deviation
-            relative to the sensor reading, the other one is a constant
-            deviation offset.
+            "The accuracy of the dasboard item (sensor). The
+            accuracy described using two parameters. One is the max
+            deviation relative to the sensor reading, the other one
+            is a constant deviation offset.
 
             Example 1: if a sensor might produce values between 
             0 and 1000, and the sensor currently reports 555, but 
@@ -395,9 +400,9 @@ module ietf-tlm-philatelist-dashboard {
           key name;
           description 
             "List of TSDB path labels. A single TSDB path often refer
-            to a whole collection of readable sensors. Each such sensor
-            is distinguished by the values associated with labels in
-            the path. Those labels are listed here.
+            to a whole collection of readable sensors. Each such 
+            sensor is distinguished by the values associated with
+            labels in the path. Those labels are listed here.
 
             Example: interfaces_interface_statistics_in_unicast_pkts
             might have one label interfaces_interface_name. Concrete
@@ -410,8 +415,9 @@ module ietf-tlm-philatelist-dashboard {
               interfaces_interface_name = eth0
 
             As can be seen in the example, a controller might inject
-            labels that are not part of the tsdb-path (host), but helps
-            the controller keep track of the incoming data streams.
+            labels that are not part of the tsdb-path (host), but
+            helps the controller keep track of the incoming data
+            streams.
             ";
           reference
             I-D.draft-kll-yang-label-tsdb;
@@ -429,9 +435,9 @@ module ietf-tlm-philatelist-dashboard {
               + the server may provide values in runtime, in which
                 case the runtime-values points to the dashboard item
                 to read to get the actual values.
-              + the controller or operator may pick one or more values
-                 by configuration, in which case they are listed under
-                static-values .
+              + the controller or operator may pick one or more
+                 values by configuration, in which case they are
+                 listed under static-values .
               + the controller may pick one or more values using some
                 internal mechanism of its own, in which case they
                 will not be visible here.
@@ -440,8 +446,8 @@ module ietf-tlm-philatelist-dashboard {
               type string;
               description 
                 "One or more values configured by the controller or
-                operator designating which instances of this TSDB path
-                to collect data about. 
+                operator designating which instances of this TSDB
+                path to collect data about. 
 
                 Example: if the label name for this label entry is
                 interfaces_interface_name, this could be a configured
@@ -453,13 +459,14 @@ module ietf-tlm-philatelist-dashboard {
                 path ../../../dash-item/tsdb-path;
               }
               description 
-                "One or more dashboard items to read label values from.
+                "One or more dashboard items to read label values
+                from.
 
                 Example: if the label name for this label entry is
                 interfaces_interface_name, this could point to a
                 dashboard item that collects the names of all 
-                interfaces, or all interfaces relevant for a particular
-                purpose or customer.
+                interfaces, or all interfaces relevant for a
+                particular purpose or customer.
                 ";
             }
           }
@@ -475,8 +482,9 @@ module ietf-tlm-philatelist-dashboard {
             mechanism is SNMP, it would be an OID. A redfish access
             mechanism would use a endpoint-local URL.
 
-            In all cases, references to the label values, as defined in
-            ../label/name, may occur. Such references are written as
+            In all cases, references to the label values, as defined
+            in ../label/name, may occur. Such references are written
+            as
 
                 $(label_name)
 
@@ -492,8 +500,8 @@ module ietf-tlm-philatelist-dashboard {
             e)']/statistics/in-unicast-pkts
 
             Any prefixes used (as if: above) are mapped to the
-            corresponding namespace (NETCONF) or module name (RESTCONF)
-            using the ../../../prefix-mappings list.
+            corresponding namespace (NETCONF) or module name
+            (RESTCONF) using the ../../../prefix-mappings list.
 
             Example 2: The access path for an SNMP get-based node
             interfaces_interface_statistics_in_unicast_pkts
@@ -502,12 +510,14 @@ module ietf-tlm-philatelist-dashboard {
             1.3.6.1.2.1.2.2.1.11.$(interfaces_interface_num)
 
             Example 3: The access path for a Redfish-based node
-            Systems_EthernetInterfaces_EthernetInterfaceMetrics_Droppe
-            dPackets            
+
+            Systems_EthernetInterfaces_EthernetInterfaceMetrics_Dropp
+            edPackets
+
             might have access path
 
-            /redfish/v1/Systems/VM1/EthernetInterfaces/$(interfaces_in
-            terface_num)/EthernetInterfaceMetrics/DroppedPackets
+            /redfish/v1/Systems/VM1/EthernetInterfaces/$(interfaces_i
+            nterface_num)/EthernetInterfaceMetrics/DroppedPackets
             ";
         }
         leaf access-params {
@@ -515,16 +525,16 @@ module ietf-tlm-philatelist-dashboard {
             path ../../../accesses/access/id;
           }
           description 
-            "Points to the specific access method to be used with this
-            dashboard item. 
+            "Points to the specific access method to be used with
+            this dashboard item. 
             ";
         }
       }
     }
     container accesses {
       description 
-        "Holds a list of all the access methods that have been defined
-        for dashboard items on the Network Element.
+        "Holds a list of all the access methods that have been
+        defined for dashboard items on the Network Element.
         ";
       list access {
         key id;

@@ -1,6 +1,7 @@
 module ietf-tlm-philatelist-types {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-types";
+  namespace 
+    "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-types";
   prefix ietf-tlm-philatelist-types;
 
   organization
@@ -111,10 +112,10 @@ module ietf-tlm-philatelist-types {
   identity dash-type {
     description 
       "The base identity for all dashboard types.
-      Dashboards are predefined collections of sensors and/or controls
-      that a Network Element publishes towards a Network Controller,
-      which uses the dashboard to find use case relevant telemetry
-      collection and control points.
+      Dashboards are predefined collections of sensors and/or
+      controls that a Network Element publishes towards a Network
+      Controller, which uses the dashboard to find use case relevant
+      telemetry collection and control points.
       ";
   }
 
@@ -153,22 +154,24 @@ module ietf-tlm-philatelist-types {
     base connection-method;
     description 
       "Connection method identity for the case where a file contains
-      the dashboard information in lieu of the Network Element itself.
+      the dashboard information in lieu of the Network Element 
+      itself.
       ";
   }
   identity get-static-url-once {
     base connection-method;
     description
       "Connection method identity for the case where a URL contains
-      the dashboard information in lieu of the Network Element itself.
-      The URL may or may not be hosted on the Network Element.
+      the dashboard information in lieu of the Network Element
+      itself. The URL may or may not be hosted on the Network 
+      Element.
       ";
   }
   identity cm-polled {
     base connection-method;
     description 
-      "Connection method identity for all mechanisms that are based on
-      the client regularly polling the server.
+      "Connection method identity for all mechanisms that are based
+      on the client regularly polling the server.
       ";
   }
 }

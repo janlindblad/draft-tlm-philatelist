@@ -1,6 +1,7 @@
 module ietf-tlm-philatelist-aggregator {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-aggregator";
+  namespace 
+    "urn:ietf:params:xml:ns:yang:ietf-tlm-philatelist-aggregator";
   prefix ietf-tlm-philatelist-aggregator;
 
   import ietf-tlm-philatelist-types {
@@ -23,7 +24,7 @@ module ietf-tlm-philatelist-aggregator {
               <mailto:mpalmero@cisco.com>";
   description
     'This YANG module defines the Telemetry Philatelist Aggregator.
-    These definitions are intended for Philatelist Network Controllers.
+    These definitions are for Philatelist Network Controllers.
 
     An AGGREGATOR ensures data from one or more SOURCE(s) are
     combined into a FLOW using a (sequence of) OPERATIONs (OPs)
@@ -126,8 +127,8 @@ module ietf-tlm-philatelist-aggregator {
             path ../../../operations/operation/id;
           }
           description 
-            "The operation to apply to the input stream(s) in order to
-            compute the output stream.
+            "The operation to apply to the input stream(s) in order
+            to compute the output stream.
             ";
         }
         container output {
@@ -161,22 +162,23 @@ module ietf-tlm-philatelist-aggregator {
         }
         choice op-type {
           description 
-            "A choice of basic operation types. This set of choices may
-            be extended by other modules agumenting the choice.
+            "A choice of basic operation types. This set of choices
+            may be extended by other modules agumenting the choice.
             ";
           container linear-sum { 
             description 
             "This operation produces the sum of the input streams.
 
-            Since the data points in the input stream are not likely to
-            be perfectly aligned in time, this linear-sum operation
-            produces a linear interpolation between each point in the
-            time series.
+            Since the data points in the input stream are not
+            likely to be perfectly aligned in time, this linear-sum
+            operation produces a linear interpolation between each 
+            point in the time series.
             
-            This works well when all inputs are continuously receiving
-            additional data points, and when their frequency is roughly
-            the same. A different summing operation should be chosen if
-            this is not the case, e.g. most-recent-sum.
+            This works well when all inputs are continuously
+            receiving additional data points, and when their 
+            frequency is roughly the same. A different summing
+            operation should be chosen if this is not the case,
+            e.g. most-recent-sum.
             "; 
           }
           container linear-average { description "FIXME"; }
@@ -184,16 +186,28 @@ module ietf-tlm-philatelist-aggregator {
           container linear-min { description "FIXME"; }
           container rolling-average {
             description "FIXME";
-            leaf timespan { type ietf-tlm-philatelist-types:something; description "FIXME"; }
+            leaf timespan { 
+              type ietf-tlm-philatelist-types:something; 
+              description "FIXME"; 
+            }
           }
           container filter-age {
             description "FIXME";
-            leaf min-age { type ietf-tlm-philatelist-types:something; description "FIXME"; }
-            leaf max-age { type ietf-tlm-philatelist-types:something; description "FIXME"; }
+            leaf min-age { 
+              type ietf-tlm-philatelist-types:something; 
+              description "FIXME"; 
+            }
+            leaf max-age { 
+              type ietf-tlm-philatelist-types:something; 
+              description "FIXME"; 
+            }
           }
           container function {
             description "FIXME";
-            leaf name { type ietf-tlm-philatelist-types:something; description "FIXME"; }
+            leaf name { 
+              type ietf-tlm-philatelist-types:something; 
+              description "FIXME"; 
+            }
           }
         }
       }
