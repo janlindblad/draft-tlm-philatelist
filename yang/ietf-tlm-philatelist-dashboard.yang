@@ -471,54 +471,96 @@ module ietf-tlm-philatelist-dashboard {
             }
           }
         }
-        leaf access-path {
-          type string;
+        choice access-path {
           description 
-            "This is the path used by the client (Network Controller)
-            when asking the server (Network Element) for data.
-            The format of the access-path depends on the specific
-            access mechanism. If the access mechanism is YANG-based,
-            this access path will be an XPath string. If the access
-            mechanism is SNMP, it would be an OID. A redfish access
-            mechanism would use a endpoint-local URL.
+          "This is the path used by the client (Network Controller)
+          when asking the server (Network Element) for data.
+          The format of the access-path depends on the specific
+          access mechanism. If the access mechanism is YANG-based,
+          this access path would be an XPath string. If the access
+          mechanism is SNMP, it would be an OID. A redfish access
+          mechanism would use a endpoint-local URL.
+          The actual path may be constructed in one of several ways.
+          ";
+          leaf plain-string {
+            type string;
+            description 
+              "The given string is used as is, without substitution
+              of any labels or special characters.
+              ";
+          }
+          leaf string-with-labels {
+            type string;
+            description 
+              "The given string contains references of the form
 
-            In all cases, references to the label values, as defined
-            in ../label/name, may occur. Such references are written
-            as
+              $(label_name)
 
-                $(label_name)
+              i.e. a dollar-sign, a left-parenthesis, 
+              the name of the label - case sensitive and without 
+              whitespace - and finally a right-parenthesis.
 
-            i.e. a dollar-sign, a left-parenthesis, 
-            the name of the label - case sensitive and without 
-            whitespace - and finally a right-parenthesis.
+              This expression refers to the labels-value pairs from
 
-            Example 1: The access path for a NETCONF get-based node
-            interfaces_interface_statistics_in_unicast_pkts
-            might have access path
+              ../label/name  and  ../label/value-source
 
-            /if:interfaces/interface[name='$(interfaces_interface_nam
-            e)']/statistics/in-unicast-pkts
+              The reference expression is substituted with the
+              label value before use.
 
-            Any prefixes used (as if: above) are mapped to the
-            corresponding namespace (NETCONF) or module name
-            (RESTCONF) using the ../../../prefix-mappings list.
+              Example: The access path for an SNMP GET-based node
+              interfaces_interface_statistics_in_unicast_pkts
+              might have access path
 
-            Example 2: The access path for an SNMP get-based node
-            interfaces_interface_statistics_in_unicast_pkts
-            might have access path
+              1.3.6.1.2.1.2.2.1.11.$(interfaces_interface_num)
 
-            1.3.6.1.2.1.2.2.1.11.$(interfaces_interface_num)
+              which gives the final OID string
 
-            Example 3: The access path for a Redfish-based node
+              1.3.6.1.2.1.2.2.1.11.4711
 
-            Systems_EthernetInterfaces_EthernetInterfaceMetrics_Dropp
-            edPackets
+              if the ../label[name='interfaces_interface_num'] value
+              is 4711.
+              ";
+          }
+          leaf url-with-labels {
+            type string;
+            description 
+              "The given string contains references of the forms
 
-            might have access path
+              {label_name}
+              {label_name:3}
+              {?label_name}
 
-            /redfish/v1/Systems/VM1/EthernetInterfaces/$(interfaces_i
-            nterface_num)/EthernetInterfaceMetrics/DroppedPackets
-            ";
+              etc. as defined in RFC6570.
+
+              This expression refers to the labels-value pairs from
+
+              ../label/name  and  ../label/value-source
+
+              The reference expression is substituted with the
+              label value before use according to the RFC6570 rules.
+
+              Example 1: The access path for a NETCONF get-based node
+              interfaces_interface_statistics_in_unicast_pkts
+              might have access path
+
+              /if:interfaces/interface[name='{interfaces_interface_na
+              me}']/statistics/in-unicast-pkts
+
+              Any prefixes used (as if: above) are mapped to the
+              corresponding namespace (NETCONF) or module name
+              (RESTCONF) using the ../../../prefix-mappings list.
+
+              Example 2: The access path for a Redfish-based node
+
+              Systems_EthernetInterfaces_EthernetInterfaceMetrics_Dro
+              ppedPackets
+
+              might have access path
+
+              /redfish/v1/Systems/VM1/EthernetInterfaces/{interfaces_
+              interface_num}/EthernetInterfaceMetrics/DroppedPackets
+              ";
+          }
         }
         leaf access-params {
           type leafref {

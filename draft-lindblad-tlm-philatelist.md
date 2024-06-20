@@ -32,6 +32,7 @@ author:
     email: "jlindbla@cisco.com"
 
 normative:
+  RFC6570:
   RFC7950:
   RFC9195:
   I-D.draft-kll-yang-label-tsdb-00:
@@ -621,19 +622,17 @@ This document has no IANA actions.
 
 # Changes (to be deleted by RFC Editor)
 
-## From version -02 to -03
-- Adopted {{RFC6570}} style URI Templates
+## From version -01 to -02
+- Adopted {{RFC6570}} style URI Templates in ietf-tlm-philatelist-dashboard
 - Moved up the outlook section, and clarified the relation to existing device side telemetry solutions.
 - Added several informative references to prior work
 - Reformatted YANG modules for shorter lines to fit IETF layout
 
-## From version -01 to -02
+## From version -00 to -01
 - Introduced Dashboard and Index concepts
 - Restructured YANG into three controller modules: collector, index, aggregator
 - Restructured YANG into one device module: provider
 - Restructured YANG common parts into one abstract module: dashboard
-
-## From version -00 to -01
 - Split YANG modules, some contents going into poweff-specific modules
 - Renamed remaining YANG modules from -poweff- to -tlm-philatelist-
 - Updated text to reflect new module organization
