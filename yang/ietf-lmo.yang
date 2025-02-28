@@ -9,12 +9,13 @@ module ietf-lmo {
     prefix yang;
   }
   organization
-    "IETF OPSA (Operations and Management Area) Working Group";
+    "IETF GREEN (Getting Ready for Energy-Efficient Networking)
+     Working Group";
   contact
-    "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
-     WG List:  <mailto:opsawg@ietf.org>
+    "WG Web:   <https://datatracker.ietf.org/group/green/about/>
+     WG List:  <mailto:green@ietf.org>
      Editor:  Jan Lindblad
-              <mailto:jlindbla@cisco.com>
+              <mailto:jan.lindblad+ietf@for.eco>
      Editor:  Marisol Palmero
               <mailto:mpalmero@cisco.com>";
   description

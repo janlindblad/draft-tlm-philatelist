@@ -6,11 +6,11 @@ category: std
 docname: draft-lindblad-tlm-philatelist-latest
 submissiontype: IETF
 number:
-date: 2024-06-20
+date: 2025-02-28
 consensus: true
 v: 3
 area: OPS
-workgroup: NETMOD
+workgroup: GREEN WG
 keyword:
  - YANG
  - telemetry
@@ -22,14 +22,14 @@ venue:
 #  type: Working Group
 #  mail: WG@example.com
 #  arch: https://example.com/WG
-  github: "janlindblad/netmod-tlm-philatelist"
-  latest: "https://janlindblad.github.io/netmod-tlm-philatelist/draft-lindblad-tlm-philatelist.html"
+  github: "janlindblad/draft-tlm-philatelist"
+  latest: "https://janlindblad.github.io/draft-tlm-philatelist/draft-lindblad-tlm-philatelist.html"
 
 author:
  -
     fullname: "Jan Lindblad"
-    organization: Cisco
-    email: "jlindbla@cisco.com"
+    organization: All For Eco
+    email: "jan.lindblad+ietf@for.eco"
 
 normative:
   RFC6570:
@@ -39,9 +39,9 @@ normative:
   I-D.draft-palmero-ivy-ps-almo-01:
 
 informative:
-  I-D.draft-ietf-opsawg-collected-data-manifest-03:
+  I-D.draft-ietf-opsawg-collected-data-manifest-05:
   I-D.draft-claise-netconf-metadata-for-collection-03:
-  I-D.draft-netana-nmop-yang-message-broker-integration-00:
+  I-D.draft-ietf-nmop-yang-message-broker-integration-06:
   RFC5424:
   RFC7603:
   RFC8641:
@@ -49,7 +49,7 @@ informative:
   Redfish:
     title: DMTF Redfish
     target: https://www.dmtf.org/standards/redfish
-    date: 2024-05-20
+    date: 2025-01-13
   Sensor_Service_Methods:
     title: Schneider Electric Sensor Service Methods
     target: https://community.se.com/t5/DCE-web-services-API/Sensor-Service-Methods/ta-p/446584
@@ -86,9 +86,9 @@ There is not much point in knowing the "cost side" of a running system (as in en
 ## YANG-based Telemetry Outlook
 
 Much work has already gone into the area of telemetry, YANG, and their intersection.  E.g.
-{{I-D.draft-ietf-opsawg-collected-data-manifest-03}},
+{{I-D.draft-ietf-opsawg-collected-data-manifest-05}},
 {{I-D.draft-claise-netconf-metadata-for-collection-03}} and
-{{I-D.draft-netana-nmop-yang-message-broker-integration-00}} come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.  We believe this work generally fits well with the principles outlined in the Network Telemetry Framework {{RFC9232}}.
+{{I-D.draft-ietf-nmop-yang-message-broker-integration-06}} come to mind. We (the POWEFF authoring team) would like to work with the authoring teams of these drafts to align our joint work.  We believe this work generally fits well with the principles outlined in the Network Telemetry Framework {{RFC9232}}.
 
 Many essential data sources in real world deployments do not support any YANG-based interfaces, and that situation is expected to remain for the forseable future, which is why we find it important to be able to ingest data from free form (often REST-based) interfaces, and then add the necessary rigor on the Collector level.  Then output the datastreams in formats that existing, mature tools can consume directly.
 
@@ -621,6 +621,10 @@ This document has no IANA actions.
 
 
 # Changes (to be deleted by RFC Editor)
+
+## From version -02 to -03
+- Updated author affiliation and document working group
+- Updated references to other documents
 
 ## From version -01 to -02
 - Adopted {{RFC6570}} style URI Templates in ietf-tlm-philatelist-dashboard
